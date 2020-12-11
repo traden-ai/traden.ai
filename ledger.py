@@ -29,4 +29,4 @@ class Ledger:
         return self.stocks
 
     def get_amount_stock(self, stock_name):
-        return self.stocks(stock_name)
+        return self.stocks[stock_name]

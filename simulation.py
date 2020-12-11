@@ -2,7 +2,7 @@ from ledger.py import Ledger
 from stock_database.py import load
 
 class Simulation:
-    def __init__(self, balance, tradable_stocks, start_date, end_date, selling_model, buying_model):
+    def __init__(self, balance: int, tradable_stocks: list, start_date: str, end_date: str, selling_model: function, buying_model: function):
         self.initial_balance = balance
         
         self.ledger = Ledger(balance, tradable_stocks)
@@ -11,42 +11,43 @@ class Simulation:
         self.start_date = start_date
         self.current_date = start_date
         self.iterator = 0
-        self.end_date = end_date
         
         self.selling_model = selling_model
         self.buying_model = buying_model
         
         self.logs = []
-        self.data = load(self.tradable_stocks, self.start_date, self.end_date)
+        self.data = load(tradable_stocks, start_date, end_date)
 
-    def execute():
+        self.end_date = self.data[-1]["date"]
+
+    def execute(self):
         while (self.current_date != self.end_date):
             selling_model()
             buying_model()
-            self.current_date = adding_days_to_date(self.current_date, 1)
+            self.current_date = self.data[iterator]["date"]
             self.iterator += 1
         self.iterator -= 1
         self.sell_all()
         return self.ledger.balance - self.initial_balance
 
-    def buy(stock_name, amount):
+    def buy(self, stock_name: str, amount: int):
         stock_price = self.data[iterator][stock_name]["Close"]
         isPossible = self.ledger.buy(stock_name, stock_price, amount)
         if isPossible:
             self.logs.extend({"action":"Bought", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
 
-    def sell(stock_name, amount):
+    def sell(self, stock_name: str,amount: int):
         stock_price = self.data[iterator][stock_name]["Close"]
         isPossible = self.ledger.sell(stock_name, stock_price, amount)
         if isPossible:
             self.logs.extend({"action":"Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
 
-    def sell_all():
+    def sell_all(self):
         stocks = self.ledger.get_stocks()
         for stock in stocks:
-            sell(stock, stocks[stock])
+            self.sell(stock, stocks[stock])
 
-    def logs_str():
+    def logs_str(self):
         logs_format = ""
         for log in self.logs:
             logs_format += "{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])

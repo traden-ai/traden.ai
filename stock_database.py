@@ -8,7 +8,7 @@ today = dt.date.today()    # current date
 
 def get_stocks():
     ''' method that loads all stocks from 'symbols.txt' into a list '''
-    
+
     stocks = []
     with open("symbols.txt", "r") as f:
         for line in f:
@@ -42,8 +42,8 @@ def data_download(year=start_year):
 
     while year <= int(today.strftime("%Y")):
         
-        start_date = f"{year}-01-01"
-        end_date = f"{year+1}-01-01"
+        start_date = str(year) + "-01-01"
+        end_date = str(year+1) + "-01-01"
 
         if year == int(today.strftime("%Y")):
             end_date = today.strftime("%Y-%m-%d")
@@ -129,3 +129,6 @@ def data_load(stocks: list, start: str, end: str):
         year += 1
 
     return data
+
+if __name__ == "__main__":
+    data_download()

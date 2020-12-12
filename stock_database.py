@@ -3,52 +3,54 @@ import csv
 import yfinance as yf
 import datetime as dt
 
-start_year = 2010       # year from which data is collected 
+start_year = 2010          # defaut year from which data is collected 
 today = dt.date.today()    # current date
 
-def data_clear():
-    ''' method that deletes all existing csv data files in the 'data/'
-    folder'''
+def get_stocks():
 
-    year = start_year
+    stocks = []
+    with open("symbols.txt", "r") as f:
+        for line in f:
+            stocks.append(line.strip())
+
+    return stocks
+
+
+def data_clear(year=start_year):
+    ''' method that deletes all existing csv data files in the 'data/'
+    folder starting from input 'year' '''
 
     while year <= int(today.strftime("%Y")):
 
-        filepath = "data/" + str(year) + ".csv"
+        filepath = f"data/{year}.csv"
         if os.path.exists(filepath):
             os.remove(filepath)
 
         year += 1
 
 
-def data_download():
-    ''' method that creates a file for each year between 'start_year' and 
+def data_download(year=start_year):
+    ''' method that creates a file for each year between input 'year' and 
     the current year, containing all the data from yfinance for each symbol
     in symbols.txt '''
 
-    data_clear()
-    year = start_year
-
-    stocks = []
-    f = open("symbols.txt", "r")
-    for line in f:
-        stocks.append(line.strip())
+    data_clear(year)
 
     if not os.path.exists("data/"):
         os.mkdir("data/")
 
     while year <= int(today.strftime("%Y")):
         
-        start_date = str(year) + "-01-01"
-        end_date = str(year+1) + "-01-01"
+        start_date = f"{year}-01-01"
+        end_date = f"{year+1}-01-01"
 
         if year == int(today.strftime("%Y")):
             end_date = today.strftime("%Y-%m-%d")
 
         print("\nDownloading data from", year, "...")
-        data = yf.download(stocks, start=start_date, end=end_date)
+        data = yf.download(get_stocks(), start=start_date, end=end_date)
 
-        filepath = "data/" + str(year) + ".csv"
+        filepath = f"data/{year}.csv"
         data.to_csv(filepath)
 
         year += 1
@@ -58,24 +60,8 @@ def data_update():
     ''' method that updates the csv data file corresponding to the
     current year '''
 
-    current_year = today.strftime("%Y")
-
-    filepath = "data/" + current_year + ".csv"
-    if os.path.exists(filepath):
-        os.remove(filepath)
-
-    stocks = []
-    f = open("symbols.txt", "r")
-    for line in f:
-        stocks.append(line.strip())
-
-    start_date = current_year + "-01-01"
-    end_date = today.strftime("%Y-%m-%d")
-
-    print("\nDownloading data from", current_year, "...")
-    data = yf.download(stocks, start=start_date, end=end_date)
-
-    data.to_csv(filepath)
+    current_year = int(today.strftime("%Y"))
+    data_download(current_year)
 
 
 def data_load_per_year(stocks: list, year: int):
@@ -85,19 +71,20 @@ def data_load_per_year(stocks: list, year: int):
     data = []
     indexes = {stock: [] for stock in stocks}
 
-    filename = "data/" + str(year) + ".csv"
-    raw_data = list(csv.reader(open(filename,'r')))
+    filename = f"data/{year}.csv"
+    with open(filename,'r') as f:
+        raw_data = list(csv.reader(f))
 
     for stock in stocks:
-        for i in range(len(raw_data[1])):
-            if raw_data[1][i] == stock:
-                indexes[stock].append(i)
+        for index, data_stock in enumerate(raw_data[1]):
+            if data_stock == stock:
+                indexes[stock].append(index)
 
     for line in raw_data[4:]:
         data_by_day = {stock: {} for stock in stocks}
         for stock in indexes:
-            for i in indexes[stock]:
-                data_by_day[stock][raw_data[0][i]] = line[i]
+            for index in indexes[stock]:
+                data_by_day[stock][raw_data[0][index]] = line[index]
         data_by_day["date"] = line[0]
         data.append(data_by_day)
 
@@ -118,10 +105,10 @@ def data_load(stocks: list, start: str, end: str):
             date2_datetime = dt.datetime.strptime(date2, "%Y-%m-%d")
             return date1_datetime >= date2_datetime            
 
-        for i in range(len(data_year)):
-            if bigger_or_equal(data_year[i]["date"], date):
+        for index, data_day in enumerate(data_year):
+            if bigger_or_equal(data_day["date"], date):
                 break
-        return i
+        return index
         
     data = []
     first_year = int(start.split('-')[0])
@@ -134,7 +121,6 @@ def data_load(stocks: list, start: str, end: str):
 
         if year == first_year:
             data_year = data_year[get_date_index(data_year, start):]
-
         if year == last_year:
             data_year = data_year[:get_date_index(data_year, end)+1]
 

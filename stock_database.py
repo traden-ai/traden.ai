@@ -143,7 +143,7 @@ def data_load(stocks: list, start: str, end: str):
         if year == last_year:
             data_year = data_year[:get_date_index(data_year, end)+1]
 
-        data.append(data_year)
+        data += data_year
         year += 1
 
     return data

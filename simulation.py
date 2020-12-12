@@ -20,6 +20,8 @@ class Simulation:
 
         self.end_date = self.data[-1]["date"]
 
+        self.results = []
+
     def execute(self):
         while (self.current_date != self.end_date):
             self.selling_model(self)
@@ -28,7 +30,7 @@ class Simulation:
             self.iterator += 1
         self.iterator -= 1
         self.sell_all()
-        return self.ledger.balance - self.initial_balance
+        self.store_result()
 
     def buy(self, stock_name: str, amount: int):
         stock_price = float(self.data[self.iterator][stock_name]["Close"])
@@ -48,6 +50,23 @@ class Simulation:
             if stocks[stock] > 0:
                 self.sell(stock, stocks[stock])
 
+    def reset(self):
+        self.ledger = Ledger(self.initial_balance, self.tradable_stocks)
+        self.current_date = self.start_date
+        self.iterator = 0
+        self.logs = []
+
+
+    def store_result(self):
+        self.results.append({"profit": self.ledger.balance - self.initial_balance, "profit_percentage": (self.ledger.balance - self.initial_balance) / self.initial_balance, "logs": self.logs})
+        self.reset()
+
+    def get_results(self):
+        return self.results
+
+    def get_result(self, no_execution):
+        return self.results[no_execution]
+
     def logs_str(self):
         logs_format = ""
         for log in self.logs:
@@ -63,5 +82,5 @@ def void(simulation):
 
 if __name__=="__main__":
     simul = Simulation(4000,["AMZN"],"2020-01-01","2020-10-01",buyAll,void)
-    print(simul.execute())
-    print(simul.logs_str())
+    simul.execute()
+    print(simul.get_results())

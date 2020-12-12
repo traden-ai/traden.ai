@@ -108,12 +108,6 @@ def data_load(stocks: list, start: str, end: str):
     ''' method that loads the data corresponding to the stocks in 'stocks'
     between the dates 'start' and 'end' from the csv files to a list '''
 
-    def get_years(start: str, end: str):
-        ''' method that receives two dates and returns the respective years '''
-        first_year = int(start.split('-')[0])
-        last_year = int(end.split('-')[0])
-        return first_year, last_year
-
     def get_date_index(data_year: list, date: str):
         ''' method that will return on which index of the list 'data_year'
         the data corresponding to date 'date' is '''
@@ -130,7 +124,8 @@ def data_load(stocks: list, start: str, end: str):
         return i
         
     data = []
-    first_year, last_year = get_years(start, end)
+    first_year = int(start.split('-')[0])
+    last_year = int(end.split('-')[0])
 
     year = first_year
     while year <= last_year:

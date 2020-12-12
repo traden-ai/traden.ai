@@ -7,7 +7,8 @@ start_year = 2010          # defaut year from which data is collected
 today = dt.date.today()    # current date
 
 def get_stocks():
-
+    ''' method that loads all stocks from 'symbols.txt' into a list '''
+    
     stocks = []
     with open("symbols.txt", "r") as f:
         for line in f:

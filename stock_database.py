@@ -129,6 +129,3 @@ def data_load(stocks: list, start: str, end: str):
         year += 1
 
     return data
-
-if __name__ == "__main__":
-    data_download()

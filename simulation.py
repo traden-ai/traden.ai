@@ -35,13 +35,13 @@ class Simulation:
             self.store_result()
 
     def buy(self, stock_name: str, amount: int):
-        stock_price = float(self.data[self.iterator][stock_name]["Close"])
+        stock_price = self.stock_current_price(stock_name)
         isPossible = self.ledger.buy(stock_name, stock_price, amount)
         if isPossible:
             self.logs.append({"action":"Bought", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
 
     def sell(self, stock_name: str,amount: int):
-        stock_price = float(self.data[self.iterator][stock_name]["Close"])
+        stock_price = self.stock_current_price(stock_name)
         isPossible = self.ledger.sell(stock_name, stock_price, amount)
         if isPossible:
             self.logs.append({"action":"Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
@@ -62,6 +62,17 @@ class Simulation:
         self.results.append({"profit": self.ledger.balance - self.initial_balance, "profit_percentage": ((self.ledger.balance - self.initial_balance) / self.initial_balance) * 100
                             ,"profit_percentage_year": profit_percentage_by_year(self.initial_balance, self.ledger.balance, time_between_days(self.start_date, self.end_date)), "logs": self.logs})
         self.reset()
+
+    def stock_current_price(self, stock_name):
+        return float(self.data[self.iterator][stock_name]["Close"])
+
+    def get_current_value(self):
+        cash = self.ledger.get_balance() 
+        stocks_value = 0
+        stocks = self.ledger.get_stocks()
+        for stock in stocks:
+            stocks_value += self.stock_current_price(stock) * stocks[stock]
+        return cash + stocks_value 
 
     def get_results(self):
         return self.results

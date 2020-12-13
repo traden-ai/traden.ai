@@ -19,7 +19,7 @@ def render_title():
                                                         |___/                    
         """)
 
-def void():
+def nothing():
     pass
 
 def help_instructions():
@@ -111,7 +111,7 @@ def invalid_command():
 def parse_command(command: str):
     
     command_switcher = {
-        "": void,
+        "": nothing,
         "h": help_instructions,
         "d": data_d,
         "u": data_u,

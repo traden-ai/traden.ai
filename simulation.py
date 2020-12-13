@@ -1,3 +1,4 @@
+from models import *
 from ledger import Ledger
 from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days
@@ -87,24 +88,5 @@ class Simulation:
         logs = self.results[no_execution]["logs"]
         logs_format = ""
         for log in logs:
-            logs_format += "{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
+            logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
         return logs_format
-
-def buyAll(simulation):
-    simulation.buy("AMZN", 1)
-    """
-    from random import randint
-    if randint(0,1):
-        simulation.buy("AMZN", 1)
-    else:
-        simulation.sell("AMZN", 1)"""
-
-def void(simulation):
-    return None
-
-
-if __name__=="__main__":
-    simul = Simulation(4000,["AMZN"],"2020-01-01","2020-10-01",buyAll,void)
-    simul.execute(no_executions=5)
-    print(simul.get_result(no_execution=1)["profit_percentage_year"])
-    print(simul.get_result(no_execution=2)["profit_percentage_year"])

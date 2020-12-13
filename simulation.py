@@ -1,5 +1,6 @@
 from ledger import Ledger
 from stock_database import data_load
+from utils import profit_percentage_by_year, time_between_days
 
 class Simulation:
     def __init__(self, balance: int, tradable_stocks: list, start_date: str, end_date: str, selling_model, buying_model):
@@ -22,15 +23,16 @@ class Simulation:
 
         self.results = []
 
-    def execute(self):
-        while (self.current_date != self.end_date):
-            self.selling_model(self)
-            self.buying_model(self)
-            self.current_date = self.data[self.iterator]["date"]
-            self.iterator += 1
-        self.iterator -= 1
-        self.sell_all()
-        self.store_result()
+    def execute(self, no_executions=1):
+        for i in range(no_executions):
+            while (self.current_date != self.end_date):
+                self.selling_model(self)
+                self.buying_model(self)
+                self.current_date = self.data[self.iterator]["date"]
+                self.iterator += 1
+            self.iterator -= 1
+            self.sell_all()
+            self.store_result()
 
     def buy(self, stock_name: str, amount: int):
         stock_price = float(self.data[self.iterator][stock_name]["Close"])
@@ -56,25 +58,35 @@ class Simulation:
         self.iterator = 0
         self.logs = []
 
-
     def store_result(self):
-        self.results.append({"profit": self.ledger.balance - self.initial_balance, "profit_percentage": (self.ledger.balance - self.initial_balance) / self.initial_balance, "logs": self.logs})
+        self.results.append({"profit": self.ledger.balance - self.initial_balance, "profit_percentage": ((self.ledger.balance - self.initial_balance) / self.initial_balance) * 100
+                            ,"profit_percentage_year": profit_percentage_by_year(self.initial_balance, self.ledger.balance, time_between_days(self.start_date, self.end_date)), "logs": self.logs})
         self.reset()
 
     def get_results(self):
         return self.results
 
-    def get_result(self, no_execution):
-        return self.results[no_execution]
+    def get_result(self, no_execution=1):
+        if len(self.results) > no_execution: 
+            return self.results[no_execution]
 
-    def logs_str(self):
+    def logs_str(self, no_execution=1):
+        if len(self.results)==0:
+            return 
+        logs = self.results[no_execution]["logs"]
         logs_format = ""
-        for log in self.logs:
+        for log in logs:
             logs_format += "{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
         return logs_format
 
 def buyAll(simulation):
     simulation.buy("AMZN", 1)
+    """
+    from random import randint
+    if randint(0,1):
+        simulation.buy("AMZN", 1)
+    else:
+        simulation.sell("AMZN", 1)"""
 
 def void(simulation):
     return None
@@ -82,5 +94,6 @@ def void(simulation):
 
 if __name__=="__main__":
     simul = Simulation(4000,["AMZN"],"2020-01-01","2020-10-01",buyAll,void)
-    simul.execute()
-    print(simul.get_results())
+    simul.execute(no_executions=5)
+    print(simul.get_result(no_execution=1)["profit_percentage_year"])
+    print(simul.get_result(no_execution=2)["profit_percentage_year"])

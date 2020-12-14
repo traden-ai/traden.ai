@@ -25,6 +25,6 @@ def models_str():
 
     models_format = ""
     for key, value in model_docs.items():
-        models_format += "\t{}:\n\t\t{}\n".format(key, value["desc"])
+        models_format += "\n\t{}: {}\n".format(key, value["desc"])
     
     return models_format

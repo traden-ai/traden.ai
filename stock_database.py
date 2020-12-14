@@ -103,11 +103,7 @@ def data_load(stocks: list, start: str, end: str):
 
     year = int(first_year)
     while year <= int(last_year):
-
-        data_year = data_load_per_year(stocks, year)
-        data += data_year
+        data += data_load_per_year(stocks, year)
         year += 1
 
-    data = data[get_date_index(data_year, start, "start"):get_date_index(data_year, end, "end")]
-
-    return data
+    return data[get_date_index(data, start, "start"):get_date_index(data, end, "end")]

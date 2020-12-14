@@ -8,43 +8,44 @@ def render_title():
 
     print("""\
 
- (                                                             (               
- )\ )   )            )    *   )          (                     )\ )            
- (()/(( /(         ( /(  ` )  /((      )  )\ ) (        (  (   (()/((     )     
- /(_))\())(    (  )\())  ( )(_))(  ( /( (()/( )\  (    )\))(   /(_))\   (      
- (_))(_))/ )\   )\((_)\  (_(_()|()\ )(_)) ((_)|(_) )\ )((_))\  (_))((_)  )\  '  
- / __| |_ ((_) ((_) |(_) |_   _|((_|(_)_  _| | (_)_(_/( (()(_) / __|(_)_((_))   
- \__ \  _/ _ \/ _|| / /    | | | '_/ _` / _` | | | ' \)) _` |  \__ \| | '  \()  
- |___/\__\___/\__||_\_\    |_| |_| \__,_\__,_| |_|_||_|\__, |  |___/|_|_|_|_(_) 
-                                                        |___/                    
+ _____ _             _     _____             _ _               _____ _               
+/  ___| |           | |   |_   _|           | (_)             /  ___(_)              
+\ `--.| |_ ___   ___| | __  | |_ __ __ _  __| |_ _ __   __ _  \ `--. _ _ __ ___      
+ `--. \ __/ _ \ / __| |/ /  | | '__/ _` |/ _` | | '_ \ / _` |  `--. \ | '_ ` _ \     
+/\__/ / || (_) | (__|   <   | | | | (_| | (_| | | | | | (_| | /\__/ / | | | | | | _ 
+\____/ \__\___/ \___|_|\_\  \_/_|  \__,_|\__,_|_|_| |_|\__, | \____/|_|_| |_| |_|(_)
+                                                        __/ |                        
+                                                       |___/                         
         """)
 
 def nothing():
     pass
 
 def help_instructions():
-    print("\n+" + ("-" * 78) + "+")
-    print("|" + (" " * 37) + "Help" + (" " * 37) + "|")
-    print("+" + ("-" * 78) + "+")
-    print("|" + (" " * 78) + "|")
-    print("|\tDescription:" + (" " * 59) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\tThis application presents a tool to simulate mathematical" + (" " * 6) + "|")
-    print("|\t\ttrading models, using real data from previous years." + (" " * 11) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\tThe options are as follows:" + (" " * 44) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\th\tOpen the help instructions." + (" " * 28) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\td\tDownload data since a year of your choice." + (" " * 13) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\tu\tUpdate the data for the current year." + (" " * 18) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\ts\tCreate a stock trading simulation." + (" " * 21) + "|")
-    print("|" + (" " * 78) + "|")
-    print("|\t\tq\tQuit the application." + (" " * 34) + "|")
-    print("|" + (" " * 78) + "|")
-    print("+" + ("-" * 78) + "+\n")
+    print("\n +" + ("-" * 78) + "+")
+    print(" |" + (" " * 37) + "Help" + (" " * 37) + "|")
+    print(" +" + ("-" * 78) + "+")
+    print(" |" + (" " * 78) + "|")
+    print(" |\tDescription:" + (" " * 60) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\tThis application presents a tool to simulate mathematical" + (" " * 7) + "|")
+    print(" |\t\ttrading models, using real data from previous years." + (" " * 12) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\tThe options are as follows:" + (" " * 45) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\th\tOpen the help instructions." + (" " * 29) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\td\tDownload data since a year of your choice." + (" " * 14) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\tu\tUpdate the data for the current year." + (" " * 19) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\ts\tCreate a stock trading simulation." + (" " * 22) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\tc\tCompare multiple simulations." + (" " * 27) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" |\t\tq\tQuit the application." + (" " * 35) + "|")
+    print(" |" + (" " * 78) + "|")
+    print(" +" + ("-" * 78) + "+\n")
 
 def data_d():
     year = int(input("\nFrom what year do you pretend to download data? "))
@@ -59,15 +60,18 @@ def data_u():
     print("")
 
 def render_simulation_results(sim: Simulation):
-
     results = sim.get_results()
     print("\n\t% Simulation Results %\n")
 
     for execution, result in enumerate(results, start=1):
         print("\tExecution {}".format(execution))
         print("\tProfit: {}".format(result["profit"]))
-        print("\tProfit Percentage: {}".format(result["profit_percentage"]))
-        print("\tLogs:\n{}".format(sim.logs_str(no_execution=execution-1)))
+        print("\tProfit (%): {}".format(result["profit_percentage"]))
+        print("\tProfit (% / Year): {}\n".format(result["profit_percentage_year"]))
+
+def store_results(sim: Simulation):
+    #TODO
+    pass
 
 def simulation():
     
@@ -91,15 +95,16 @@ def simulation():
         print(models.models_str())
         selling_model = input("\tWhich selling model do you want to simulate? ")
 
-    # model = input("\nWhich model do you want to simulate? ")
-
     sim = Simulation(balance, stocks, start_date, end_date, models.model_docs[buying_model]["func"], models.model_docs[selling_model]["func"])
-
     no_exec = int(input("\n\tHow many executions do you want to simulate? "))
 
     sim.execute(no_exec)
-
     render_simulation_results(sim)
+    store_results(sim)
+
+def compare_sims():
+    #TODO
+    pass
 
 def quit_app():
     print("")
@@ -116,6 +121,7 @@ def parse_command(command: str):
         "d": data_d,
         "u": data_u,
         "s": simulation,
+        "c": compare_sims,
         "q": quit_app
     }
 

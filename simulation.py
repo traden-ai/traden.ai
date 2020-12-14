@@ -4,7 +4,8 @@ from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days
 
 class Simulation:
-    def __init__(self, balance: int, tradable_stocks: list, start_date: str, end_date: str, selling_model, buying_model):
+    def __init__(self, identifier: int, balance: int, tradable_stocks: list, start_date: str, end_date: str, selling_model, buying_model):
+        self.id = identifier
         self.initial_balance = balance
         self.tradable_stocks = tradable_stocks
         
@@ -81,6 +82,9 @@ class Simulation:
     def get_result(self, no_execution=0):
         if len(self.results) > no_execution: 
             return self.results[no_execution]
+    
+    def get_id(self):
+        return self.id
 
     def logs_str(self, no_execution=0):
         if len(self.results)==0:

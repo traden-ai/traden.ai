@@ -16,6 +16,8 @@ class ComparingSimulations:
         return [sum(map(lambda x: float(x[metric]), simul.get_results())) / len(simul.get_results()) for simul in self.simulations]
 
     def get_best_simulation_by_metric(self, metric="profit"):
+        if not self.executed:
+            self.execute()
         expected_metric_values = self.get_expected_metric(metric=metric)
         return self.simulations[expected_metric_values.index(max(expected_metric_values))]
 

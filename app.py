@@ -8,15 +8,14 @@ def render_title():
 
     print("""\
 
- (                                                             (               
- )\ )   )            )    *   )          (                     )\ )            
- (()/(( /(         ( /(  ` )  /((      )  )\ ) (        (  (   (()/((     )     
- /(_))\())(    (  )\())  ( )(_))(  ( /( (()/( )\  (    )\))(   /(_))\   (      
- (_))(_))/ )\   )\((_)\  (_(_()|()\ )(_)) ((_)|(_) )\ )((_))\  (_))((_)  )\  '  
- / __| |_ ((_) ((_) |(_) |_   _|((_|(_)_  _| | (_)_(_/( (()(_) / __|(_)_((_))   
- \__ \  _/ _ \/ _|| / /    | | | '_/ _` / _` | | | ' \)) _` |  \__ \| | '  \()  
- |___/\__\___/\__||_\_\    |_| |_| \__,_\__,_| |_|_||_|\__, |  |___/|_|_|_|_(_) 
-                                                        |___/                    
+  _____ _             _     _____             _ _               _____ _               
+ /  ___| |           | |   |_   _|           | (_)             /  ___(_)              
+ \ `--.| |_ ___   ___| | __  | |_ __ __ _  __| |_ _ __   __ _  \ `--. _ _ __ ___      
+  `--. \ __/ _ \ / __| |/ /  | | '__/ _` |/ _` | | '_ \ / _` |  `--. \ | '_ ` _ \     
+ /\__/ / || (_) | (__|   <   | | | | (_| | (_| | | | | | (_| | /\__/ / | | | | | | _ 
+ \____/ \__\___/ \___|_|\_\  \_/_|  \__,_|\__,_|_|_| |_|\__, | \____/|_|_| |_| |_|(_)
+                                                         __/ |                        
+                                                        |___/                         
         """)
 
 def nothing():
@@ -42,12 +41,14 @@ def help_instructions():
     print("|" + (" " * 78) + "|")
     print("|\t\ts\tCreate a stock trading simulation." + (" " * 21) + "|")
     print("|" + (" " * 78) + "|")
+    print("|\t\tc\tCompare multiple simulations." + (" " * 26) + "|")
+    print("|" + (" " * 78) + "|")
     print("|\t\tq\tQuit the application." + (" " * 34) + "|")
     print("|" + (" " * 78) + "|")
     print("+" + ("-" * 78) + "+\n")
 
 def data_d():
-    year = int(input("\nFrom what year do you pretend to download data? "))
+    year = int(input("\nStarting year for data download: "))
     if year <= int(dt.date.today().strftime("%Y")) and year > 0:
         data_download(year)
         print("")
@@ -59,54 +60,63 @@ def data_u():
     print("")
 
 def render_simulation_results(sim: Simulation):
-
     results = sim.get_results()
-    print("\n\t% Simulation Results %\n")
+    print("\nEx.\t% Results %\n")
 
     for execution, result in enumerate(results, start=1):
-        print("\tExecution {}".format(execution))
-        print("\tProfit: {}".format(result["profit"]))
-        print("\tProfit Percentage: {}".format(result["profit_percentage"]))
-        print("\tLogs:\n{}".format(sim.logs_str(no_execution=execution-1)))
+        print("[{}]\tProfit: {}".format(execution, result["profit"]))
+        print("\tProfit (%): {}".format(result["profit_percentage"]))
+        print("\tProfit (% / Year): {}\n".format(result["profit_percentage_year"]))
+
+def store_results(sim: Simulation):
+    #TODO
+    pass
 
 def simulation():
     
-    balance = float(input("\n\tWhat is your initial balance? "))
+    balance = float(input("\nInitial balance: "))
 
-    stocks_raw = input("\n\tWhat stocks do you intend to trade? ")
+    stocks_raw = input("\nStocks: ")
     stocks = re.split(", |,| ", stocks_raw.upper())
     
-    start_date = input("\n\tWhen do you want to start the simulation? (YYYY-mm-dd) ")
-    end_date = input("\n\tWhen do you want to end the simulation? (YYYY-mm-dd) ")
+    start_date = input("\nStart of the simulation: (YYYY-mm-dd) ")
+    end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
 
-    buying_model = input("\n\tWhich buying model do you want to simulate? ")
+    buying_model = input("\nBuying model: ")
     while buying_model not in models.model_docs:
-        print("\n\tInvalid model. Please check the following list of available models...\n")
-        print(models.models_str())
-        buying_model = input("\tWhich buying model do you want to simulate? ")
+        if buying_model == "l":
+            print("\n\t% Available Models %")
+            print(models.models_str())
+        else:
+            print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
+        buying_model = input("Buying model: ")
 
-    selling_model = input("\n\tWhich selling model do you want to simulate? ")
+    selling_model = input("\nSelling model: ")
     while selling_model not in models.model_docs:
-        print("\n\tInvalid model. Please check the following list of available models...\n")
-        print(models.models_str())
-        selling_model = input("\tWhich selling model do you want to simulate? ")
-
-    # model = input("\nWhich model do you want to simulate? ")
+        if selling_model == "l":
+            print("\n% Available Models %")
+            print(models.models_str())
+        else:
+            print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.\n")
+        selling_model = input("Selling model: ")
 
     sim = Simulation(balance, stocks, start_date, end_date, models.model_docs[buying_model]["func"], models.model_docs[selling_model]["func"])
-
-    no_exec = int(input("\n\tHow many executions do you want to simulate? "))
+    no_exec = int(input("\nNumber of executions: "))
 
     sim.execute(no_exec)
-
     render_simulation_results(sim)
+    store_results(sim)
+
+def compare_sims():
+    #TODO
+    pass
 
 def quit_app():
     print("")
     exit()
 
 def invalid_command():
-    print("\nInvalid command. Please insert 'h' for help.\n")
+    print("\n\tERROR: Invalid command.\n\tPlease insert 'h' for help.\n")
 
 def parse_command(command: str):
     
@@ -116,6 +126,7 @@ def parse_command(command: str):
         "d": data_d,
         "u": data_u,
         "s": simulation,
+        "c": compare_sims,
         "q": quit_app
     }
 

@@ -1,3 +1,4 @@
+from models import *
 from simulation import Simulation
 
 class ComparingSimulations:
@@ -20,22 +21,6 @@ class ComparingSimulations:
             self.execute()
         expected_metric_values = self.get_expected_metric(metric=metric)
         return self.simulations[expected_metric_values.index(max(expected_metric_values))]
-
-
-def buyAll(simulation):
-    simulation.buy("AMZN", 1)
-    
-
-def buyRandom(simulation):
-    from random import randint
-    if randint(0,1):
-        simulation.buy("AMZN", 1)
-    else:
-        simulation.sell("AMZN", 1)
-
-def void(simulation):
-    return None
-
 
 if __name__=="__main__":
     simul1 = Simulation(4000,["AMZN"],"2020-01-01","2020-10-01",buyAll,void)

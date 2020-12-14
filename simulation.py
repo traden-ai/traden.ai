@@ -92,5 +92,5 @@ class Simulation:
         logs = self.results[no_execution]["logs"]
         logs_format = ""
         for log in logs:
-            logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
+            logs_format += "{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
         return logs_format

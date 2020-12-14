@@ -8,10 +8,10 @@ start_year = 2010          # defaut year from which data is collected
 today = dt.date.today()    # current date
 
 def get_stocks():
-    ''' method that loads all stocks from 'symbols.txt' into a list '''
+    ''' method that loads all stocks from 'data/symbols.txt' into a list '''
 
     stocks = []
-    with open("symbols.txt", "r") as f:
+    with open("data/symbols.txt", "r") as f:
         for line in f:
             stocks.append(line.strip())
 
@@ -34,7 +34,7 @@ def data_clear(year=start_year):
 def data_download(year=start_year):
     ''' method that creates a file for each year between input 'year' and 
     the current year, containing all the data from yfinance for each symbol
-    in symbols.txt '''
+    in data/symbols.txt '''
 
     data_clear(year)
 
@@ -103,11 +103,7 @@ def data_load(stocks: list, start: str, end: str):
 
     year = int(first_year)
     while year <= int(last_year):
-
-        data_year = data_load_per_year(stocks, year)
-        data += data_year
+        data += data_load_per_year(stocks, year)
         year += 1
 
-    data = data[get_date_index(data_year, start, "start"):get_date_index(data_year, end, "end")]
-
-    return data
+    return data[get_date_index(data, start, "start"):get_date_index(data, end, "end")]

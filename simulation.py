@@ -78,11 +78,11 @@ class Simulation:
     def get_results(self):
         return self.results
 
-    def get_result(self, no_execution=1):
+    def get_result(self, no_execution=0):
         if len(self.results) > no_execution: 
             return self.results[no_execution]
 
-    def logs_str(self, no_execution=1):
+    def logs_str(self, no_execution=0):
         if len(self.results)==0:
             return 
         logs = self.results[no_execution]["logs"]

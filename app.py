@@ -67,7 +67,7 @@ def render_simulation_results(sim: Simulation):
         print("\tExecution {}".format(execution))
         print("\tProfit: {}".format(result["profit"]))
         print("\tProfit Percentage: {}".format(result["profit_percentage"]))
-        print("\tLogs:\n{}".format(sim.logs_str()))
+        print("\tLogs:\n{}".format(sim.logs_str(no_execution=execution-1)))
 
 def simulation():
     

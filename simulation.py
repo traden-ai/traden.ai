@@ -1,10 +1,10 @@
 from models import *
 from ledger import Ledger
 from stock_database import data_load
-from utils import profit_percentage_by_year, time_between_days
+from utils import profit_percentage_by_year, time_between_days, get_year, get_month
 
 class Simulation:
-    def __init__(self, identifier: int, balance: int, tradable_stocks: list, start_date: str, end_date: str, selling_model, buying_model):
+    def __init__(self, identifier: int, balance: int, tradable_stocks: list, start_date: str, end_date: str, model):
         self.id = identifier
         self.initial_balance = balance
         self.tradable_stocks = tradable_stocks
@@ -15,22 +15,23 @@ class Simulation:
         self.current_date = start_date
         self.iterator = 0
         
-        self.selling_model = selling_model
-        self.buying_model = buying_model
+        self.model = model
         
         self.logs = []
         self.data = data_load(tradable_stocks, start_date, end_date)
 
         self.end_date = self.data[-1]["date"]
 
+        self.evaluations = []
         self.results = []
 
     def execute(self, no_executions=1):
         for i in range(no_executions):
+            self.evaluations.append((str(self.current_date), self.get_current_value()))
             while (self.current_date != self.end_date):
-                self.selling_model(self)
-                self.buying_model(self)
+                self.model(self)
                 self.current_date = self.data[self.iterator]["date"]
+                self.evaluations.append((str(self.current_date), self.get_current_value()))
                 self.iterator += 1
             self.iterator -= 1
             self.sell_all()
@@ -85,6 +86,25 @@ class Simulation:
     
     def get_id(self):
         return self.id
+
+    def get_evaluations(self, mode="daily"):
+        if mode=="daily":
+            return self.evaluations
+        elif mode=="monthly":
+            filtered_evaluations = [self.evaluations[0]]
+            for i in range(len(self.evaluations)):
+                date = self.evaluations[i][0]
+                previous_date = filtered_evaluations[-1][0]
+                if get_year(date) != get_year(previous_date) or get_month(date) != get_month(previous_date):
+                    filtered_evaluations.append(self.evaluations[i])
+        elif mode=="yearly":
+            filtered_evaluations = [self.evaluations[0]]
+            for i in range(len(self.evaluations)):
+                date = self.evaluations[i][0]
+                previous_date = filtered_evaluations[-1][0]
+                if get_year(date) != get_year(previous_date):
+                    filtered_evaluations.append(self.evaluations[i])
+        return filtered_evaluations
 
     def logs_str(self, no_execution=0):
         if len(self.results)==0:

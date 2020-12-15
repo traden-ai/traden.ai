@@ -19,6 +19,16 @@ def get_year_month_day(date):
     day = date_parts[2]
     return year,month,day
 
+def get_year(date):
+    date_parts = date.split("-")
+    year = date_parts[0]
+    return year
+
+def get_month(date):
+    date_parts = date.split("-")
+    month = date_parts[1]
+    return month    
+
 def date_smaller_or_equal(date1: str, date2: str):
     date1_datetime = dt.datetime.strptime(date1, "%Y-%m-%d")
     date2_datetime = dt.datetime.strptime(date2, "%Y-%m-%d")

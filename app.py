@@ -1,8 +1,16 @@
+import os
 import re
 import models
 import datetime as dt
 from simulation import Simulation
 from stock_database import data_download, data_update
+
+sim_ID = 1
+
+def update_sim_ID():
+    global sim_ID
+    while os.path.exists(f"results/s_{sim_ID}.txt"):
+        sim_ID += 1
 
 def render_title():
 
@@ -43,6 +51,8 @@ def help_instructions():
     print("|" + (" " * 78) + "|")
     print("|\t\tc\tCompare multiple simulations." + (" " * 26) + "|")
     print("|" + (" " * 78) + "|")
+    print("|\t\tx\tClear simulation history." + (" " * 30) + "|")
+    print("|" + (" " * 78) + "|")
     print("|\t\tq\tQuit the application." + (" " * 34) + "|")
     print("|" + (" " * 78) + "|")
     print("+" + ("-" * 78) + "+\n")
@@ -59,19 +69,51 @@ def data_u():
     data_update()
     print("")
 
-def render_simulation_results(sim: Simulation):
+def render_simulation_logs(sim: Simulation):
+    logs_str = ""
     results = sim.get_results()
-    print("\nEx.\t% Results %\n")
+    logs_str += "\nEx."
+
+    for execution, _ in enumerate(results, start=1):
+        logs_str += "\n[{}]{}".format(execution, sim.logs_str(no_execution=execution-1))
+
+    return logs_str
+
+def render_simulation_long_results(sim: Simulation):
+    results_str = ""
+    results = sim.get_results()
+    results_str += "\nEx."
 
     for execution, result in enumerate(results, start=1):
-        print("[{}]\tProfit: {}".format(execution, result["profit"]))
-        print("\tProfit (%): {}".format(result["profit_percentage"]))
-        print("\tProfit (% / Year): {}\n".format(result["profit_percentage_year"]))
+        results_str += "\n[{}]\tProfit: {}".format(execution, result["profit"])
+        results_str += "\n\tProfit (%): {}".format(result["profit_percentage"])
+        results_str += "\n\tProfit (% / Year): {}\n".format(result["profit_percentage_year"])
 
-def store_results(sim: Simulation):
-    #TODO
-    pass
+    return results_str
 
+def store_results(sim: Simulation, sim_ID: int, balance: int, stocks: list, start_date: str, end_date: str, model: str):
+
+    if not os.path.exists("results/"):
+        os.mkdir("results/")
+
+    filepath = "results/s_{}.txt".format(sim_ID)
+    with open(filepath,'w') as f:
+        f.write("+" + ("-" * 78) + "+\n")
+        f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
+        f.write("+" + ("-" * 78) + "+\n")
+        f.write("\nBalance: {}\nStocks: {}\nStarting Date: {}\nEnding Date: {}\nModel: {}\t({})\n".format(\
+            balance, stocks, start_date, end_date, model, models.model_docs[model]["desc"]))
+        f.write("\n+" + ("-" * 78) + "+\n")
+        f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
+        f.write("+" + ("-" * 78) + "+\n")
+        f.write(render_simulation_long_results(sim))
+        f.write("\n+" + ("-" * 78) + "+\n")
+        f.write("|" + (" " * 32) + "Simulation Logs" + (" " * 31) + "|\n")
+        f.write("+" + ("-" * 78) + "+\n")
+        f.write(render_simulation_logs(sim))
+
+    return filepath
+        
 def simulation():
     
     balance = float(input("\nInitial balance: "))
@@ -82,34 +124,40 @@ def simulation():
     start_date = input("\nStart of the simulation: (YYYY-mm-dd) ")
     end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
 
-    buying_model = input("\nBuying model: ")
-    while buying_model not in models.model_docs:
-        if buying_model == "l":
-            print("\n\t% Available Models %")
-            print(models.models_str())
-        else:
-            print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
-        buying_model = input("Buying model: ")
-
-    selling_model = input("\nSelling model: ")
-    while selling_model not in models.model_docs:
-        if selling_model == "l":
+    model = input("\nSimulation Model: ")
+    while model not in models.model_docs:
+        if model == "l":
             print("\n% Available Models %")
             print(models.models_str())
         else:
             print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.\n")
-        selling_model = input("Selling model: ")
+        model = input("Simulation Model: ")
 
-    sim = Simulation(balance, stocks, start_date, end_date, models.model_docs[buying_model]["func"], models.model_docs[selling_model]["func"])
+    update_sim_ID()
+    sim = Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
     no_exec = int(input("\nNumber of executions: "))
 
     sim.execute(no_exec)
-    render_simulation_results(sim)
-    store_results(sim)
+    print("\n" + "% Simulation Results %\n" + render_simulation_long_results(sim))
+    print("For more details: " + store_results(sim, sim_ID, balance, stocks, start_date, end_date, model) + "\n")
 
 def compare_sims():
     #TODO
     pass
+
+def results_clear():
+
+    files_raw = input("\nFiles to delete: (* for all OR s_1, c_1_2, ...) ")
+    if files_raw == "*":
+        for f in os.listdir("results/"):
+            os.remove(os.path.join("results/", f))
+    else:
+        files = re.split(", |,| ", files_raw.lower())
+        for f in files:
+            filepath = "results/{}.txt".format(f)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+    print("")
 
 def quit_app():
     print("")
@@ -127,6 +175,7 @@ def parse_command(command: str):
         "u": data_u,
         "s": simulation,
         "c": compare_sims,
+        "x": results_clear,
         "q": quit_app
     }
 

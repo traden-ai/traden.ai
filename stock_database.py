@@ -84,16 +84,12 @@ def data_load_per_year(stocks: list, year: int):
 
     for line in raw_data[4:]:
         data_by_day = {stock: {} for stock in stocks}
-        dont_append = False
         for stock in indexes:
             for index in indexes[stock]:
                 data_by_day[stock][raw_data[0][index]] = line[index]
-                if line[index] == "":
-                    dont_append = True
         data_by_day["date"] = line[0]
-        if not dont_append:
+        if not (line[0] == "2018-12-05" or line[0] == "2017-02-20" or line[0] == "2016-01-18"):
             data.append(data_by_day)
-
     return data
 
 

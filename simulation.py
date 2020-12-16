@@ -2,6 +2,8 @@ from models import *
 from ledger import Ledger
 from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days, get_year, get_month
+import matplotlib.pyplot as plt
+
 
 class Simulation:
     def __init__(self, identifier: int, balance: int, tradable_stocks: list, start_date: str, end_date: str, model):
@@ -21,17 +23,20 @@ class Simulation:
         self.data = data_load(tradable_stocks, start_date, end_date)
 
         self.end_date = self.data[-1]["date"]
-
+        
         self.evaluations = []
+
+        for el in self.data:
+            self.evaluations.append((str(el["date"]), []))
+
         self.results = []
 
     def execute(self, no_executions=1):
         for i in range(no_executions):
-            self.evaluations.append((str(self.current_date), self.get_current_value()))
             while (self.current_date != self.end_date):
                 self.model(self)
                 self.current_date = self.data[self.iterator]["date"]
-                self.evaluations.append((str(self.current_date), self.get_current_value()))
+                self.evaluations[self.iterator][1].append(self.get_current_value())                
                 self.iterator += 1
             self.iterator -= 1
             self.sell_all()
@@ -86,6 +91,17 @@ class Simulation:
     
     def get_id(self):
         return self.id
+    
+    def get_graph(self, mode="daily"):
+        plt.xlabel("Time ({})".format(mode))
+        plt.ylabel("Capital")    
+        X = []
+        Y = []
+        for el in self.get_evaluations(mode=mode):
+            Y.append(sum(el[1]) / len(el[1]))
+        X = range(1,len(Y) + 1)
+        plt.plot(X,Y)
+        plt.show()
 
     def get_evaluations(self, mode="daily"):
         if mode=="daily":

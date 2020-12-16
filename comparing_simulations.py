@@ -37,9 +37,10 @@ class ComparingSimulations:
             X = []
             Y = []
             for el in simul.get_evaluations(mode=mode):
-                Y.append(el[1])
+                Y.append(sum(el[1]) / len(el[1]))
             X = range(1,len(Y) + 1)
-            plt.plot(X,Y)
+            plt.plot(X,Y, label="Simulation {}".format(str(simul.get_id())))
+        plt.legend(loc='best')
         plt.show()
 
 if __name__=="__main__":
@@ -48,6 +49,6 @@ if __name__=="__main__":
     comp = ComparingSimulations([simul1,simul2])
     comp.execute(no_executions=1)
     print(comp.get_expected_metric(metric="profit_percentage"))
-    print(comp.get_graph_comparison(mode="daily"))
+    print(comp.get_graph_comparison())
 
     

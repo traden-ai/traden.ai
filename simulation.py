@@ -18,10 +18,10 @@ class Simulation:
         self.current_date = start_date
         self.iterator = 0
         
-        self.model = model
-        
         self.logs = []
         self.data = data_load(tradable_stocks, start_date, end_date)
+
+        self.model = model(self.data)
 
         self.actual_end_date = self.data[-1]["date"]
         
@@ -33,9 +33,10 @@ class Simulation:
         self.results = []
 
     def execute(self, no_executions=1):
+        self.model.preprocess_data()
         for i in range(no_executions):
             while (self.current_date != self.actual_end_date):
-                self.model(self)
+                self.model.execute(self)
                 self.current_date = self.data[self.iterator]["date"]
                 self.evaluations[self.iterator][1].append(self.get_current_value())                
                 self.iterator += 1

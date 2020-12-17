@@ -49,13 +49,3 @@ class ComparingSimulations:
                 plt.plot(X,Y, label="{}".format(str(simul.get_tradable_stocks())))
         plt.legend(loc='best')
         plt.show()
-
-if __name__=="__main__":
-    simul1 = Simulation(1,4000,["AMZN"],"2019-01-01","2020-10-01",buyAll)
-    simul2 = Simulation(2,4000,["AMZN"],"2019-01-01","2020-10-01",buyRandom)
-    comp = ComparingSimulations([simul1,simul2])
-    comp.execute(no_executions=1)
-    print(comp.get_expected_metric(metric="profit_percentage"))
-    print(comp.get_graph_comparison())
-
-    

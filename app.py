@@ -3,6 +3,7 @@ import re
 import models
 import datetime as dt
 from simulation import Simulation
+from comparing_simulations import ComparingSimulations
 from stock_database import data_download, data_update
 
 sim_ID = 1
@@ -69,6 +70,76 @@ def data_u():
     data_update()
     print("")
 
+def ask_balance():
+    try:
+        balance = float(input("\nInitial balance: "))
+        return balance
+    except Exception as e:
+        raise e
+
+def ask_stocks():
+    try:
+        stocks_raw = input("\nStocks: ")
+        stocks = re.split(", |,| ", stocks_raw.upper())
+        return stocks
+    except Exception as e:
+        raise e
+
+def ask_period():
+    try:
+        start_date = input("\nStart of the simulation: (YYYY-mm-dd) ")
+        end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
+        return start_date, end_date
+    except Exception as e:
+        raise e
+
+def ask_model():
+    try:
+        model = input("\nSimulation Model: ")
+        while model not in models.model_docs:
+            if model == "l":
+                print("\n\t% Available Models %")
+                print(models.models_str())
+            else:
+                print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.\n")
+            model = input("Simulation Model: ")
+        return model
+    except Exception as e:
+        raise e
+
+def ask_multiple_models():
+    try:
+        models_raw = input("\nModels to compare: ")
+        if models_raw == "l":
+            print("\n\t% Available Models %")
+            print(models.models_str())
+            return ask_multiple_models()
+        else:
+            models_clean = re.split(", |,| ", models_raw)
+            for model in models_clean:
+                if model not in models.model_docs:
+                    print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.")
+                    return ask_multiple_models()
+        return models_clean
+    except Exception as e:
+        raise e
+
+def ask_executions():
+    try:
+        no_exec = int(input("\nNumber of executions: "))
+        return no_exec
+    except Exception as e:
+        raise e
+
+def ask_graph(graph_type="results"):
+    try:
+        graph = input("Plot {} into graph? (yes/no) ".format(graph_type))
+        while graph not in ("yes", "no", "y", "n"):
+            graph = input("Plot {} into graph? (yes/no) ".format(graph_type))
+        return graph
+    except Exception as e:
+        raise e
+
 def render_simulation_logs(sim: Simulation):
     logs_str = ""
     results = sim.get_results()
@@ -91,59 +162,132 @@ def render_simulation_long_results(sim: Simulation):
 
     return results_str
 
-def store_results(sim: Simulation, sim_ID: int, balance: int, stocks: list, start_date: str, end_date: str, model: str):
+def store_sim_results(sim: Simulation):
 
-    if not os.path.exists("results/"):
-        os.mkdir("results/")
+    try:
+        if not os.path.exists("results/"):
+            os.mkdir("results/")
 
-    filepath = "results/s_{}.txt".format(sim_ID)
-    with open(filepath,'w') as f:
-        f.write("+" + ("-" * 78) + "+\n")
-        f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
-        f.write("+" + ("-" * 78) + "+\n")
-        f.write("\nBalance: {}\nStocks: {}\nStarting Date: {}\nEnding Date: {}\nModel: {}\t({})\n".format(\
-            balance, stocks, start_date, end_date, model, models.model_docs[model]["desc"]))
-        f.write("\n+" + ("-" * 78) + "+\n")
-        f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
-        f.write("+" + ("-" * 78) + "+\n")
-        f.write(render_simulation_long_results(sim))
-        f.write("\n+" + ("-" * 78) + "+\n")
-        f.write("|" + (" " * 32) + "Simulation Logs" + (" " * 31) + "|\n")
-        f.write("+" + ("-" * 78) + "+\n")
-        f.write(render_simulation_logs(sim))
+        filepath = "results/s_{}.txt".format(sim.get_id())
+        with open(filepath,'w') as f:
+            f.write("+" + ("-" * 78) + "+\n")
+            f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
+            f.write("+" + ("-" * 78) + "+\n")
+            f.write("\nBalance: {}\nStocks: {}\nStarting Date: {}\nEnding Date: {}\nModel: {}\t({})\n".format(\
+                sim.get_initial_balance(), sim.get_tradable_stocks(), sim.get_start_date(), sim.get_end_date(), sim.get_model(), models.model_docs[sim.get_model()]["desc"]))
+            f.write("\n+" + ("-" * 78) + "+\n")
+            f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
+            f.write("+" + ("-" * 78) + "+\n")
+            f.write(render_simulation_long_results(sim))
+            f.write("\n+" + ("-" * 78) + "+\n")
+            f.write("|" + (" " * 32) + "Simulation Logs" + (" " * 31) + "|\n")
+            f.write("+" + ("-" * 78) + "+\n")
+            f.write(render_simulation_logs(sim))
 
-    return filepath
+        return filepath
+    
+    except:
+        return "Error occurred when storing the simulation data..."
         
 def simulation():
-    
-    balance = float(input("\nInitial balance: "))
+    try:
+        balance = ask_balance()
+        stocks = ask_stocks()
+        start_date, end_date = ask_period()
+        model = ask_model()
+        no_exec = ask_executions()
 
-    stocks_raw = input("\nStocks: ")
-    stocks = re.split(", |,| ", stocks_raw.upper())
-    
-    start_date = input("\nStart of the simulation: (YYYY-mm-dd) ")
-    end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
+        update_sim_ID()
+        sim = Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
+        sim.execute(no_executions=no_exec)
 
-    model = input("\nSimulation Model: ")
-    while model not in models.model_docs:
-        if model == "l":
-            print("\n% Available Models %")
-            print(models.models_str())
-        else:
-            print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.\n")
-        model = input("Simulation Model: ")
+        print("\n" + "% Simulation Results %\n" + render_simulation_long_results(sim))
+        print("For more details: " + store_sim_results(sim) + "\n")
 
-    update_sim_ID()
-    sim = Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
-    no_exec = int(input("\nNumber of executions: "))
+        graph = ask_graph(graph_type="simulation")
+        if graph in ("yes", "y"):
+            sim.get_graph()
+        print("")
 
-    sim.execute(no_exec)
-    print("\n" + "% Simulation Results %\n" + render_simulation_long_results(sim))
-    print("For more details: " + store_results(sim, sim_ID, balance, stocks, start_date, end_date, model) + "\n")
+    except:
+        print("\n\tAborted.\n\tSomething went wrong with your simulation...\n")
 
-def compare_sims():
+def render_comparison_menu():
+    menu_str = ""
+    menu_str += "\n\t% Types of comparisons available %\n"
+    menu_str += "\n\t[1] Compare simulation models (for same stocks and time period)\n"
+    menu_str += "\n\t[2] Compare time periods (for same stocks and model)\n"
+    menu_str += "\n\t[3] Compare stocks (for same model and time period)\n"
+    return menu_str
+
+def render_comparison_short_results(comp: ComparingSimulations, comp_type: str):
+    #TODO
+    return ""
+
+def render_comparison_long_results(comp: ComparingSimulations, comp_type: str):
+    #TODO
+    return ""
+
+def store_comp_results(comp: ComparingSimulations):
+    #TODO
+    return ""
+
+def compare_type_one():
+    try:
+        balance = ask_balance()
+        stocks = ask_stocks()
+        start_date, end_date = ask_period()
+        models_clean = ask_multiple_models()
+        no_exec = ask_executions()
+
+        sims = []
+        for model in models_clean:
+            update_sim_ID()
+            sims.append(Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"]))
+
+        comp = ComparingSimulations(sims)
+        comp.execute(no_executions=no_exec)
+
+        print("\n" + "% Comparison Results %\n" + render_comparison_short_results(comp, "model"))
+        # print("For more details: " + store_comp_results(comp) + "\n")
+
+        graph = ask_graph(graph_type="comparison")
+        if graph in ("yes", "y"):
+            comp.get_graph_comparison(label="model")
+        print("")
+
+    except:
+        print("\n\tAborted.\n\tSomething went wrong with your comparison...\n")
+
+def compare_type_two():
     #TODO
     pass
+
+def compare_type_three():
+    #TODO
+    pass
+
+def compare_sims():
+    
+    print(render_comparison_menu())
+
+    try:
+        comp_type = int(input("Select type: "))
+    except:
+        print("\n\tERROR: Invalid type of comparison.\n")
+        return
+    try:
+        if comp_type == 1:
+            compare_type_one()
+        elif comp_type == 2:
+            compare_type_two()
+        elif comp_type == 3:
+            compare_type_three()
+        else:
+            print("\n\tERROR: Invalid type of comparison.\n")
+            return
+    except:
+        print("\nAborted. Something went wrong with your comparison...\n")
 
 def results_clear():
 
@@ -184,7 +328,11 @@ def parse_command(command: str):
 
 def run():
     while True:
-        command = input("stock_trading> ")
+        try:
+            command = input("stock_trading> ")
+        except:
+            print("")
+            continue
         parse_command(command)
 
 if __name__ == "__main__":

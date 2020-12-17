@@ -14,6 +14,7 @@ class Simulation:
         self.ledger = Ledger(balance, tradable_stocks)
 
         self.start_date = start_date
+        self.end_date = end_date
         self.current_date = start_date
         self.iterator = 0
         
@@ -22,7 +23,7 @@ class Simulation:
         self.logs = []
         self.data = data_load(tradable_stocks, start_date, end_date)
 
-        self.end_date = self.data[-1]["date"]
+        self.actual_end_date = self.data[-1]["date"]
         
         self.evaluations = []
 
@@ -33,7 +34,7 @@ class Simulation:
 
     def execute(self, no_executions=1):
         for i in range(no_executions):
-            while (self.current_date != self.end_date):
+            while (self.current_date != self.actual_end_date):
                 self.model(self)
                 self.current_date = self.data[self.iterator]["date"]
                 self.evaluations[self.iterator][1].append(self.get_current_value())                
@@ -91,6 +92,21 @@ class Simulation:
     
     def get_id(self):
         return self.id
+
+    def get_initial_balance(self):
+        return self.initial_balance
+
+    def get_tradable_stocks(self):
+        return self.tradable_stocks
+
+    def get_start_date(self):
+        return self.start_date
+
+    def get_end_date(self):
+        return self.end_date
+
+    def get_model(self):
+        return self.model.__name__
     
     def get_graph(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))

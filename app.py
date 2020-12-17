@@ -6,12 +6,12 @@ from simulation import Simulation
 from comparing_simulations import ComparingSimulations
 from stock_database import data_download, data_update
 
-sim_ID = 1
+sim_id = 1
 
-def update_sim_ID():
-    global sim_ID
-    while os.path.exists(f"results/s_{sim_ID}.txt"):
-        sim_ID += 1
+def update_sim_id():
+    global sim_id
+    while os.path.exists(f"results/s_{sim_id}.txt"):
+        sim_id += 1
 
 def render_title():
 
@@ -101,7 +101,7 @@ def ask_model():
                 print("\n\t% Available Models %")
                 print(models.models_str())
             else:
-                print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.\n")
+                print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
             model = input("Simulation Model: ")
         return model
     except Exception as e:
@@ -110,16 +110,15 @@ def ask_model():
 def ask_multiple_models():
     try:
         models_raw = input("\nModels to compare: ")
-        if models_raw == "l":
-            print("\n\t% Available Models %")
-            print(models.models_str())
-            return ask_multiple_models()
-        else:
+        models_clean = re.split(", |,| ", models_raw)
+        while not all(item in models.model_docs.keys() for item in models_clean):
+            if models_raw == "l":
+                print("\n\t% Available Models %")
+                print(models.models_str())
+            else:
+                print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
+            models_raw = input("Models to compare: ")
             models_clean = re.split(", |,| ", models_raw)
-            for model in models_clean:
-                if model not in models.model_docs:
-                    print("\nERROR: Invalid model.\nPlease insert 'l' for a list of the available models.")
-                    return ask_multiple_models()
         return models_clean
     except Exception as e:
         raise e
@@ -197,8 +196,8 @@ def simulation():
         model = ask_model()
         no_exec = ask_executions()
 
-        update_sim_ID()
-        sim = Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
+        update_sim_id()
+        sim = Simulation(sim_id, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
         sim.execute(no_executions=no_exec)
 
         print("\n" + "% Simulation Results %\n" + render_simulation_long_results(sim))
@@ -242,8 +241,8 @@ def compare_type_one():
 
         sims = []
         for model in models_clean:
-            update_sim_ID()
-            sims.append(Simulation(sim_ID, balance, stocks, start_date, end_date, models.model_docs[model]["func"]))
+            update_sim_id()
+            sims.append(Simulation(sim_id, balance, stocks, start_date, end_date, models.model_docs[model]["func"]))
 
         comp = ComparingSimulations(sims)
         comp.execute(no_executions=no_exec)

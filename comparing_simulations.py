@@ -2,7 +2,6 @@ from models import *
 from simulation import Simulation
 import matplotlib.pyplot as plt
 
-
 class ComparingSimulations:
     def __init__(self, list_of_simulations, executed=False):
         self.simulations = list_of_simulations

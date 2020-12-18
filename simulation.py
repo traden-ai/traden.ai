@@ -2,7 +2,6 @@ from models import *
 from ledger import Ledger
 from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days, get_year, get_month
-from ema import EMA
 import matplotlib.pyplot as plt
 
 
@@ -114,7 +113,7 @@ class Simulation:
         return self.end_date
 
     def get_model(self):
-        return self.model.__name__
+        return self.model.__class__.__name__
     
     def get_graph(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))
@@ -154,10 +153,3 @@ class Simulation:
         for log in logs:
             logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
         return logs_format
-
-
-if __name__ == "__main__":
-    sim = Simulation(1, 100000, ["AMZN", "AMD", "DIS"], "2014-01-01", "2020-11-30", EMA)
-    sim.execute()
-    sim.get_graph()
-    print(sim.get_results()[0]["profit_percentage_year"])

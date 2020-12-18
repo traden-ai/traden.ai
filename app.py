@@ -1,8 +1,8 @@
 import os
 import re
-import models
 import datetime as dt
 from simulation import Simulation
+from models import model_encyclopedia
 from comparing_simulations import ComparingSimulations
 from stock_database import data_download, data_update
 
@@ -96,10 +96,11 @@ def ask_period():
 def ask_model():
     try:
         model = input("\nSimulation Model: ")
-        while model not in models.model_docs:
+        model = model.lower()
+        while model not in model_encyclopedia.model_docs:
             if model == "l":
                 print("\n\t% Available Models %")
-                print(models.models_str())
+                print(model_encyclopedia.models_str())
             else:
                 print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
             model = input("Simulation Model: ")
@@ -110,11 +111,11 @@ def ask_model():
 def ask_multiple_models():
     try:
         models_raw = input("\nModels to compare: ")
-        models_clean = re.split(", |,| ", models_raw)
-        while not all(item in models.model_docs.keys() for item in models_clean):
+        models_clean = re.split(", |,| ", models_raw.lower())
+        while not all(item in model_encyclopedia.model_docs.keys() for item in models_clean):
             if models_raw == "l":
                 print("\n\t% Available Models %")
-                print(models.models_str())
+                print(model_encyclopedia.models_str())
             else:
                 print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
             models_raw = input("Models to compare: ")
@@ -167,13 +168,13 @@ def store_sim_results(sim: Simulation):
         if not os.path.exists("results/"):
             os.mkdir("results/")
 
-        filepath = "results/s_{}.txt".format(sim.get_id())
+        filepath = "results/s{}.txt".format(sim.get_id())
         with open(filepath,'w') as f:
             f.write("+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
             f.write("\nBalance: {}\nStocks: {}\nStarting Date: {}\nEnding Date: {}\nModel: {}\t({})\n".format(\
-                sim.get_initial_balance(), sim.get_tradable_stocks(), sim.get_start_date(), sim.get_end_date(), sim.get_model(), models.model_docs[sim.get_model()]["desc"]))
+                sim.get_initial_balance(), sim.get_tradable_stocks(), sim.get_start_date(), sim.get_end_date(), sim.get_model(), model_encyclopedia.model_docs[sim.get_model().lower()]["desc"]))
             f.write("\n+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
@@ -197,10 +198,10 @@ def simulation():
         no_exec = ask_executions()
 
         update_sim_id()
-        sim = Simulation(sim_id, balance, stocks, start_date, end_date, models.model_docs[model]["func"])
+        sim = Simulation(sim_id, balance, stocks, start_date, end_date, model_encyclopedia.model_docs[model]["class"])
         sim.execute(no_executions=no_exec)
 
-        print("\n" + "% Simulation Results %\n" + render_simulation_long_results(sim))
+        print("\n\t% Simulation Results %\n" + render_simulation_long_results(sim))
         print("For more details: " + store_sim_results(sim) + "\n")
 
         graph = ask_graph(graph_type="simulation")
@@ -242,7 +243,7 @@ def compare_type_one():
         sims = []
         for model in models_clean:
             update_sim_id()
-            sims.append(Simulation(sim_id, balance, stocks, start_date, end_date, models.model_docs[model]["func"]))
+            sims.append(Simulation(sim_id, balance, stocks, start_date, end_date, model_encyclopedia.model_docs[model]["class"]))
 
         comp = ComparingSimulations(sims)
         comp.execute(no_executions=no_exec)
@@ -290,7 +291,7 @@ def compare_sims():
 
 def results_clear():
 
-    files_raw = input("\nFiles to delete: (* for all OR s_1, c_1_2, ...) ")
+    files_raw = input("\nFiles to delete: (* for all OR s1, s2, ...) ")
     if files_raw == "*":
         for f in os.listdir("results/"):
             os.remove(os.path.join("results/", f))

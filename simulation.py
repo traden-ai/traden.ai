@@ -2,6 +2,7 @@ from models import *
 from ledger import Ledger
 from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days, get_year, get_month
+from ema import EMA
 import matplotlib.pyplot as plt
 
 
@@ -21,7 +22,7 @@ class Simulation:
         self.logs = []
         self.data = data_load(tradable_stocks, start_date, end_date)
 
-        self.model = model(self.data)
+        self.model = model(self.tradable_stocks)
 
         self.actual_end_date = self.data[-1]["date"]
         
@@ -33,7 +34,7 @@ class Simulation:
         self.results = []
 
     def execute(self, no_executions=1):
-        self.model.preprocess_data()
+        self.model.preprocess_data(self.data)
         for i in range(no_executions):
             while (self.current_date != self.actual_end_date):
                 self.model.execute(self)
@@ -90,7 +91,13 @@ class Simulation:
     def get_result(self, no_execution=0):
         if len(self.results) > no_execution: 
             return self.results[no_execution]
+
+    def get_ledger(self):
+        return self.ledger
     
+    def get_iteration(self):
+        return self.iterator
+
     def get_id(self):
         return self.id
 
@@ -147,3 +154,10 @@ class Simulation:
         for log in logs:
             logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
         return logs_format
+
+
+if __name__ == "__main__":
+    sim = Simulation(1, 100000, ["AMZN", "AMD", "DIS"], "2014-01-01", "2020-11-30", EMA)
+    sim.execute()
+    sim.get_graph()
+    print(sim.get_results()[0]["profit_percentage_year"])

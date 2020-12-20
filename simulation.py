@@ -45,16 +45,18 @@ class Simulation:
             self.store_result()
 
     def buy(self, stock_name: str, amount: int):
-        stock_price = self.stock_current_price(stock_name)
-        isPossible = self.ledger.buy(stock_name, stock_price, amount)
-        if isPossible:
-            self.logs.append({"action":"Bought", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
+        if amount > 0:
+            stock_price = self.stock_current_price(stock_name)
+            isPossible = self.ledger.buy(stock_name, stock_price, amount)
+            if isPossible:
+                self.logs.append({"action":"Bought", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
 
-    def sell(self, stock_name: str,amount: int):
-        stock_price = self.stock_current_price(stock_name)
-        isPossible = self.ledger.sell(stock_name, stock_price, amount)
-        if isPossible:
-            self.logs.append({"action":"Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
+    def sell(self, stock_name: str, amount: int):
+        if amount > 0:
+            stock_price = self.stock_current_price(stock_name)
+            isPossible = self.ledger.sell(stock_name, stock_price, amount)
+            if isPossible:
+                self.logs.append({"action":"Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
 
     def sell_all(self):
         stocks = self.ledger.get_stocks()

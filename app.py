@@ -10,7 +10,7 @@ sim_id = 1
 
 def update_sim_id():
     global sim_id
-    while os.path.exists(f"results/s_{sim_id}.txt"):
+    while os.path.exists(f"results/s{sim_id}.txt"):
         sim_id += 1
 
 def render_title():

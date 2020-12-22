@@ -8,10 +8,14 @@ from stock_database import data_download, data_update
 
 sim_id = 1
 
-def update_sim_id():
+def get_last_sim_id():
     global sim_id
     while os.path.exists(f"results/s{sim_id}.txt"):
         sim_id += 1
+
+def update_sim_id():
+    global sim_id
+    sim_id += 1
 
 def render_title():
 
@@ -112,10 +116,12 @@ def ask_multiple_models():
     try:
         models_raw = input("\nModels to compare: ")
         models_clean = re.split(", |,| ", models_raw.lower())
-        while not all(item in model_encyclopedia.model_docs.keys() for item in models_clean):
-            if models_raw == "l":
+        while len(models_clean) < 2 or not all(item in model_encyclopedia.model_docs.keys() for item in models_clean):
+            if models_raw.lower() == "l":
                 print("\n\t% Available Models %")
                 print(model_encyclopedia.models_str())
+            elif len(models_clean) < 2 and all(item in model_encyclopedia.model_docs.keys() for item in models_clean):
+                print("\n\tERROR: Invalid input.\n\tPlease insert enough models for a comparison.\n")
             else:
                 print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
             models_raw = input("Models to compare: ")
@@ -210,6 +216,8 @@ def simulation():
         print("")
 
     except:
+        if KeyboardInterrupt:
+            print("")
         print("\n\tAborted.\n\tSomething went wrong with your simulation...\n")
 
 def render_comparison_menu():
@@ -220,17 +228,46 @@ def render_comparison_menu():
     menu_str += "\n\t[3] Compare stocks (for same model and time period)\n"
     return menu_str
 
-def render_comparison_short_results(comp: ComparingSimulations, comp_type: str):
-    #TODO
-    return ""
+def render_comparison_short_results(comp: ComparingSimulations, comp_type="id"):
+    def get_title(sim: Simulation, comp_type="id"):
+        title = ""
+        if comp_type == "id":
+            title += str(sim.get_id())
+        elif comp_type == "model":
+            title += sim.get_model()
+        elif comp_type == "period":
+            title += sim.get_start_date() + " -> " + sim.get_end_date()
+        elif comp_type == "stock":
+            title += sim.get_stocks()[0]
+        return title
 
-def render_comparison_long_results(comp: ComparingSimulations, comp_type: str):
+    results_str = ""
+    best_sim = comp.get_best_simulation_by_metric()
+    worst_sim = comp.get_worst_simulation_by_metric()
+
+    results_str += "\n\t% Best {} ({}) %\n".format(comp_type, get_title(best_sim, comp_type=comp_type))
+    results_str += render_simulation_long_results(best_sim)
+
+    results_str += "\n\t% Worst {} ({}) %\n".format(comp_type, get_title(worst_sim, comp_type=comp_type))
+    results_str += render_simulation_long_results(worst_sim)
+
+    return results_str
+
+def render_comparison_long_results(comp: ComparingSimulations, comp_type="id"):
     #TODO
     return ""
 
 def store_comp_results(comp: ComparingSimulations):
-    #TODO
-    return ""
+    
+    filenames = ""
+    sims = comp.get_simulations()
+    filenames += store_sim_results(sims[0])
+
+    for sim in sims[1:]:
+        filenames += ", "
+        filenames += store_sim_results(sim)
+
+    return filenames
 
 def compare_type_one():
     try:
@@ -248,16 +285,16 @@ def compare_type_one():
         comp = ComparingSimulations(sims)
         comp.execute(no_executions=no_exec)
 
-        print("\n" + "% Comparison Results %\n" + render_comparison_short_results(comp, "model"))
-        # print("For more details: " + store_comp_results(comp) + "\n")
+        print(render_comparison_short_results(comp, comp_type="model"))
+        print("For more details: " + store_comp_results(comp) + "\n")
 
         graph = ask_graph(graph_type="comparison")
         if graph in ("yes", "y"):
             comp.get_graph_comparison(label="model")
         print("")
 
-    except:
-        print("\n\tAborted.\n\tSomething went wrong with your comparison...\n")
+    except Exception as e:
+        raise e
 
 def compare_type_two():
     #TODO
@@ -273,10 +310,7 @@ def compare_sims():
 
     try:
         comp_type = int(input("Select type: "))
-    except:
-        print("\n\tERROR: Invalid type of comparison.\n")
-        return
-    try:
+
         if comp_type == 1:
             compare_type_one()
         elif comp_type == 2:
@@ -284,10 +318,13 @@ def compare_sims():
         elif comp_type == 3:
             compare_type_three()
         else:
-            print("\n\tERROR: Invalid type of comparison.\n")
+            print("\n\tERROR: Type of comparison does not exist.")
+            compare_sims()
             return
     except:
-        print("\nAborted. Something went wrong with your comparison...\n")
+        if KeyboardInterrupt:
+            print("")
+        print("\n\tAborted.\n\tSomething went wrong with your comparison...\n")
 
 def results_clear():
 
@@ -336,5 +373,6 @@ def run():
         parse_command(command)
 
 if __name__ == "__main__":
+    get_last_sim_id()
     render_title()
     run()

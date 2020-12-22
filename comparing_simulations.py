@@ -12,6 +12,9 @@ class ComparingSimulations:
             simul.execute(no_executions)
         self.executed = True
  
+    def get_simulations(self):
+        return self.simulations
+
     def get_expected_metric(self, metric="profit"):
         if not self.executed:
             self.execute()

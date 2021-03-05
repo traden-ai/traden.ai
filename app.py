@@ -4,7 +4,7 @@ import datetime as dt
 from simulation import Simulation
 from models import model_encyclopedia
 from comparing_simulations import ComparingSimulations
-from stock_database import data_download, data_update
+from stock_database import data_load
 
 sim_id = 1
 
@@ -214,7 +214,6 @@ def simulation():
         if graph in ("yes", "y"):
             sim.get_graph()
         print("")
-
     except:
         if KeyboardInterrupt:
             print("")

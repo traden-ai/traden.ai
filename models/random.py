@@ -8,11 +8,6 @@ class Random(ModelInterface):
         self.tickers = tradable_stocks
         self.dfs = {}
 
-    def preprocess_data(self, data):
-        for t in self.tickers:
-            values = pd.DataFrame({"close": [float(dic[t]['Close']) for dic in data]})
-            self.dfs[t] = values
-
     def execute(self, simulation):
         ledger = simulation.get_ledger()
         balance = ledger.get_balance()

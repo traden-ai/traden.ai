@@ -1,5 +1,5 @@
-from connection import get_client, get_database, get_collection
-from constants import DATABASE, COLLECTION
+from .connection import get_client, get_database, get_collection
+from .constants import DATABASE, COLLECTION
     
 def insert_items(items, database= DATABASE, collection = COLLECTION):
     if isinstance(items,list):

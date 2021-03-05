@@ -1,4 +1,4 @@
-from utils import insert_items, remove_multiple, remove_item, query_time, get_entire_collection, update_item
+from .utils import insert_items, remove_multiple, remove_item, query_item, get_entire_collection, update_item
 
 def insert_data(items):
     insert_items(items)

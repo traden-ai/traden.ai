@@ -19,25 +19,24 @@ class Simulation:
         self.iterator = 0
         
         self.logs = []
-        self.data = data_load(tradable_stocks, start_date, end_date)
+        self.data, self.dates, self.prices = data_load(tradable_stocks, start_date, end_date)
 
         self.model = model(self.tradable_stocks)
 
-        self.actual_end_date = self.data[-1]["date"]
+        self.actual_end_date = self.dates[-1]
         
         self.evaluations = []
 
-        for el in self.data:
-            self.evaluations.append((str(el["date"]), []))
+        for date in self.dates:
+            self.evaluations.append((date, []))
 
         self.results = []
 
     def execute(self, no_executions=1):
-        self.model.preprocess_data(self.data)
         for i in range(no_executions):
             while (self.current_date != self.actual_end_date):
                 self.model.execute(self)
-                self.current_date = self.data[self.iterator]["date"]
+                self.current_date = self.dates[self.iterator]
                 self.evaluations[self.iterator][1].append(self.get_current_value())                
                 self.iterator += 1
             self.iterator -= 1
@@ -76,7 +75,13 @@ class Simulation:
         self.reset()
 
     def stock_current_price(self, stock_name):
-        return float(self.data[self.iterator][stock_name]["Close"])
+        return float(self.prices[stock_name][self.iterator])
+
+    def get_data_by_ticker(self, ticker):
+        return self.data[ticker]
+    
+    def get_prices(self, ticker):
+        return self.prices[ticker]
 
     def get_current_value(self):
         cash = self.ledger.get_balance() 

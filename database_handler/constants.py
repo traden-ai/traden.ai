@@ -1,2 +1,2 @@
 DATABASE = "StockData"
-COLLECTION = "DailyDataByTicker" 
+COLLECTION = "DailyDataByTicker"

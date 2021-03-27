@@ -6,19 +6,22 @@ from time import sleep
 from os import path
 import json
 
+
 def get_stocks():
-    ''' method that loads all stocks from 'symbols.txt' into a list '''
+    """ method that loads all stocks from 'symbols.txt' into a list """
     stocks = []
     with open("symbols.txt", "r") as f:
         for line in f:
             stocks.append(line.strip())
     return stocks
 
+
 def get_daily(stock):
     # use your alpha_vantage api key
     ts = TimeSeries(key="E9NN094GU5JX53JA", output_format='json')
     data, meta_data = ts.get_daily(symbol=stock, outputsize='full')
     return data
+
 
 def get_tech_indicator(stock, indicator):
     ts = TechIndicators(key="E9NN094GU5JX53JA", output_format='json')
@@ -32,6 +35,7 @@ def get_tech_indicator(stock, indicator):
         data, meta_data = ts.get_rsi(symbol=stock)
     return data
 
+
 if __name__ == "__main__":
     stocks = get_stocks()
     size = len(stocks)
@@ -41,7 +45,7 @@ if __name__ == "__main__":
         try:
             ticker = stocks[index]
             if not path.exists("{}.json".format(ticker)):
-                daily = get_tech_indicator(ticker,"rsi")
+                daily = get_tech_indicator(ticker, "rsi")
                 with open("{}_rsi.json".format(ticker), 'w') as f:
                     json.dump(daily, f)
             index += 1
@@ -49,4 +53,4 @@ if __name__ == "__main__":
             print("success on {}".format(ticker))
         except Exception as e:
             print("exception on {}, trying different key\n{}".format(ticker, e))
-            sleep(60)  
+            sleep(60)

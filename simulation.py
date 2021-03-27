@@ -1,4 +1,3 @@
-from models import *
 from ledger import Ledger
 from stock_database import data_load
 from utils import profit_percentage_by_year, time_between_days, get_year, get_month
@@ -6,25 +5,24 @@ import matplotlib.pyplot as plt
 
 
 class Simulation:
-    def __init__(self, identifier: int, balance: int, tradable_stocks: list, start_date: str, end_date: str, model):
-        self.id = identifier
+    def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model):
         self.initial_balance = balance
         self.tradable_stocks = tradable_stocks
-        
+
         self.ledger = Ledger(balance, tradable_stocks)
 
         self.start_date = start_date
         self.end_date = end_date
         self.current_date = start_date
         self.iterator = 0
-        
+
         self.logs = []
         self.data, self.dates, self.prices = data_load(tradable_stocks, start_date, end_date)
 
         self.model = model(self.tradable_stocks)
 
         self.actual_end_date = self.dates[-1]
-        
+
         self.evaluations = []
 
         for date in self.dates:
@@ -34,10 +32,10 @@ class Simulation:
 
     def execute(self, no_executions=1):
         for i in range(no_executions):
-            while (self.current_date != self.actual_end_date):
+            while self.current_date != self.actual_end_date:
                 self.model.execute(self)
                 self.current_date = self.dates[self.iterator]
-                self.evaluations[self.iterator][1].append(self.get_current_value())                
+                self.evaluations[self.iterator][1].append(self.get_current_value())
                 self.iterator += 1
             self.iterator -= 1
             self.sell_all()
@@ -46,16 +44,19 @@ class Simulation:
     def buy(self, stock_name: str, amount: int):
         if amount > 0:
             stock_price = self.stock_current_price(stock_name)
-            isPossible = self.ledger.buy(stock_name, stock_price, amount)
-            if isPossible:
-                self.logs.append({"action":"Bought", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
+            is_possible = self.ledger.buy(stock_name, stock_price, amount)
+            if is_possible:
+                self.logs.append({"action": "Bought", "date": self.current_date, "stock_name": stock_name,
+                                  "stock_price": stock_price, "amount": amount})
 
     def sell(self, stock_name: str, amount: int):
         if amount > 0:
             stock_price = self.stock_current_price(stock_name)
-            isPossible = self.ledger.sell(stock_name, stock_price, amount)
-            if isPossible:
-                self.logs.append({"action":"Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price, "amount": amount})
+            is_possible = self.ledger.sell(stock_name, stock_price, amount)
+            if is_possible:
+                self.logs.append(
+                    {"action": "Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price,
+                     "amount": amount})
 
     def sell_all(self):
         stocks = self.ledger.get_stocks()
@@ -70,8 +71,14 @@ class Simulation:
         self.logs = []
 
     def store_result(self):
-        self.results.append({"profit": self.ledger.balance - self.initial_balance, "profit_percentage": ((self.ledger.balance - self.initial_balance) / self.initial_balance) * 100
-                            ,"profit_percentage_year": profit_percentage_by_year(self.initial_balance, self.ledger.balance, time_between_days(self.start_date, self.end_date)), "logs": self.logs})
+        self.results.append({"profit": self.ledger.balance - self.initial_balance,
+                             "profit_percentage": ((self.ledger.balance - self.initial_balance)
+                                                   / self.initial_balance) * 100,
+                             "profit_percentage_year": profit_percentage_by_year(self.initial_balance,
+                                                                                 self.ledger.balance,
+                                                                                 time_between_days(self.start_date,
+                                                                                                   self.end_date)),
+                             "logs": self.logs})
         self.reset()
 
     def stock_current_price(self, stock_name):
@@ -79,7 +86,7 @@ class Simulation:
 
     def get_data_by_ticker(self, ticker):
         return self.data[ticker]
-    
+
     def get_prices(self, ticker):
         return self.prices[ticker]
 
@@ -89,23 +96,20 @@ class Simulation:
         stocks = self.ledger.get_stocks()
         for stock in stocks:
             stocks_value += self.stock_current_price(stock) * stocks[stock]
-        return cash + stocks_value 
+        return cash + stocks_value
 
     def get_results(self):
         return self.results
 
     def get_result(self, no_execution=0):
-        if len(self.results) > no_execution: 
+        if len(self.results) > no_execution:
             return self.results[no_execution]
 
     def get_ledger(self):
         return self.ledger
-    
+
     def get_iteration(self):
         return self.iterator
-
-    def get_id(self):
-        return self.id
 
     def get_initial_balance(self):
         return self.initial_balance
@@ -121,42 +125,44 @@ class Simulation:
 
     def get_model(self):
         return self.model.__class__.__name__
-    
+
     def get_graph(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))
-        plt.ylabel("Capital")    
-        X = []
-        Y = []
+        plt.ylabel("Capital")
+        y = []
         for el in self.get_evaluations(mode=mode):
-            Y.append(sum(el[1]) / len(el[1]))
-        X = range(1,len(Y) + 1)
-        plt.plot(X,Y)
+            y.append(sum(el[1]) / len(el[1]))
+        x = range(1, len(y) + 1)
+        plt.plot(x, y)
         plt.show()
 
     def get_evaluations(self, mode="daily"):
-        if mode=="daily":
+        if mode == "daily":
             return self.evaluations
-        elif mode=="monthly":
+        elif mode == "monthly":
             filtered_evaluations = [self.evaluations[0]]
             for i in range(len(self.evaluations)):
                 date = self.evaluations[i][0]
                 previous_date = filtered_evaluations[-1][0]
                 if get_year(date) != get_year(previous_date) or get_month(date) != get_month(previous_date):
                     filtered_evaluations.append(self.evaluations[i])
-        elif mode=="yearly":
+            return filtered_evaluations
+        elif mode == "yearly":
             filtered_evaluations = [self.evaluations[0]]
             for i in range(len(self.evaluations)):
                 date = self.evaluations[i][0]
                 previous_date = filtered_evaluations[-1][0]
                 if get_year(date) != get_year(previous_date):
                     filtered_evaluations.append(self.evaluations[i])
-        return filtered_evaluations
+            return filtered_evaluations
 
     def logs_str(self, no_execution=0):
-        if len(self.results)==0:
-            return 
+        if len(self.results) == 0:
+            return
         logs = self.results[no_execution]["logs"]
         logs_format = ""
         for log in logs:
-            logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"], log["stock_name"], log["stock_price"], log["date"])
+            logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"],
+                                                                               log["stock_name"], log["stock_price"],
+                                                                               log["date"])
         return logs_format

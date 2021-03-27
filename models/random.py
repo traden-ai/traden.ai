@@ -6,7 +6,6 @@ class Random(ModelInterface):
 
     def __init__(self, tradable_stocks):
         self.tickers = tradable_stocks
-        self.dfs = {}
 
     def execute(self, simulation):
         ledger = simulation.get_ledger()
@@ -15,7 +14,7 @@ class Random(ModelInterface):
 
         if randint(0, 1):
             for s in self.tickers:
-                close = self.dfs[s].at[simulation.get_iteration(), 'close']
+                close = simulation.get_prices(s)[simulation.get_iteration()]
                 available = balance // close
                 simulation.buy(s, randint(0, available))
         else:

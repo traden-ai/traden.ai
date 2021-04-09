@@ -6,7 +6,7 @@ def get_stocks():
     """ method that loads all stocks from 'data/symbols.txt' into a list """
 
     stocks = []
-    with open("data/symbols.txt", "r") as f:
+    with open("symbols.txt", "r") as f:
         for line in f:
             stocks.append(line.strip())
 

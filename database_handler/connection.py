@@ -1,10 +1,17 @@
 from pymongo import MongoClient
 
+passwords = {
+    "Admin": "StockTradingSim",
+    "ReadOnly": "Test@123"
+}
+
 
 def get_client():
+    username = "Admin"
     password = "StockTradingSim"
     db_name = "StockData"
-    uri = "mongodb+srv://Admin:{}@cluster0.em20u.mongodb.net/{}?retryWrites=true&w=majority".format(password, db_name)
+    uri = "mongodb+srv://{}:{}@cluster0.em20u.mongodb.net/{}?retryWrites=true&w=majority"\
+        .format(username, password, db_name)
     return MongoClient(uri)
 
 

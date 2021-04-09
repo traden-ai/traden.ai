@@ -1,6 +1,6 @@
-from ledger import Ledger
-from stock_database import data_load
-from utils import profit_percentage_by_year, time_between_days, get_year, get_month
+from ledger.ledger import Ledger
+from data.stock_database import data_load
+from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
 import matplotlib.pyplot as plt
 
 

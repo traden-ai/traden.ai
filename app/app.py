@@ -1,9 +1,9 @@
 import os
 import re
 from datetime import datetime
-from simulation import Simulation
+from simulation.simulation import Simulation
 from models import model_encyclopedia
-from comparing_simulations import ComparingSimulations
+from simulation.comparing_simulations import ComparingSimulations
 
 
 def nothing():

@@ -1,27 +1,20 @@
-from ledger.ledger import Ledger
 from data.stock_database import data_load
 from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
 import matplotlib.pyplot as plt
+from models.runnable_interface import *
 
 
-class Simulation:
-    def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model):
+class Simulation(Runnable):
+
+    def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model: ModelInterface):
+        super().__init__(balance, tradable_stocks, model)
         self.initial_balance = balance
-        self.tradable_stocks = tradable_stocks
-
-        self.ledger = Ledger(balance, tradable_stocks)
-
-        self.start_date = start_date
-        self.end_date = end_date
-        self.current_date = start_date
-        self.iterator = 0
-
-        self.logs = []
         self.data, self.dates, self.prices = data_load(tradable_stocks, start_date, end_date)
 
-        self.model = model(self.tradable_stocks)
-
-        self.actual_end_date = self.dates[-1]
+        self.start_date = start_date
+        self.end_date = self.dates[-1]
+        self.current_date = start_date
+        self.iterator = 0
 
         self.evaluations = []
 
@@ -30,20 +23,23 @@ class Simulation:
 
         self.results = []
 
+        self.logs = []
+
     def execute(self, no_executions=1):
         for i in range(no_executions):
-            while self.current_date != self.actual_end_date:
-                self.model.execute(self)
+            while self.current_date != self.end_date:
+                self.model.execute(self.get_daily_data())
                 self.current_date = self.dates[self.iterator]
                 self.evaluations[self.iterator][1].append(self.get_current_value())
                 self.iterator += 1
             self.iterator -= 1
+            self.current_date = self.dates[self.iterator]
             self.sell_all()
             self.store_result()
 
     def buy(self, stock_name: str, amount: int):
         if amount > 0:
-            stock_price = self.stock_current_price(stock_name)
+            stock_price = self.get_current_stock_price(stock_name)
             is_possible = self.ledger.buy(stock_name, stock_price, amount)
             if is_possible:
                 self.logs.append({"action": "Bought", "date": self.current_date, "stock_name": stock_name,
@@ -51,11 +47,12 @@ class Simulation:
 
     def sell(self, stock_name: str, amount: int):
         if amount > 0:
-            stock_price = self.stock_current_price(stock_name)
+            stock_price = self.get_current_stock_price(stock_name)
             is_possible = self.ledger.sell(stock_name, stock_price, amount)
             if is_possible:
                 self.logs.append(
-                    {"action": "Sold", "date": self.current_date, "stock_name": stock_name, "stock_price": stock_price,
+                    {"action": "Sold", "date": self.current_date, "stock_name": stock_name,
+                     "stock_price": stock_price,
                      "amount": amount})
 
     def sell_all(self):
@@ -81,7 +78,13 @@ class Simulation:
                              "logs": self.logs})
         self.reset()
 
-    def stock_current_price(self, stock_name):
+    def get_daily_data(self):
+        daily_data = {}
+        for ticker in self.tradable_stocks:
+            daily_data[ticker] = self.data[ticker][self.iterator]
+        return daily_data
+
+    def get_current_stock_price(self, stock_name):
         return float(self.prices[stock_name][self.iterator])
 
     def get_data_by_ticker(self, ticker):
@@ -91,11 +94,11 @@ class Simulation:
         return self.prices[ticker]
 
     def get_current_value(self):
-        cash = self.ledger.get_balance() 
+        cash = self.ledger.get_balance()
         stocks_value = 0
         stocks = self.ledger.get_stocks()
         for stock in stocks:
-            stocks_value += self.stock_current_price(stock) * stocks[stock]
+            stocks_value += self.get_current_stock_price(stock) * stocks[stock]
         return cash + stocks_value
 
     def get_results(self):
@@ -163,6 +166,7 @@ class Simulation:
         logs_format = ""
         for log in logs:
             logs_format += "\t{} {} stocks of {} with price {} at {}\n".format(log["action"], log["amount"],
-                                                                               log["stock_name"], log["stock_price"],
+                                                                               log["stock_name"],
+                                                                               log["stock_price"],
                                                                                log["date"])
         return logs_format

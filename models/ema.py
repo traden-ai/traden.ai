@@ -1,30 +1,23 @@
-from random import randint
-from .model_interface import ModelInterface
+import random
+from models.model_interface import *
 
 
 class EMA(ModelInterface):
 
-    def __init__(self, tradable_stocks):
-        self.tickers = tradable_stocks
-
-    def execute(self, simulation):
-        ledger = simulation.get_ledger()
-        balance = ledger.get_balance()
-        owned_stocks = ledger.get_stocks()
-
-        for s in owned_stocks:
-            close = simulation.get_prices(s)[simulation.get_iteration()]
-            ema_long = simulation.get_data_by_ticker(s)[simulation.get_iteration(), 10]  # TODO fix ugly constant
+    def execute(self, daily_data: dict):
+        output = []
+        for s in daily_data:
+            close = daily_data[s]["CLOSE"]
+            ema_long = daily_data[s]["EMA50"]
 
             if close < ema_long:
-                simulation.sell(s, owned_stocks[s])
+                output.append({"Ticker": s, "Action": Action.SELL, "Intensity": 1})
 
-        for s in self.tickers:
-            ema_short = simulation.get_data_by_ticker(s)[simulation.get_iteration(), 9]  # TODO fix ugly constant
-            ema_long = simulation.get_data_by_ticker(s)[simulation.get_iteration(), 10]  # TODO fix ugly constant
-            close = simulation.get_prices(s)[simulation.get_iteration()]
-
-            available = balance // close
+        for s in daily_data:
+            ema_short = daily_data[s]["EMA20"]
+            ema_long = daily_data[s]["EMA50"]
 
             if ema_short > ema_long:
-                simulation.buy(s, randint(0, available))
+                output.append({"Ticker": s, "Action": Action.BUY, "Intensity": random.uniform(0, 1)})
+
+        return output

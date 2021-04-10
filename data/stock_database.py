@@ -20,13 +20,12 @@ def data_load(stocks: list, start: str, end: str):
     return_data = {}
     prices = {}
     for stock_data in json_data:
-        matrix = []
+        return_data[stock_data["Symbol"]] = []
         company_prices = []
         for day in stock_data["Data"]:
             if start <= day <= end:
-                matrix = [[float(stock_data["Data"][day][feature]) for feature in stock_data["Data"][day]]] + matrix
+                return_data[stock_data["Symbol"]].append(stock_data["Data"][day])
                 company_prices = [float(stock_data["Data"][day]["CLOSE"])] + company_prices
-        return_data[stock_data["Symbol"]] = np.array(matrix)
         prices[stock_data["Symbol"]] = company_prices
     dates = []
     for day in json_data[0]["Data"]:

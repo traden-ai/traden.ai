@@ -1,5 +1,5 @@
 from .ema import EMA
-from .random import Random
+from .random_op import Random
 
 model_docs = {
     "ema": {"class": EMA, "desc": "(...)"},

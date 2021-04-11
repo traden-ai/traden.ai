@@ -1,9 +1,8 @@
-import os
 import re
 from datetime import datetime
 from simulation.simulation import Simulation
-from models import model_encyclopedia
 from simulation.comparing_simulations import ComparingSimulations
+from model_database_handler.model_database_handler import *
 
 
 def nothing():
@@ -13,14 +12,14 @@ def nothing():
 def render_title():
     print("""
 
-  _____ _             _     _____             _ _               _____ _               
- /  ___| |           | |   |_   _|           | (_)             /  ___(_)              
- \ `--.| |_ ___   ___| | __  | |_ __ __ _  __| |_ _ __   __ _  \ `--. _ _ __ ___      
-  `--. \ __/ _ \ / __| |/ /  | | '__/ _` |/ _` | | '_ \ / _` |  `--. \ | '_ ` _ \     
- /\__/ / || (_) | (__|   <   | | | | (_| | (_| | | | | | (_| | /\__/ / | | | | | | _ 
- \____/ \__\___/ \___|_|\_\  \_/_|  \__,_|\__,_|_|_| |_|\__, | \____/|_|_| |_| |_|(_)
-                                                         __/ |                        
-                                                        |___/                         
+     _                 _                        _ 
+    | |               | |                      (_)
+    | |_ _ __ __ _  __| | ___ _ __         __ _ _ 
+    | __| '__/ _` |/ _` |/ _ \ '_ \       / _` | |
+    | |_| | | (_| | (_| |  __/ | | |  _  | (_| | |
+     \__|_|  \__,_|\__,_|\___|_| |_| (_)  \__,_|_|
+  
+  
         """)
 
 
@@ -62,19 +61,26 @@ def ask_period():
         raise e
 
 
-def ask_models():
+def ask_model_instances():
     try:
-        models_raw = input("\nModel(s): ")
-        models_clean = re.split(", |,| ", models_raw.lower())
-        while not all(item in model_encyclopedia.model_docs.keys() for item in models_clean):
-            if models_raw.lower() == "l":
-                print("\n\t% Available Models")
-                print(model_encyclopedia.models_str())
+        model_instances_raw = input("\nModel instance(s): ")
+        model_instances_clean = re.split(", |,| ", model_instances_raw.lower())
+        while not all(item in list_instances() for item in model_instances_clean):
+            if model_instances_raw.lower() == "l":
+                print("\n\t% Available Models Instances\n")
+                instances = list_instances()
+                for i in instances:
+                    print("\t" + i)
             else:
-                print("\n\tERROR: Invalid model.\n\tPlease insert 'l' for a list of the available models.\n")
-            models_raw = input("Models to compare: ")
-            models_clean = re.split(", |,| ", models_raw)
-        return models_clean
+                print("\n\tERROR: Invalid model instance.\n\tPlease insert 'l' for a list of the available model "
+                      "instances.")
+            model_instances_raw = input("\nModel instance(s): ")
+            model_instances_clean = re.split(", |,| ", model_instances_raw)
+
+        for i in range(len(model_instances_clean)):
+            model_instances_clean[i] = get_instance(model_instances_clean[i])
+
+        return model_instances_clean
     except Exception as e:
         raise e
 
@@ -102,14 +108,14 @@ def ask_simulation():
     balance = ask_balance()
     stocks = ask_stocks()
     start_date, end_date = ask_period()
-    models = ask_models()
+    model_instances = ask_model_instances()
     no_exec = ask_executions()
 
     try:
-        if len(models) == 1:
-            simulation(balance, stocks, start_date, end_date, models[0], no_exec)
+        if len(model_instances) == 1:
+            simulation(balance, stocks, start_date, end_date, model_instances[0], no_exec)
         else:
-            simulation_comparison(balance, stocks, start_date, end_date, models, no_exec)
+            simulation_comparison(balance, stocks, start_date, end_date, model_instances, no_exec)
 
     except KeyboardInterrupt:
         print("\n\n\tAborted.\n")
@@ -154,16 +160,17 @@ def store_simulation_results(sim: Simulation):
             os.mkdir("simulation_history/")
 
         timestamp = datetime.now()
-        filepath = "simulation_history/{}.txt".format(sim.get_model() + str(timestamp.year) + str(timestamp.month) +
-                                                      str(timestamp.day) + str(timestamp.hour) + str(timestamp.minute) +
-                                                      str(timestamp.second) + str(timestamp.microsecond))
+        filepath = "simulation_history/{}.txt".format(sim.get_model().__class__.__name__ + str(timestamp.year) +
+                                                      str(timestamp.month) + str(timestamp.day) + str(timestamp.hour) +
+                                                      str(timestamp.minute) + str(timestamp.second) +
+                                                      str(timestamp.microsecond))
         with open(filepath, 'w') as f:
             f.write("+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
             f.write("\nBalance: {}\nStocks: {}\nStarting Date: {}\nEnding Date: {}\nModel: {}\t({})\n".format(
                 sim.get_initial_balance(), sim.get_tradable_stocks(), sim.get_start_date(), sim.get_end_date(),
-                sim.get_model(), model_encyclopedia.model_docs[sim.get_model().lower()]["desc"]))
+                sim.get_model().__class__.__name__, sim.get_model().get_description()))
             f.write("\n+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
@@ -179,9 +186,9 @@ def store_simulation_results(sim: Simulation):
         return "ERROR: Could not store the simulation data."
 
 
-def simulation(balance: float, stocks: list, start_date: str, end_date: str, model: str, no_exec: int):
+def simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
 
-    sim = Simulation(balance, stocks, start_date, end_date, model_encyclopedia.model_docs[model]["class"])
+    sim = Simulation(balance, stocks, start_date, end_date, model_instance)
     sim.execute(no_executions=no_exec)
 
     print("\n\t\t% Simulation Results\n" + render_simulation_long_results(sim))
@@ -229,12 +236,11 @@ def store_comp_results(comp: ComparingSimulations):
     return filenames
 
 
-def simulation_comparison(balance: float, stocks: list, start_date: str, end_date: str, models: list, no_exec: int):
+def simulation_comparison(balance: float, stocks: list, start_date: str, end_date: str, model_instances, no_exec: int):
     try:
         sims = []
-        for model in models:
-            sims.append(Simulation(balance, stocks, start_date, end_date,
-                                   model_encyclopedia.model_docs[model]["class"]))
+        for instance in model_instances:
+            sims.append(Simulation(balance, stocks, start_date, end_date, instance))
 
         comp = ComparingSimulations(sims)
         comp.execute(no_executions=no_exec)
@@ -299,13 +305,12 @@ def run():
 
     while True:
         try:
-            command = input("stock_trading> ")
+            command = input("traden.ai> ")
             parse_command(command)
         except KeyboardInterrupt:
             quit_app()
 
 
 if __name__ == "__main__":
-
     render_title()
     run()

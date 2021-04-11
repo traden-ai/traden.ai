@@ -8,6 +8,11 @@ class Action(Enum):
 
 class ModelInterface:
 
+    description = "default description for model"
+
+    def get_description(self):
+        return self.description
+
     def execute(self, daily_data: dict) -> list:
         """Executes actions for a certain day in the respective runnable
         ----------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 from ledger.ledger import Ledger
-from model_interface import ModelInterface, Action
+from models.model_interface import ModelInterface, Action
 
 
 class Runnable:
@@ -13,7 +13,7 @@ class Runnable:
         """Sets a model in the respective runnable"""
         self.model = model
 
-    def execute(self):
+    def execute_day(self):
         """Executes a certain day in the respective runnable"""
         daily_data = self.get_daily_data()
         results = self.model.execute(daily_data)

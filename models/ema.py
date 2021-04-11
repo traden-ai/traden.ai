@@ -4,6 +4,8 @@ from models.model_interface import *
 
 class EMA(ModelInterface):
 
+    description = "Buys and sells when EMA lines cross."
+
     def execute(self, daily_data: dict):
         output = []
         for s in daily_data:

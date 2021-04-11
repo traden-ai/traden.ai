@@ -4,6 +4,8 @@ from models.model_interface import *
 
 class Random(ModelInterface):
 
+    description = "Buys and sells randomly."
+
     def execute(self, daily_data: dict):
         output = []
         for s in daily_data:

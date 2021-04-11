@@ -28,7 +28,7 @@ class Simulation(Runnable):
     def execute(self, no_executions=1):
         for i in range(no_executions):
             while self.current_date != self.end_date:
-                self.model.execute(self.get_daily_data())
+                self.execute_day()
                 self.current_date = self.dates[self.iterator]
                 self.evaluations[self.iterator][1].append(self.get_current_value())
                 self.iterator += 1
@@ -127,7 +127,7 @@ class Simulation(Runnable):
         return self.end_date
 
     def get_model(self):
-        return self.model.__class__.__name__
+        return self.model
 
     def get_graph(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))

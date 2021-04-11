@@ -136,7 +136,7 @@ class Simulation(Runnable):
         for el in self.get_evaluations(mode=mode):
             y.append(sum(el[1]) / len(el[1]))
         x = range(1, len(y) + 1)
-        plt.plot(x, y)
+        plt.plot(x, y, label="{}".format(self.model.__class__.__name__))
         plt.show()
 
     def get_evaluations(self, mode="daily"):

@@ -32,7 +32,7 @@ class ComparingSimulations:
         expected_metric_values = self.get_expected_metric(metric=metric)
         return self.simulations[expected_metric_values.index(min(expected_metric_values))]
 
-    def get_graph_comparison(self, mode="daily", label="id"):
+    def get_graph_comparison(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))
         plt.ylabel("Capital")
         for sim in self.simulations:
@@ -40,13 +40,6 @@ class ComparingSimulations:
             for el in sim.get_evaluations(mode=mode):
                 y.append(sum(el[1]) / len(el[1]))
             x = range(1, len(y) + 1)
-            if label == "id":
-                plt.plot(x, y, label="{}".format(str(sim.get_id())))
-            elif label == "model":
-                plt.plot(x, y, label="{}".format(sim.get_model()))
-            elif label == "period":
-                plt.plot(x, y, label="{} -> {}".format(sim.get_start_date(), sim.get_end_date()))
-            elif label == "stock":
-                plt.plot(x, y, label="{}".format(str(sim.get_tradable_stocks())))
+            plt.plot(x, y, label="{}".format(sim.get_model().__class__.__name__))
         plt.legend(loc='best')
         plt.show()

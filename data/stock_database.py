@@ -1,12 +1,14 @@
 from database_handler.handler_calls import get_data
 import numpy as np
 
+filepath = "symbols.txt"
 
-def get_stocks():
+
+def get_stocks(path=filepath):
     """ method that loads all stocks from 'data/symbols.txt' into a list """
 
     stocks = []
-    with open("symbols.txt", "r") as f:
+    with open(path, "r") as f:
         for line in f:
             stocks.append(line.strip())
 

@@ -3,6 +3,10 @@ from datetime import datetime
 from simulation.simulation import Simulation
 from simulation.comparing_simulations import ComparingSimulations
 from model_database_handler.model_database_handler import *
+from data.stock_database import get_stocks
+
+
+available_stocks = None
 
 
 def nothing():
@@ -36,71 +40,82 @@ def help_instructions():
 
 
 def ask_balance():
-    try:
-        balance = float(input("\nInitial balance: "))
-        return balance
-    except Exception as e:
-        raise e
+    while True:
+        try:
+            balance = float(input("\nInitial balance: "))
+            return balance
+        except ValueError:
+            print("\n\tPlease enter a number.")
 
 
 def ask_stocks():
-    try:
+    while True:
         stocks_raw = input("\nStock(s): ")
         stocks = re.split(", |,| ", stocks_raw.upper())
+        if not all(item in available_stocks for item in stocks):
+            print("\n\tPlease enter valid and available stocks.")
+            continue
         return stocks
-    except Exception as e:
-        raise e
+
+
+def validate_date(date_text):
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 
 def ask_period():
-    try:
+    while True:
         start_date = input("\nStart of the simulation: (YYYY-mm-dd) ")
+        if not validate_date(start_date):
+            print("\n\tPlease enter a valid date.")
+            continue
         end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
+        if not validate_date(end_date):
+            print("\n\tPlease enter a valid date.")
+            continue
         return start_date, end_date
-    except Exception as e:
-        raise e
 
 
 def ask_model_instances():
-    try:
+    while True:
         model_instances_raw = input("\nModel instance(s): ")
-        model_instances_clean = re.split(", |,| ", model_instances_raw.lower())
-        while not all(item in list_instances() for item in model_instances_clean):
-            if model_instances_raw.lower() == "l":
-                print("\n\t% Available Models Instances\n")
-                instances = list_instances()
-                for i in instances:
-                    print("\t" + i)
-            else:
-                print("\n\tERROR: Invalid model instance.\n\tPlease insert 'l' for a list of the available model "
-                      "instances.")
-            model_instances_raw = input("\nModel instance(s): ")
-            model_instances_clean = re.split(", |,| ", model_instances_raw)
+        model_instances_clean = re.split(", |,| ", model_instances_raw)
+        if model_instances_raw.lower() == "l":
+            print("\n\t% Available Models Instances\n")
+            instances = list_instances()
+            for i in instances:
+                print("\t" + i)
+            continue
+        elif not all(item in list_instances() for item in model_instances_clean):
+            print("\n\tPlease enter valid and available model instances.")
+            print("\n\tInsert 'l' to consult them.")
+            continue
 
         for i in range(len(model_instances_clean)):
             model_instances_clean[i] = get_instance(model_instances_clean[i])
 
         return model_instances_clean
-    except Exception as e:
-        raise e
 
 
 def ask_executions():
-    try:
-        no_exec = int(input("\nNumber of executions: "))
-        return no_exec
-    except Exception as e:
-        raise e
+    while True:
+        try:
+            no_exec = int(input("\nNumber of executions: "))
+            return no_exec
+        except ValueError:
+            print("\n\tPlease enter a number.")
 
 
-def ask_graph(graph_type="results"):
-    try:
-        graph = input("Plot {} into graph? (yes/no) ".format(graph_type))
-        while graph not in ("yes", "no", "y", "n"):
-            graph = input("Plot {} into graph? (yes/no) ".format(graph_type))
-        return graph
-    except Exception as e:
-        raise e
+def ask_graph():
+    while True:
+        option = input("Plot results into graph? (yes/no) ")
+        if option not in ("yes", "no", "y", "n"):
+            print("\n\tPlease enter valid option.")
+            continue
+        return option in ("yes", "y")
 
 
 def ask_simulation():
@@ -113,14 +128,14 @@ def ask_simulation():
 
     try:
         if len(model_instances) == 1:
-            simulation(balance, stocks, start_date, end_date, model_instances[0], no_exec)
+            do_simulation(balance, stocks, start_date, end_date, model_instances[0], no_exec)
         else:
-            simulation_comparison(balance, stocks, start_date, end_date, model_instances, no_exec)
+            do_simulation_comparison(balance, stocks, start_date, end_date, model_instances, no_exec)
 
     except KeyboardInterrupt:
         print("\n\n\tAborted.\n")
-    except:
-        print("\n\tAborted.\n\tSomething went wrong with your simulation...\n")
+    except Exception as e:
+        print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
 
 
 def render_simulation_logs(sim: Simulation):
@@ -135,12 +150,7 @@ def render_simulation_logs(sim: Simulation):
     return logs_str
 
 
-def render_simulation_short_results():
-    # TODO
-    pass
-
-
-def render_simulation_long_results(sim: Simulation):
+def render_simulation_results(sim: Simulation):
 
     results_str = ""
     results = sim.get_results()
@@ -174,7 +184,7 @@ def store_simulation_results(sim: Simulation):
             f.write("\n+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Results" + (" " * 30) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
-            f.write(render_simulation_long_results(sim))
+            f.write(render_simulation_results(sim))
             f.write("\n+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 32) + "Simulation Logs" + (" " * 31) + "|\n")
             f.write("+" + ("-" * 78) + "+\n")
@@ -182,43 +192,40 @@ def store_simulation_results(sim: Simulation):
 
         return filepath
 
-    except:
-        return "ERROR: Could not store the simulation data."
+    except Exception as e:
+        return "ERROR: Could not store the simulation data: " + str(e)
 
 
-def simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
+def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
 
-    sim = Simulation(balance, stocks, start_date, end_date, model_instance)
-    sim.execute(no_executions=no_exec)
+    try:
+        sim = Simulation(balance, stocks, start_date, end_date, model_instance)
+        sim.execute(no_executions=no_exec)
 
-    print("\n\t\t% Simulation Results\n" + render_simulation_long_results(sim))
-    print("For more details: " + store_simulation_results(sim) + "\n")
+        print("\n\t\t% Simulation Results\n" + render_simulation_results(sim))
+        print("For more details: " + store_simulation_results(sim) + "\n")
 
-    graph = ask_graph(graph_type="simulation")
-    if graph in ("yes", "y"):
-        sim.get_graph()
+        if ask_graph():
+            sim.get_graph()
+        print("")
 
-    print("")
+    except Exception as e:
+        raise e
 
 
-def render_comparison_short_results(comp: ComparingSimulations):
+def render_comparison_results(comp: ComparingSimulations):
 
     results_str = ""
     best_sim = comp.get_best_simulation_by_metric()
     worst_sim = comp.get_worst_simulation_by_metric()
 
     results_str += "\n\t% Best model ({})\n".format(best_sim.get_model())
-    results_str += render_simulation_long_results(best_sim)  # TODO render_simulation_short_results
+    results_str += render_simulation_results(best_sim)
 
     results_str += "\n\t% Worst model ({})\n".format(worst_sim.get_model())
-    results_str += render_simulation_long_results(worst_sim)  # TODO render_simulation_short_results
+    results_str += render_simulation_results(worst_sim)
 
     return results_str
-
-
-def render_comparison_long_results():
-    # TODO
-    pass
 
 
 def store_comp_results(comp: ComparingSimulations):
@@ -231,12 +238,11 @@ def store_comp_results(comp: ComparingSimulations):
         filenames += ", "
         filenames += store_simulation_results(sim)
 
-    # TODO file for comparison itself? -> render_comparison_long_results
-
     return filenames
 
 
-def simulation_comparison(balance: float, stocks: list, start_date: str, end_date: str, model_instances, no_exec: int):
+def do_simulation_comparison(balance: float, stocks: list, start_date: str, end_date: str, model_instances,
+                             no_exec: int):
     try:
         sims = []
         for instance in model_instances:
@@ -245,12 +251,11 @@ def simulation_comparison(balance: float, stocks: list, start_date: str, end_dat
         comp = ComparingSimulations(sims)
         comp.execute(no_executions=no_exec)
 
-        print(render_comparison_short_results(comp))
+        print(render_comparison_results(comp))
         print("For more details: " + store_comp_results(comp) + "\n")
 
-        graph = ask_graph(graph_type="comparison")
-        if graph in ("yes", "y"):
-            comp.get_graph_comparison(label="model")
+        if ask_graph():
+            comp.get_graph_comparison()
         print("")
 
     except Exception as e:
@@ -274,8 +279,8 @@ def clear_simulation_history():
         else:
             print("\n\tSimulation history not found.\n")
 
-    except:
-        print("\n\tERROR: Could not delete the simulation history.\n")
+    except Exception as e:
+        print("\n\tCaught an exception while deleting the simulation history: " + str(e) + "\n")
 
 
 def quit_app():
@@ -312,5 +317,6 @@ def run():
 
 
 if __name__ == "__main__":
+    available_stocks = set(get_stocks("../data/symbols.txt"))
     render_title()
     run()

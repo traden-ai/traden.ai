@@ -1,5 +1,8 @@
 import datetime as dt
 
+import numpy as np
+from data.stock_database import data_load
+
 
 def profit_percentage_by_year(initial_value, current_value, time_in_days):
     return (((((current_value - initial_value) / initial_value) + 1) ** (365 / time_in_days)) - 1) * 100
@@ -54,3 +57,35 @@ def get_date_index(data_year: list, date: str, date_type: str):
             break
 
     return index
+
+
+def convert_daily_data_to_np(daily_data: dict, keys =
+                             ("CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "MACD", "RSI", "MACD_Hist", "MACD_Signal", "EMA20", "EMA50")):
+    result = {}
+    matrix = []
+
+    for s in daily_data:
+        vec = [daily_data[s][el] for el in keys]
+        result[s] = np.array(vec)
+    return result
+
+
+def convert_data_to_np(data_raw):
+    matrix = {}
+    stock_matrix = []
+
+    for stock in data_raw:
+        for index in range(len(data_raw[stock])):
+            stock_matrix.append([convert_daily_data_to_np({stock : data_raw[stock][index]})[stock]])
+        matrix[stock] = np.concatenate(stock_matrix, axis=0)
+        stock_matrix = []
+    return matrix
+
+
+def convert_prices_to_np(prices_raw):
+    price_matrix = {}
+
+    for stock in prices_raw:
+        elements = [price for price in prices_raw[stock]]
+        price_matrix[stock] = np.array(elements).reshape(-1, 1)
+    return price_matrix

@@ -160,6 +160,8 @@ def render_simulation_results(sim: Simulation):
         results_str += "\n[{}]\t\tProfit: {}".format(execution, result["profit"])
         results_str += "\n\t\tProfit (%): {}".format(result["profit_percentage"])
         results_str += "\n\t\tProfit (% / Year): {}\n".format(result["profit_percentage_year"])
+        for stock in result["stocks_performance"]:
+            results_str += "\n\t\tProfit for {} stock (%) : {}".format(stock, result["stocks_performance"][stock])
 
     return results_str
 

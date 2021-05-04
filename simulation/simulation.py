@@ -68,6 +68,11 @@ class Simulation(Runnable):
         self.logs = []
 
     def store_result(self):
+        tradable_stocks = self.ledger.get_stocks()
+        stocks_performance = {}
+        for s in tradable_stocks:
+            stocks_performance[s] = ((self.prices[s][-1] - self.prices[s][0])
+                                                   / self.prices[s][0]) * 100
         self.results.append({"profit": self.ledger.balance - self.initial_balance,
                              "profit_percentage": ((self.ledger.balance - self.initial_balance)
                                                    / self.initial_balance) * 100,
@@ -75,6 +80,7 @@ class Simulation(Runnable):
                                                                                  self.ledger.balance,
                                                                                  time_between_days(self.start_date,
                                                                                                    self.end_date)),
+                             "stocks_performance": stocks_performance,
                              "logs": self.logs})
         self.reset()
 

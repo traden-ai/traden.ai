@@ -1,28 +1,20 @@
-from .utils import insert_items, remove_multiple, remove_item, query_item, get_entire_collection, update_item
+from database_handler.utils import insert_items, remove_item, query_item
 
 
 def insert_data(items):
     insert_items(items)
 
 
-def get_all_data():
-    return get_entire_collection()
-
-
-def get_data(tickers):
+def get_data(tickers, start_date, end_date):
     data = []
     for ticker in tickers:
-        data += [query_item(ticker)]
+        data += [query_item(ticker, start_date, end_date)]
     return data
 
 
 def update_data(items):
     for item in items:
-        update_item(item["Symbol"], item["Data"])
-
-
-def delete_all_data():
-    remove_multiple({})
+        insert_items(item)
 
 
 def delete_data(tickers):

@@ -1,2 +1,4 @@
-DATABASE = "StockData"
-COLLECTION = "DailyDataByTicker"
+AWS_ACCESS_KEY_ID = "AKIASF5A74GT242RGHUQ"
+AWS_SECRET_ACCESS_KEY = "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"
+REGION = "us-east-2"
+TABLE_NAME = "Traden"

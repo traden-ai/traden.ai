@@ -1,0 +1,12 @@
+daily
+sma
+ema
+macd
+rsi
+cci
+adx
+stoch
+aroon
+bbands
+ad
+obv

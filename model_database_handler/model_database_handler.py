@@ -34,4 +34,9 @@ def delete_all():
 
 
 def list_instances():
-    return os.listdir(path)
+    elements = os.listdir(path)
+    instances = []
+    for element in elements:
+        if "." not in element:
+            instances.append(element)
+    return instances

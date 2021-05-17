@@ -59,7 +59,7 @@ class NeuralNet(ModelInterface):
         self.model = Model(inputs=NNinput, outputs=output)
         adam = optimizers.Adam(lr=0.005)
         self.model.compile(optimizer=adam, loss='mse')
-        self.model.fit(x=X, y=Y, batch_size=32, epochs=5000, shuffle=True)
+        self.model.fit(x=X, y=Y, batch_size=32, epochs=2000, shuffle=True)
 
     def execute(self, daily_data: dict):
         output = []
@@ -68,7 +68,7 @@ class NeuralNet(ModelInterface):
 
         for s in daily_data:
             output_raw = self.model.predict(self.x_normalizer.transform(vec[s].reshape(1, -1)))
-            close = float(daily_data[s]["CLOSE"])
+            close = float(daily_data[s]["4. close"])
             nominal_threshold = self.hyperparameters["threshold"] * close
             pos_diff = float(output_raw[0][0]) - close + nominal_threshold
             neg_diff = float(output_raw[0][0]) - close - nominal_threshold
@@ -91,20 +91,7 @@ class NeuralNet(ModelInterface):
 
 
 if __name__ == '__main__':
-    model = NeuralNet(0.02)
-    X, Y = model.preprocessing("GM", "2015-01-01", "2018-01-01", 2)
-    print(Y)
+    model = NeuralNet(0.1)
+    X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
-    """print(model.execute({"GM":
-                             {"RSI": "56.2179",
-                              "OPEN": "51.9500",
-                              "HIGH": "53.2100",
-                              "LOW": "51.2900",
-                              "CLOSE": "52.9000",
-                              "VOLUME": "18374963",
-                              "MACD_Signal": "1.4388",
-                              "MACD": "0.8454",
-                              "MACD_Hist": "-0.5934",
-                              "EMA20": "52.4433",
-                              "EMA50": "49.2830"}}))"""
     save_instance("NeuralNet", model)

@@ -1,37 +1,39 @@
-from .connection import get_collection
-from .constants import DATABASE, COLLECTION
+from database_handler.connection import get_client
+from database_handler.constants import TABLE_NAME
+from boto3.dynamodb.conditions import Key
+import json
 
 
-def insert_items(items, database=DATABASE, collection=COLLECTION):
-    if isinstance(items, list):
-        db = get_collection(database, collection)
-        db.insert_many(items)
-    else:
-        db = get_collection(database, collection)
-        db.insert_one(items)
+def insert_items(items, batch_size=25):
+    client = get_client()
+    for item in items:
+        batch = []
+        for date in item["Data"]:
+            new_item = {"Symbol": {"S": item["Symbol"]},
+                        "Date": {"S": date},
+                        "Data": {"S": json.dumps(item["Data"][date])}}
+            batch.append({"PutRequest" : {"Item": new_item}})
+            if len(batch) == batch_size:
+                client.batch_write_item(RequestItems={TABLE_NAME : batch})
+                batch = []
+        if len(batch) != 0:
+            client.batch_write_item(RequestItems={TABLE_NAME: batch})
 
 
-def remove_item(ticker, database=DATABASE, collection=COLLECTION):
-    db = get_collection(database, collection)
-    db.delete_one({"Symbol": ticker})
+def remove_item(ticker):
+    client = get_client()
+    item = query_item(ticker)
+    for date in item["Data"]:
+        client.delete_item(TableName=TABLE_NAME, Key={"Symbol": {"S": ticker}, "Date": {"S": date}})
 
 
-def remove_multiple(spec, database=DATABASE, collection=COLLECTION):
-    """ spec is a document with item specifications"""
-    db = get_collection(database, collection)
-    db.delete_many(spec)
+def query_item(ticker, start_date, end_date):
+    client = get_client()
+    response = client.query(TableName=TABLE_NAME, KeyConditions={
+        "Symbol": {"ComparisonOperator": "EQ", "AttributeValueList": [{"S": ticker}]},
+        "Date": {"ComparisonOperator": "BETWEEN", "AttributeValueList": [{"S": start_date}, {"S": end_date}]}})
+    new_item = {"Symbol": ticker, "Data": {}}
+    for item in response['Items']:
+        new_item["Data"][item["Date"]["S"]] = json.loads(item["Data"]["S"])
+    return new_item
 
-
-def query_item(ticker, database=DATABASE, collection=COLLECTION):
-    db = get_collection(database, collection)
-    return db.find_one({"Symbol": ticker})
-
-
-def get_entire_collection(database=DATABASE, collection=COLLECTION):
-    db = get_collection(database, collection)
-    return list(db.find({}))
-
-
-def update_item(ticker, new_data, database=DATABASE, collection=COLLECTION):
-    db = get_collection(database, collection)
-    db.find_one_and_update({"Symbol": ticker}, {"$set": {"Data": new_data}})

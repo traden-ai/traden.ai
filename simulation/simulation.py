@@ -72,7 +72,7 @@ class Simulation(Runnable):
         stocks_performance = {}
         for s in tradable_stocks:
             stocks_performance[s] = ((self.prices[s][-1] - self.prices[s][0])
-                                                   / self.prices[s][0]) * 100
+                                     / self.prices[s][0]) * 100
         self.results.append({"profit": self.ledger.balance - self.initial_balance,
                              "profit_percentage": ((self.ledger.balance - self.initial_balance)
                                                    / self.initial_balance) * 100,

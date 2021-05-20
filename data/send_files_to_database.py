@@ -1,6 +1,6 @@
 import json
-from new_database_handler.handler_calls import insert_data, query_item, remove_item
-from stock_database import get_stocks
+from database_handler.handler_calls import insert_data, query_item, remove_item
+from utils.utils import get_stocks
 
 
 def convert_ticker_files_into_data(ticker, indicators):

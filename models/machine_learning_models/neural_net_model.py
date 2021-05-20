@@ -2,7 +2,7 @@ import random
 from models.model_interface import *
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
-from data.stock_database import data_load
+from utils.utils import data_load
 import keras
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation

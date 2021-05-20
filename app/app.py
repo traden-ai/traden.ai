@@ -3,7 +3,7 @@ from datetime import datetime
 from simulation.simulation import Simulation
 from simulation.comparing_simulations import ComparingSimulations
 from model_database_handler.model_database_handler import *
-from data.stock_database import get_stocks
+from utils.utils import get_stocks
 
 
 available_stocks = None

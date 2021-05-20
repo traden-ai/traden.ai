@@ -1,8 +1,12 @@
 import datetime as dt
 
 import numpy as np
-from data.stock_database import data_load
+from database_handler.handler_calls import get_data
 
+symbols_filepath = "../data/symbols.txt"
+keys_filepath = "../data/keys.txt"
+indicators_filepath = "../data/indicators.txt"
+proxies_filepath = "../data/proxies.txt"
 
 def profit_percentage_by_year(initial_value, current_value, time_in_days):
     return (((((current_value - initial_value) / initial_value) + 1) ** (365 / time_in_days)) - 1) * 100
@@ -89,3 +93,56 @@ def convert_prices_to_np(prices_raw):
         elements = [price for price in prices_raw[stock]]
         price_matrix[stock] = np.array(elements).reshape(-1, 1)
     return price_matrix
+
+
+def get_proxies(path=proxies_filepath):
+    proxies = []
+    with open(path, "r") as f:
+        for line in f:
+            proxies.append(line.strip())
+
+    return proxies
+
+def get_stocks(path=symbols_filepath):
+    stocks = []
+    with open(path, "r") as f:
+        for line in f:
+            stocks.append(line.strip())
+
+    return stocks
+
+def get_keys(path=keys_filepath):
+    keys = []
+    with open(path, "r") as f:
+        for line in f:
+            keys.append(line.strip())
+    return keys
+
+
+def get_indicators(path=indicators_filepath):
+    indicators = []
+    with open(path, "r") as f:
+        for line in f:
+            indicators.append(line.strip())
+    return indicators
+
+
+def data_load(stocks: list, start: str, end: str):
+    """ method that loads the data corresponding to the stocks in 'stocks'
+    between the dates 'start' and 'end' from the database to a numpy array """
+    json_data = get_data(stocks, start, end)
+    return_data = {}
+    prices = {}
+    for stock_data in json_data:
+        return_data[stock_data["Symbol"]] = []
+        company_prices = []
+        for day in stock_data["Data"]:
+            if start <= day <= end:
+                return_data[stock_data["Symbol"]].append(stock_data["Data"][day])
+                company_prices.append(float(stock_data["Data"][day]["4. close"]))
+        prices[stock_data["Symbol"]] = company_prices
+    dates = []
+    for day in json_data[0]["Data"]:
+        if start <= day <= end:
+            dates.append(day)
+    return return_data, dates, prices

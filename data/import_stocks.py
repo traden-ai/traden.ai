@@ -4,37 +4,12 @@ from alpha_vantage.timeseries import TimeSeries
 from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.fundamentaldata import FundamentalData
 from time import sleep
+from utils.utils import get_stocks, get_indicators
 from os import path
 import json
 import sys
 
-key = "346C7PNCROD4ATR3"
-
-
-def get_keys():
-    keys = []
-    with open("keys.txt", "r") as f:
-        for line in f:
-            keys.append(line.strip())
-    return keys
-
-
-def get_stocks():
-    """ method that loads all stocks from 'symbols.txt' into a list """
-    stocks = []
-    with open("symbols.txt", "r") as f:
-        for line in f:
-            stocks.append(line.strip())
-    return stocks
-
-
-def get_indicators():
-    indicators = []
-    with open("indicators.txt", "r") as f:
-        for line in f:
-            indicators.append(line.strip())
-    return indicators
-
+key = "E9NN094GU5JX53JA"
 
 def get_type_by_indicator(indicator):
     if indicator in ("daily"):

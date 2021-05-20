@@ -1,7 +1,6 @@
-from data.stock_database import data_load
-from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
+from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month, data_load
 import matplotlib.pyplot as plt
-from models.runnable_interface import *
+from simulation.runnable_interface import *
 
 
 class Simulation(Runnable):

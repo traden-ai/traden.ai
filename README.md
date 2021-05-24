@@ -41,18 +41,21 @@ In the traden ecosystem you can also find some very interesting mechanisms to co
 2. Install Python3
 3. Install Python Libraries
 <br/>
-    3.1 Boto3 ( ```pip3 install boto3``` )
+    3.1 Boto3 (pip3 install boto3)
 <br/>
-    3.2 TensorFlow ( ```pip3 install tensorflow``` )
+    3.2 TensorFlow (pip3 install tensorflow)
 <br/>
-    3.3 Keras ( ```pip3 install keras```)
+    3.3 Keras (pip3 install keras)
 <br/>
-    3.4 Json Encoder ( ```pip3 install json-encoder```)
+    3.4 Json Encoder (pip3 install json-encoder)
 <br/>
-    3.5 Scikit-Learn ( ```pip3 install scikit-learn```)
+    3.5 Scikit-Learn (pip3 install scikit-learn)
+<br/>
+<br/>
+
 4. (Optional) Set the PYTHONPATH environment variable to the StockTradingSimulator directory in the source file of your operating system (for example bashrc in some linux operating systems)
 
-Note: You can use the commands in yellow, to install the respetive dependencies in the command line (assuming you have pip3 installed).
+Note: You can use the commands in parentheses, to install the respetive dependencies in the command line (assuming you have pip3 installed).
 
 
 # Run

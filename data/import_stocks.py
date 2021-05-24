@@ -4,19 +4,28 @@ from alpha_vantage.timeseries import TimeSeries
 from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.fundamentaldata import FundamentalData
 from time import sleep
+
+from pandas.core.base import DataError
+from pandas.core.frame import DataFrame
 from utils.utils import get_stocks, get_indicators
 from os import path
+import requests
 import json
 import sys
 
 key = "E9NN094GU5JX53JA"
+key_index = 0
+keys = ["E9NN094GU5JX53JA",
+        "TRWEWUN34X40JD5X",
+        "346C7PNCROD4ATR3"
+        ]
 
 def get_type_by_indicator(indicator):
     if indicator in ("daily"):
         return get_daily
     elif indicator in ("sma", "ema", "macd", "rsi", "vwap", "cci", "stoch", "adx", "aroon", "bbands", "ad", "obv"):
         return get_tech_indicator
-    elif indicator in ("company_overview"):
+    elif indicator in ("company_overview", "income_statement", "balance_sheet", "cash_flow", "earnings"):
         return get_fundamental_indicator
 
 
@@ -57,12 +66,22 @@ def get_tech_indicator(stock, indicator):
     return data
 
 
+
 def get_fundamental_indicator(stock, indicator):
     ts = FundamentalData(key=key, output_format='json')
     if indicator == "company_overview":
         data, meta_data = ts.get_company_overview(symbol=stock)
+    elif indicator == "earnings":
+        url = "https://www.alphavantage.co/query?function=EARNINGS&symbol={}&apikey={}".format(stock, key)
+        raw = requests.get(url)
+        data = raw.json()
+    elif indicator == "cash_flow":
+        data, meta_data = ts.get_cash_flow_quarterly(symbol=stock)
+    elif indicator == "income_statement":
+        data, meta_data = ts.get_income_statement_quarterly(symbol=stock)
+    elif indicator == "balance_sheet":
+        data, meta_data = ts.get_balance_sheet_quarterly(symbol=stock)
     return data
-
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -80,14 +99,23 @@ if __name__ == "__main__":
             indicator = indicators[indicator_index]
             if not path.exists("alpha_vantage/{}_{}.json".format(ticker, indicator)):
                 data = get_type_by_indicator(indicator)(ticker, indicator)
-                with open("alpha_vantage/{}_{}.json".format(ticker, indicator), 'w') as f:
-                    json.dump(data, f)
+
+                if ("Note" in data.keys()):
+                    # alpha vantage returns limit without raising exception
+                    raise Exception
+
+                with open("alpha_vantage/{}_{}.json".format(ticker, indicator), 'x') as f:
+                    if type(data) == DataFrame:
+                        json.dump(data.to_json(orient="index"), f)
+                    else:
+                        json.dump(data, f)
             if indicator_index == len(indicators) - 1:
                 stock_index += 1
             index += 1
             indicator_index = (indicator_index + 1) % len(indicators)
 
-            print("success on {}".format(ticker))
+            print("success on {} with key {}".format(ticker, key))
         except Exception as e:
-            print("exception on {}, trying different key\n{}".format(ticker, e))
-            sleep(60)
+            key_index = (key_index+1) % len(keys)
+            key = keys[key_index]
+            print("exception on {} with key {}\n{}".format(ticker, key, e))    

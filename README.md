@@ -51,8 +51,6 @@ In the traden ecosystem you can also find some very interesting mechanisms to co
     <br/>
     3.5 Scikit-Learn (pip3 install scikit-learn)
     <br/>
-<br/>
-
 4. (Optional) Set the PYTHONPATH environment variable to the StockTradingSimulator directory in the source file of your operating system (for example bashrc in some linux operating systems)
 
 Note: You can use the commands in parentheses, to install the respetive dependencies in the command line (assuming you have pip3 installed).

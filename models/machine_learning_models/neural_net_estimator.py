@@ -1,4 +1,7 @@
 import random
+
+from constants import PYTHON_PATH
+from models.estimator_interface import EstimatorInterface, record_estimation
 from models.model_interface import *
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
@@ -12,7 +15,7 @@ import os
 from model_database_handler.model_database_handler import *
 
 
-class NeuralNet(ModelInterface):
+class NeuralNetEstimator(EstimatorInterface):
     description = "Artificial Intelligence Approach using NeuralNets."
 
     model = None
@@ -24,7 +27,7 @@ class NeuralNet(ModelInterface):
     hyperparameters = None
 
     def __init__(self, threshold):
-        self.hyperparameters = {"threshold": threshold}
+        self.set_threshold(percentual_threshold=threshold)
 
     def preprocessing(self, stock, start, end, pred_time):
         data_raw, _, prices_raw = data_load([stock], start, end)
@@ -61,36 +64,26 @@ class NeuralNet(ModelInterface):
         self.model.compile(optimizer=adam, loss='mse')
         self.model.fit(x=X, y=Y, batch_size=32, epochs=2000, shuffle=True)
 
-    def execute(self, daily_data: dict):
-        output = []
-
+    @record_estimation
+    def estimate(self, daily_data: dict) -> dict:
+        estimations = {}
         vec = convert_daily_data_to_np(daily_data)
-
         for s in daily_data:
-            output_raw = self.model.predict(self.x_normalizer.transform(vec[s].reshape(1, -1)))
-            close = float(daily_data[s]["4. close"])
-            nominal_threshold = self.hyperparameters["threshold"] * close
-            diff = float(output_raw[0][0]) - close
-
-            if diff > nominal_threshold:
-                output.append({"Ticker": s, "Action": Action.BUY, "Intensity": min((diff / nominal_threshold), 1)})
-            elif diff < -nominal_threshold:
-                output.append({"Ticker": s, "Action": Action.SELL, "Intensity": min((abs(diff) / nominal_threshold), 1)})
-
-        return output
+            estimations[s] = self.model.predict(self.x_normalizer.transform(vec[s].reshape(1, -1)))[0][0]
+        return estimations
 
     def save_attributes(self):
         if self.model:
-            self.model.save("../../instances/NeuralNetModel.h5")
+            self.model.save(PYTHON_PATH + "/instances/NeuralNetEstimator.h5")
             self.model = None
 
     def retrieve_attributes(self):
-        if os.path.exists("../../instances/NeuralNetModel.h5"):
-            self.model = keras.models.load_model("../../instances/NeuralNetModel.h5")
+        if os.path.exists(PYTHON_PATH + "/instances/NeuralNetEstimator.h5"):
+            self.model = keras.models.load_model(PYTHON_PATH + "/instances/NeuralNetEstimator.h5")
 
 
 if __name__ == '__main__':
-    model = NeuralNet(0.1)
+    model = NeuralNetEstimator(0.01)
     X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
-    save_instance("NeuralNet", model)
+    save_instance("NeuralNetEstimator", model)

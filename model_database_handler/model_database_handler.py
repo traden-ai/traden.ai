@@ -1,9 +1,11 @@
 import os
 import jsonpickle
+
+from constants import PYTHON_PATH
 from models.model_interface import ModelInterface
 from models import *
 
-path = "../instances/"
+path = PYTHON_PATH + "/instances/"
 
 
 def get_instance(name: str):

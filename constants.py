@@ -1,0 +1,1 @@
+PYTHON_PATH = "/home/diogo/Documents/StockTradingSimulator/"

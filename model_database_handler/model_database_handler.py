@@ -24,6 +24,8 @@ def save_instance(name: str, instance: ModelInterface):
     json_content = json.loads(json_string)
     json_content["py/object"] = str(inspect.getfile(instance.__class__)).replace(PYTHON_PATH, "")\
         .replace("/", ".")[:-2] + str(instance.__class__.__name__)
+    if json_content["py/object"][0] == ".":
+        json_content["py/object"] = json_content["py/object"][1:]
     if not os.path.exists(path):
         os.mkdir(path)
     with open(path + name, 'w') as f:

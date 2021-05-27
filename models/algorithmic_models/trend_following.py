@@ -26,10 +26,10 @@ class trend_following(ModelInterface):
 
         for s in daily_data:
         
-            prev_close = float(self.prev[s]["4. close"])
-            prev_volume = float(self.prev[s]["5. volume"])
-            close = float(daily_data[s]["4. close"])
-            volume = float(daily_data[s]["5. volume"])
+            prev_close = float(self.prev[s]["daily"]["4. close"])
+            prev_volume = float(self.prev[s]["daily"]["5. volume"])
+            close = float(daily_data[s]["daily"]["4. close"])
+            volume = float(daily_data[s]["daily"]["5. volume"])
 
             pp = (close - prev_close) / prev_close
             vp = (volume - prev_volume) / prev_volume

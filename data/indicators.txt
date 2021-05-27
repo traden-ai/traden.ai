@@ -10,3 +10,7 @@ aroon
 bbands
 ad
 obv
+cash_flow
+balance_sheet
+income_statement
+earnings

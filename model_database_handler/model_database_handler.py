@@ -4,6 +4,8 @@ import jsonpickle
 from constants import PYTHON_PATH
 from models.model_interface import ModelInterface
 from models import *
+import inspect
+import json
 
 path = PYTHON_PATH + "/instances/"
 
@@ -19,10 +21,13 @@ def get_instance(name: str):
 def save_instance(name: str, instance: ModelInterface):
     instance.save_attributes()
     json_string = jsonpickle.encode(instance)
+    json_content = json.loads(json_string)
+    json_content["py/object"] = str(inspect.getfile(instance.__class__)).replace(PYTHON_PATH, "")\
+        .replace("/", ".")[:-2] + str(instance.__class__.__name__)
     if not os.path.exists(path):
         os.mkdir(path)
     with open(path + name, 'w') as f:
-        f.write(json_string)
+        f.write(json.dumps(json_content))
 
 
 def delete_instance(name: str):

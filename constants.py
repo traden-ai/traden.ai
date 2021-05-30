@@ -1,1 +1,1 @@
-PYTHON_PATH = "/home/diogo/Documents/StockTradingSimulator/"
+PYTHON_PATH = "YOUR_PYTHON_PATH"  # set your python path here

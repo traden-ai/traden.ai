@@ -1,5 +1,4 @@
-from uno import Enum
-
+from enum import Enum
 from models.model_interface import ModelInterface, Action
 
 
@@ -14,7 +13,7 @@ def record_estimation(func):
 
 class EstimatorInterface(ModelInterface):
     estimations = []
-    percentual_threshold = None
+    percentage_threshold = None
     nominal_threshold = None
 
     def estimate(self, daily_data: dict) -> dict:
@@ -36,20 +35,24 @@ class EstimatorInterface(ModelInterface):
             estimation = results[ticker]
             price = float(daily_data[ticker]["4. close"])
             difference = estimation - price
-            if self.percentual_threshold:
-                if difference > (self.percentual_threshold * price):
-                    output.append({"Ticker": ticker, "Action": Action.BUY, "Intensity": min(abs(difference)/(2*(self.percentual_threshold*price)),1)})
-                elif difference < (-self.percentual_threshold * price):
-                    output.append({"Ticker": ticker, "Action": Action.SELL, "Intensity": min(abs(difference)/(2*(self.percentual_threshold*price)),1)})
+            if self.percentage_threshold:
+                if difference > (self.percentage_threshold * price):
+                    output.append({"Ticker": ticker, "Action": Action.BUY,
+                                   "Intensity": min(abs(difference) / (2 * (self.percentage_threshold * price)), 1)})
+                elif difference < (-self.percentage_threshold * price):
+                    output.append({"Ticker": ticker, "Action": Action.SELL,
+                                   "Intensity": min(abs(difference) / (2 * (self.percentage_threshold * price)), 1)})
             elif self.nominal_threshold:
                 if difference > self.nominal_threshold:
-                    output.append({"Ticker": ticker, "Action": Action.BUY, "Intensity": min(abs(difference)/(2*self.nominal_threshold),1)})
+                    output.append({"Ticker": ticker, "Action": Action.BUY,
+                                   "Intensity": min(abs(difference) / (2 * self.nominal_threshold), 1)})
                 elif difference < -self.nominal_threshold:
-                    output.append({"Ticker": ticker, "Action": Action.SELL, "Intensity": min(abs(difference)/(2*self.nominal_threshold),1)})
+                    output.append({"Ticker": ticker, "Action": Action.SELL,
+                                   "Intensity": min(abs(difference) / (2 * self.nominal_threshold), 1)})
         return output
 
-    def set_threshold(self, percentual_threshold=None, nominal_threshold=None):
-        self.percentual_threshold = percentual_threshold
+    def set_threshold(self, percentage_threshold=None, nominal_threshold=None):
+        self.percentage_threshold = percentage_threshold
         self.nominal_threshold = nominal_threshold
 
     def get_estimations(self):

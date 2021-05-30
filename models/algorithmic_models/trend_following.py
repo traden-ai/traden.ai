@@ -1,12 +1,7 @@
-from model_database_handler.model_database_handler import save_instance
-import random
-from typing import Dict
 from models.model_interface import *
 from model_database_handler.model_database_handler import *
-from constants import PYTHON_PATH
-
+from utils.utils import convert_daily_data_to_np
 class trend_following(ModelInterface):
-
     description = "Follows market trends."
 
     prev = {}
@@ -19,36 +14,36 @@ class trend_following(ModelInterface):
 
     def execute(self, daily_data: dict):
         output = []
-        
-        if (self.prev == {}):
+
+        if self.prev == {}:
             self.prev = daily_data
             return output
 
         for s in daily_data:
-        
-            prev_close = float(self.prev[s]["daily"]["4. close"])
-            prev_volume = float(self.prev[s]["daily"]["5. volume"])
-            close = float(daily_data[s]["daily"]["4. close"])
-            volume = float(daily_data[s]["daily"]["5. volume"])
+
+            prev_close = self.prev[s].close
+            prev_volume = self.prev[s].volume
+            close = daily_data[s].close
+            volume = daily_data[s].volume
 
             pp = (close - prev_close) / prev_close
             vp = (volume - prev_volume) / prev_volume
 
-            if (s not in self.prices_bought and pp >= self.price_increase and vp >= self.volume_increase):
+            if s not in self.prices_bought and pp >= self.price_increase and vp >= self.volume_increase:
                 output.append(
                     {"Ticker": s, "Action": Action.BUY, "Intensity": 1})
                 self.prices_bought[s] = close
 
-            elif (s in self.prices_bought):
+            elif s in self.prices_bought:
                 pdelta = close - \
-                    self.prices_bought[s] / self.prices_bought[s]
-                
-                #take profit
-                if (pdelta >= self.profit_target):
+                         self.prices_bought[s] / self.prices_bought[s]
+
+                # take profit
+                if pdelta >= self.profit_target:
                     output.append({"Ticker": s, "Action": Action.SELL, "Intensity": 0.75})
-                
-                #stop losses
-                elif (pdelta < self.stop_loss):
+
+                # stop losses
+                elif pdelta < self.stop_loss:
                     output.append({"Ticker": s, "Action": Action.SELL, "Intensity": 1})
 
         self.prev = daily_data

@@ -66,14 +66,13 @@ def get_date_index(data_year: list, date: str, date_type: str):
 
 def convert_daily_data_to_np(daily_data: dict, keys=
 (
-        "4. close", "1. open", "2. high", "3. low", "5. volume", "SMA", "EMA", "MACD_Hist", "MACD_Signal", "MACD",
-        "CCI", "RSI",
-        "ADX", "SlowD", "SlowK")):
+        "close", "open", "high", "low", "volume", "sma", "ema", "macd_hist", "macd_signal", "macd",
+        "cci", "rsi", "adx", "stoch_slowd", "stoch_slowk")):
     result = {}
     matrix = []
 
     for s in daily_data:
-        vec = [daily_data[s][el] for el in keys]
+        vec = [getattr(daily_data[s], el) for el in keys]
         result[s] = np.array(vec)
     return result
 

@@ -1,7 +1,7 @@
 from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month, data_load
 import matplotlib.pyplot as plt
 from simulation.runnable_interface import *
-
+from simulation.daily_data import DailyData
 
 class Simulation(Runnable):
 
@@ -86,7 +86,7 @@ class Simulation(Runnable):
     def get_daily_data(self):
         daily_data = {}
         for ticker in self.tradable_stocks:
-            daily_data[ticker] = self.data[ticker][self.iterator]
+            daily_data[ticker] = DailyData(self.data[ticker][self.iterator])
         return daily_data
 
     def get_current_stock_price(self, stock_name):

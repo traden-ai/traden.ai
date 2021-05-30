@@ -3,7 +3,7 @@
 <div align="center">
   <img align="center" src="images/traden_ai.jpg" alt="Traden" width="200">
 </div>
-
+<br/>
 <p align="center">
   <a href="#about">About</a> •
   <a href="#technologies">Technologies</a> •
@@ -27,38 +27,49 @@ In the traden ecosystem you can also find some very interesting mechanisms to co
 
 # Technologies
 
-* Require download
-  * [Python3](https://www.python.org/)
-  * [TensorFlow](https://www.tensorflow.org/)
-  * [Keras](https://keras.io/)
+Require download:
+* [Python3](https://www.python.org/)
+  * [NumPy](https://numpy.org/)
+  * [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+  * [Matplotlib](https://matplotlib.org/)
+  * [JsonPickle](https://jsonpickle.github.io/)
   * [Scikit-Learn](https://scikit-learn.org/stable/)
-* No download required
-  * [Amazon Web Services](https://aws.amazon.com/)
+  * [Keras](https://keras.io/)
+  * [TensorFlow](https://www.tensorflow.org/)
+        
+No download required:
+* [Amazon Web Services](https://aws.amazon.com/)
 
 # Installation
 
 1. Clone the repository into your local computer
 2. Install Python3
-3. Install Python Libraries
+3. Install the Python Libraries required by the App
     <br/>
-    3.1 Boto3 (pip3 install boto3)
+    3.1 NumPy (pip3 install numpy)
     <br/>
-    3.2 TensorFlow (pip3 install tensorflow)
+    3.2 Boto3 (pip3 install boto3)
     <br/>
-    3.3 Keras (pip3 install keras)
+    3.3 Matplotlib (pip3 install matplotlib)
     <br/>
-    3.4 Json Encoder (pip3 install json-encoder)
+    3.4 JsonPickle (pip3 install jsonpickle)
     <br/>
-    3.5 Scikit-Learn (pip3 install scikit-learn)
+4. (Optional) Install the Python Libraries required by the implemented models
     <br/>
-4. (Optional) Set the PYTHONPATH environment variable to the StockTradingSimulator directory in the source file of your operating system (for example bashrc in some linux operating systems)
+    4.1 Scikit-Learn (pip3 install sklearn)
+    <br/>
+    4.2 Keras (pip3 install keras)
+    <br/>
+    4.3 TensorFlow (pip3 install tensorflow)
+    <br/>
+5. (Optional) Set the PYTHONPATH environment variable to the *traden.ai* directory in the source file of your operating system (for example bashrc in some linux operating systems)
 
 Note: You can use the commands in parentheses, to install the respetive dependencies in the command line (assuming you have pip3 installed).
 
 
 # Run
 
-1. Set the PYTHONPATH environment variable to the StockTradingSimulator directory
+1. Set the PYTHONPATH environment variable to the *traden.ai* directory
 2. Run the app file using a python interpreter
 
 Note: We recommend the use of IDE such as [PyCharm](https://www.jetbrains.com/pycharm/) with running features already integrated which automatically set the environment variables.

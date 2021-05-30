@@ -2,6 +2,7 @@ import datetime as dt
 
 import numpy as np
 from database_handler.handler_calls import get_data
+from simulation.daily_data import DailyData
 
 symbols_filepath = "../data/symbols.txt"
 keys_filepath = "../data/keys.txt"
@@ -70,7 +71,6 @@ def convert_daily_data_to_np(daily_data: dict, keys=
         "cci", "rsi", "adx", "stoch_slowd", "stoch_slowk")):
     result = {}
     matrix = []
-
     for s in daily_data:
         vec = [getattr(daily_data[s], el) for el in keys]
         result[s] = np.array(vec)
@@ -83,7 +83,7 @@ def convert_data_to_np(data_raw):
 
     for stock in data_raw:
         for index in range(len(data_raw[stock])):
-            stock_matrix.append([convert_daily_data_to_np({stock: data_raw[stock][index]})[stock]])
+            stock_matrix.append([convert_daily_data_to_np({stock: DailyData(data_raw[stock][index])})[stock]])
         matrix[stock] = np.concatenate(stock_matrix, axis=0)
         stock_matrix = []
     return matrix

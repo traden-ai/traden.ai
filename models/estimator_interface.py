@@ -33,7 +33,7 @@ class EstimatorInterface(ModelInterface):
         results = self.estimate(daily_data)
         for ticker in results:
             estimation = results[ticker]
-            price = float(daily_data[ticker]["4. close"])
+            price = float(getattr(daily_data[ticker], "close"))
             difference = estimation - price
             if self.percentage_threshold:
                 if difference > (self.percentage_threshold * price):

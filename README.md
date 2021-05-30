@@ -62,7 +62,7 @@ No download required:
     <br/>
     4.3 TensorFlow (pip3 install tensorflow)
     <br/>
-5. (Optional) Set the PYTHONPATH environment variable to the StockTradingSimulator directory in the source file of your operating system (for example bashrc in some linux operating systems)
+5. (Optional) Set the PYTHONPATH environment variable to the *traden.ai* directory in the source file of your operating system (for example bashrc in some linux operating systems)
 
 Note: You can use the commands in parentheses, to install the respetive dependencies in the command line (assuming you have pip3 installed).
 

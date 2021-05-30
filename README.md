@@ -69,7 +69,7 @@ Note: You can use the commands in parentheses, to install the respetive dependen
 
 # Run
 
-1. Set the PYTHONPATH environment variable to the StockTradingSimulator directory
+1. Set the PYTHONPATH environment variable to the *traden.ai* directory
 2. Run the app file using a python interpreter
 
 Note: We recommend the use of IDE such as [PyCharm](https://www.jetbrains.com/pycharm/) with running features already integrated which automatically set the environment variables.

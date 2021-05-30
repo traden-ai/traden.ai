@@ -54,7 +54,7 @@ No download required:
     <br/>
     3.4 JsonPickle (pip3 install jsonpickle)
     <br/>
-4. (Optional) Install the Python Libraries required by the already implemented models
+4. (Optional) Install the Python Libraries required by the implemented models
     <br/>
     4.1 Scikit-Learn (pip3 install sklearn)
     <br/>

@@ -2,6 +2,7 @@ import datetime as dt
 
 import numpy as np
 from database_handler.handler_calls import get_data
+from models.model_interface import Action
 from simulation.daily_data import DailyData
 
 symbols_filepath = "../data/symbols.txt"
@@ -177,7 +178,29 @@ def filter_by_ticket(actions: list):
     final_dict = {}
     for model_actions in actions:
         for action in model_actions:
-            if model_actions[action]["Ticker"] not in final_dict:
-                final_dict[model_actions[action]["Ticker"]] = []
-            final_dict[model_actions[action]["Ticker"]].append(model_actions[action])
+            if action["Ticker"] not in final_dict:
+                final_dict[action["Ticker"]] = []
+            final_dict[action["Ticker"]].append(action)
     return final_dict
+
+
+def majority_voting(actions):
+    actions_dict = filter_by_ticket(actions)
+    final_actions = []
+    for s in actions_dict:
+        no_buys = 0
+        buy_intensity_sum = 0
+        no_sells = 0
+        sell_intensity_sum = 0
+        for action in actions_dict[s]:
+            if action["Action"] == Action.SELL:
+                sell_intensity_sum += action["Intensity"]
+                no_sells += 1
+            elif action["Action"] == Action.BUY:
+                buy_intensity_sum += action["Intensity"]
+                no_buys += 1
+        if no_buys > len(actions_dict[s]) / 2:
+            final_actions.append({"Ticker": s, "Action": Action.BUY, "Intensity": buy_intensity_sum / no_buys})
+        elif no_sells > len(actions_dict[s]) / 2:
+            final_actions.append({"Ticker": s, "Action": Action.SELL, "Intensity": sell_intensity_sum / no_sells})
+    return final_actions

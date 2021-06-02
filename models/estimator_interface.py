@@ -57,3 +57,6 @@ class EstimatorInterface(ModelInterface):
 
     def get_estimations(self):
         return self.estimations
+
+    def reset_estimations(self):
+        self.estimations = []

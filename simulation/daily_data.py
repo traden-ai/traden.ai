@@ -1,3 +1,9 @@
+from simulation.earnings import Earnings
+from simulation.balance_sheet import BalanceSheet
+from simulation.cash_flow import CashFlow
+from simulation.income_statement import IncomeStatement
+
+
 class DailyData:
     """class for representing data pertaining to a specific day"""
 
@@ -32,11 +38,10 @@ class DailyData:
         self.ad = float(data["ad"]["Chaikin A/D"])
         self.obv = float(data["obv"]["OBV"])
 
-        # TODO create specific classes
-        self.earnings = None
-        self.cash_flow = None
-        self.income_statement = None
-        self.balance_sheet = None
+        self.earnings = Earnings(data["earnings"]) if "earnings" in data.keys() else None
+        self.cash_flow = CashFlow(data["cash_flow"]) if "cash_flow" in data.keys() else None
+        self.income_statement = IncomeStatement(data["income_statement"]) if "income_statement" in data.keys() else None
+        self.balance_sheet = BalanceSheet(data["balance_sheet"]) if "balance_sheet" in data.keys() else None
 
     # TODO create setters and and description
     # without this it still works since python has no such thing as private att

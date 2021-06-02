@@ -1,0 +1,31 @@
+class IncomeStatement:
+
+    """class for representing fundamental data regarding income_statement"""
+
+    def __init__(self, data):
+        self.fiscalDateEnding = data["fiscalDateEnding"]
+        self.reportedCurrency = data["reportedCurrency"]
+        self.grossProfit = data["grossProfit"]
+        self.totalRevenue = data["totalRevenue"]
+        self.costOfRevenue = data["costOfRevenue"]
+        self.costofGoodsAndServicesSold = data["costofGoodsAndServicesSold"]
+        self.operatingIncome = data["operatingIncome"]
+        self.sellingGeneralAndAdministrative = data["sellingGeneralAndAdministrative"]
+        self.researchAndDevelopment = data["researchAndDevelopment"]
+        self.operatingExpenses = data["operatingExpenses"]
+        self.investmentIncomeNet = data["investmentIncomeNet"]
+        self.netInterestIncome = data["netInterestIncome"]
+        self.interestIncome = data["interestIncome"]
+        self.interestExpense = data["interestExpense"]
+        self.nonInterestIncome = data["nonInterestIncome"]
+        self.otherNonOperatingIncome = data["otherNonOperatingIncome"]
+        self.depreciation = data["depreciation"]
+        self.depreciationAndAmortization = data["depreciationAndAmortization"]
+        self.incomeBeforeTax = data["incomeBeforeTax"]
+        self.incomeTaxExpense = data["incomeTaxExpense"]
+        self.interestAndDebtExpense = data["interestAndDebtExpense"]
+        self.netIncomeFromContinuingOperations = data["netIncomeFromContinuingOperations"]
+        self.comprehensiveIncomeNetOfTax = data["comprehensiveIncomeNetOfTax"]
+        self.ebit = data["ebit"]
+        self.ebitda = data["ebitda"]
+        self.netIncome = data["netIncome"]

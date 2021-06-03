@@ -1,5 +1,3 @@
-from uno import Enum
-
 from models.model_interface import ModelInterface
 from utils.utils import filter_by_ticket, majority_voting
 

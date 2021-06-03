@@ -34,7 +34,8 @@ def help_instructions():
     print("|\t% Commands\n|")
     print("|\t\th\tOpen the help instructions.\n|")
     print("|\t\ts\tCreate a stock trading model simulation.\n|")
-    print("|\t\tx\tClear simulation history.\n|")
+    print("|\t\txh\tClear simulation history.\n|")
+    print("|\t\txi\tClear model instances.\n|")
     print("|\t\tq\tQuit the application.\n+\n")
 
 
@@ -226,14 +227,11 @@ def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, 
 
 def render_comparison_results(comp: ComparingSimulations):
     results_str = ""
-    best_sim = comp.get_best_simulation_by_metric()
-    worst_sim = comp.get_worst_simulation_by_metric()
+    sims = comp.get_ordered_simulations()
 
-    results_str += "\n\t% Best model ({})\n".format(best_sim.get_model().__class__.__name__)
-    results_str += render_simulation_results(best_sim)
-
-    results_str += "\n\t% Worst model ({})\n".format(worst_sim.get_model().__class__.__name__)
-    results_str += render_simulation_results(worst_sim)
+    for sim in sims:
+        results_str += "\n\t% {}\n".format(sim.get_model().__class__.__name__)
+        results_str += render_simulation_results(sim)
 
     return results_str
 
@@ -279,7 +277,7 @@ def clear_simulation_history():
                 for f in os.listdir("simulation_history/"):
                     os.remove(os.path.join("simulation_history/", f))
             else:
-                files = re.split(", |,| ", files_raw.lower())
+                files = re.split(", |,| ", files_raw)
                 for f in files:
                     filepath = "simulation_history/{}.txt".format(f)
                     if os.path.exists(filepath):
@@ -290,6 +288,28 @@ def clear_simulation_history():
 
     except Exception as e:
         print("\n\tCaught an exception while deleting the simulation history: " + str(e) + "\n")
+        # raise e
+
+
+def clear_model_instances():
+    try:
+        if os.path.isdir(PYTHON_PATH + "/instances/"):
+            files_raw = input("\nFiles to delete: (* for all) ")
+            if files_raw == "*":
+                for f in os.listdir(PYTHON_PATH + "/instances/"):
+                    os.remove(os.path.join(PYTHON_PATH + "/instances/", f))
+            else:
+                files = re.split(", |,| ", files_raw)
+                for f in files:
+                    filepath = PYTHON_PATH + "/instances/{}".format(f)
+                    if os.path.exists(filepath):
+                        os.remove(filepath)
+            print("\n\tModel instances removed with success.\n")
+        else:
+            print("\n\tModel instances not found.\n")
+
+    except Exception as e:
+        print("\n\tCaught an exception while deleting the model instances: " + str(e) + "\n")
         # raise e
 
 
@@ -307,7 +327,8 @@ def parse_command(command: str):
         "": nothing,
         "h": help_instructions,
         "s": ask_simulation,
-        "x": clear_simulation_history,
+        "xh": clear_simulation_history,
+        "xi": clear_model_instances,
         "q": quit_app
     }
 

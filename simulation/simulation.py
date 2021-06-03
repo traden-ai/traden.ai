@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from simulation.runnable_interface import *
 from simulation.daily_data import DailyData
 
+
 class Simulation(Runnable):
 
     def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model: ModelInterface):

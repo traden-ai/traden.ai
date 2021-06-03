@@ -140,7 +140,7 @@ def ask_simulation():
         print("\n\n\tAborted.\n")
     except Exception as e:
         print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
-        # raise e
+        raise e
 
 
 def render_simulation_logs(sim: Simulation):
@@ -155,24 +155,22 @@ def render_simulation_logs(sim: Simulation):
 
 
 def render_simulation_results(sim: Simulation):
-    stock_profit = 0
     results_str = ""
     results = sim.get_results()
-    results_str += "\nEx."
+    avg_results = sim.get_avg_results()
+    results_str += "\nAvg:" if sim.get_no_executions() != 1 else "\nEx:\t"
 
-    for execution, result in enumerate(results, start=1):
-        results_str += "\n[{}]\t\tProfit: {}".format(execution, result["profit"])
-        results_str += "\n\t\tProfit (%): {}".format(result["profit_percentage"])
-        results_str += "\n\t\tProfit (% / Year): {}\n".format(result["profit_percentage_year"])
+    results_str += "\tProfit: {}".format(avg_results["profit"])
+    results_str += "\n\t\tProfit (%): {}".format(avg_results["profit_percentage"])
+    results_str += "\n\t\tProfit (% / Year): {}\n".format(avg_results["profit_percentage_year"])
 
     for stock in results[0]["stocks_performance"]:
         results_str += "\n\t\tProfit for {} stock (%): {}".format(stock, results[0]["stocks_performance"][stock])
-        stock_profit += results[0]["stocks_performance"][stock]
 
     results_str += "\n"
     if len(sim.get_tradable_stocks()) > 1:
         results_str += "\t\tAverage profit for chosen stocks (%): {}\n".format(
-            stock_profit / len(sim.get_tradable_stocks()))
+            avg_results["stocks_performance"])
 
     return results_str
 
@@ -214,7 +212,7 @@ def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, 
         sim = Simulation(balance, stocks, start_date, end_date, model_instance)
         sim.execute(no_executions=no_exec)
 
-        print("\n\t\t% Simulation Results\n" + render_simulation_results(sim))
+        print("\n\t\t% {}\n".format(sim.get_model().__class__.__name__) + render_simulation_results(sim))
         print("For more details: " + store_simulation_results(sim) + "\n")
 
         if ask_graph():
@@ -230,7 +228,7 @@ def render_comparison_results(comp: ComparingSimulations):
     sims = comp.get_ordered_simulations()
 
     for sim in sims:
-        results_str += "\n\t% {}\n".format(sim.get_model().__class__.__name__)
+        results_str += "\n\t\t% {}\n".format(sim.get_model().__class__.__name__)
         results_str += render_simulation_results(sim)
 
     return results_str
@@ -270,46 +268,35 @@ def do_simulation_comparison(balance: float, stocks: list, start_date: str, end_
 
 
 def clear_simulation_history():
-    try:
-        if os.path.isdir("simulation_history/"):
-            files_raw = input("\nFiles to delete: (* for all) ")
-            if files_raw == "*":
-                for f in os.listdir("simulation_history/"):
-                    os.remove(os.path.join("simulation_history/", f))
-            else:
-                files = re.split(", |,| ", files_raw)
-                for f in files:
-                    filepath = "simulation_history/{}.txt".format(f)
-                    if os.path.exists(filepath):
-                        os.remove(filepath)
-            print("\n\tSimulation history removed with success.\n")
-        else:
-            print("\n\tSimulation history not found.\n")
-
-    except Exception as e:
-        print("\n\tCaught an exception while deleting the simulation history: " + str(e) + "\n")
-        # raise e
+    delete_files(PYTHON_PATH + "/app/simulation_history/")
 
 
 def clear_model_instances():
+    delete_files(PYTHON_PATH + "/instances/")
+
+
+def delete_files(dir_path: str):
     try:
-        if os.path.isdir(PYTHON_PATH + "/instances/"):
-            files_raw = input("\nFiles to delete: (* for all) ")
-            if files_raw == "*":
-                for f in os.listdir(PYTHON_PATH + "/instances/"):
-                    os.remove(os.path.join(PYTHON_PATH + "/instances/", f))
+        if os.path.isdir(dir_path):
+            files_raw = input("\nFiles to remove: (* for all) ")
+            if files_raw == "":
+                print()
+                return
+            elif files_raw == "*":
+                for f in os.listdir(dir_path):
+                    os.remove(os.path.join(dir_path, f))
             else:
                 files = re.split(", |,| ", files_raw)
                 for f in files:
-                    filepath = PYTHON_PATH + "/instances/{}".format(f)
+                    filepath = dir_path + "{}".format(f)
                     if os.path.exists(filepath):
                         os.remove(filepath)
-            print("\n\tModel instances removed with success.\n")
+            print("\n\tFiles removed with success.\n")
         else:
-            print("\n\tModel instances not found.\n")
+            print("\n\tNo files found.\n")
 
     except Exception as e:
-        print("\n\tCaught an exception while deleting the model instances: " + str(e) + "\n")
+        print("\n\tCaught an exception while deleting designated files: " + str(e) + "\n")
         # raise e
 
 

@@ -22,10 +22,13 @@ class Simulation(Runnable):
             self.evaluations.append((date, []))
 
         self.results = []
+        self.avg_results = {}
+        self.no_executions = 0
 
         self.logs = []
 
     def execute(self, no_executions=1):
+        self.no_executions = no_executions
         for i in range(no_executions):
             while self.current_date != self.end_date:
                 self.execute_day()
@@ -82,6 +85,13 @@ class Simulation(Runnable):
                                                                                                    self.end_date)),
                              "stocks_performance": stocks_performance,
                              "logs": self.logs})
+        self.avg_results = {"profit": sum(map(lambda x: x["profit"], self.results)) / len(self.results),
+                            "profit_percentage":
+                                sum(map(lambda x: x["profit_percentage"], self.results)) / len(self.results),
+                            "profit_percentage_year":
+                                sum(map(lambda x: x["profit_percentage_year"], self.results)) / len(self.results),
+                            "stocks_performance":
+                                sum(self.results[0]["stocks_performance"].values()) / len(tradable_stocks)}
         self.reset()
 
     def get_daily_data(self):
@@ -110,6 +120,9 @@ class Simulation(Runnable):
     def get_results(self):
         return self.results
 
+    def get_avg_results(self):
+        return self.avg_results
+
     def get_result(self, no_execution=0):
         if len(self.results) > no_execution:
             return self.results[no_execution]
@@ -134,6 +147,9 @@ class Simulation(Runnable):
 
     def get_model(self):
         return self.model
+
+    def get_no_executions(self):
+        return self.no_executions
 
     def get_graph(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))

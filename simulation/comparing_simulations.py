@@ -9,6 +9,7 @@ class ComparingSimulations:
     def execute(self, no_executions=1):
         for sim in self.simulations:
             sim.execute(no_executions)
+
         self.executed = True
 
     def get_simulations(self):
@@ -17,8 +18,8 @@ class ComparingSimulations:
     def get_expected_metric(self, metric="profit"):
         if not self.executed:
             self.execute()
-        return [sum(map(lambda x: float(x[metric]), sim.get_results())) / len(sim.get_results()) for sim in
-                self.simulations]
+        return [sum(map(lambda x: float(x[metric]), sim.get_results())) / len(sim.get_results())
+                for sim in self.simulations]
 
     def get_best_simulation_by_metric(self, metric="profit"):
         if not self.executed:
@@ -31,6 +32,13 @@ class ComparingSimulations:
             self.execute()
         expected_metric_values = self.get_expected_metric(metric=metric)
         return self.simulations[expected_metric_values.index(min(expected_metric_values))]
+
+    def get_ordered_simulations(self, metric="profit"):
+        if not self.executed:
+            self.execute()
+        return sorted(self.simulations,
+                      key=lambda sim: sum(map(lambda x: float(x[metric]), sim.get_results())) / len(sim.get_results()),
+                      reverse=True)
 
     def get_graph_comparison(self, mode="daily"):
         plt.xlabel("Time ({})".format(mode))

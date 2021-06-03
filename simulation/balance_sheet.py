@@ -21,7 +21,7 @@ class BalanceSheet:
         self.longTermInvestments = data["longTermInvestments"]
         self.shortTermInvestments = data["shortTermInvestments"]
         self.otherCurrentAssets = data["otherCurrentAssets"]
-        self.otherNonCurrentAssets = data["otherNonCurrentAssets"]
+        self.otherNonCurrrentAssets = data["otherNonCurrrentAssets"]
         self.totalLiabilities = data["totalLiabilities"]
         self.totalCurrentLiabilities = data["totalCurrentLiabilities"]
         self.currentAccountsPayable = data["currentAccountsPayable"]

@@ -1,7 +1,9 @@
 from models.model_interface import *
 from model_database_handler.model_database_handler import *
-from utils.utils import convert_daily_data_to_np
-class trend_following(ModelInterface):
+
+
+class TrendFollowing(ModelInterface):
+
     description = "Follows market trends."
 
     prev = {}
@@ -51,5 +53,5 @@ class trend_following(ModelInterface):
 
 
 if __name__ == '__main__':
-    x = trend_following()
-    save_instance("trend_following", x)
+    x = TrendFollowing()
+    save_instance("TrendFollowing", x)

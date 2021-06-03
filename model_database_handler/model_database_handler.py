@@ -38,11 +38,14 @@ def delete_instance(name: str):
 
 
 def delete_all():
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
+    if os.path.exists(path):
+        for f in os.listdir(path):
+            os.remove(os.path.join(path, f))
 
 
 def list_instances():
+    if not os.path.exists(path):
+        os.mkdir(path)
     elements = os.listdir(path)
     instances = []
     for element in elements:

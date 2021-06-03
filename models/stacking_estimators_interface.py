@@ -16,7 +16,7 @@ class StackingEstimatorsInterface(EstimatorInterface):
 
     def __init__(self, estimators, percentual_threshold=None, nominal_threshold=None):
         self.estimators = estimators
-        self.set_threshold(percentage_threshold=percentual_threshold, nominal_threshold=nominal_threshold)
+        self.set_threshold(percentual_threshold=percentual_threshold, nominal_threshold=nominal_threshold)
 
     def preprocessing(self, tradable_stocks: list, start_date: str, end_date: str, pred_time: int):
         raw_Y = []
@@ -80,13 +80,14 @@ def convert_raw_to_x(raw_X):
             for ticker in raw_model_data[iter]:
                 if ticker not in daily_model_estimates:
                     daily_model_estimates[ticker] = [[]] * len(raw_model_data)
-                if daily_model_estimates[ticker][iter] == []:
+                if not daily_model_estimates[ticker][iter]:
                     daily_model_estimates[ticker][iter] = [float(raw_model_data[iter][ticker])]
                 else:
                     daily_model_estimates[ticker][iter].append(float(raw_model_data[iter][ticker]))
     for ticker in daily_model_estimates:
         daily_model_estimates[ticker] = np.array(daily_model_estimates[ticker])
     return daily_model_estimates
+
 
 def convert_raw_to_y(raw_Y, pred_time):
     daily_prices = {}
@@ -101,6 +102,6 @@ if __name__ == '__main__':
     model1 = get_instance("NeuralNetEstimator")
     model2 = get_instance("NeuralNetEstimator2")
     stacked = StackingEstimatorsInterface([model1, model2], percentual_threshold=0.01)
-    X,Y = stacked.preprocessing(["DUK"], "2015-01-01", "2018-01-01", 1)
+    X, Y = stacked.preprocessing(["DUK"], "2015-01-01", "2018-01-01", 1)
     stacked.train(X, Y)
     save_instance("FirstStacked", stacked)

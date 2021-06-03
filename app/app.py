@@ -5,8 +5,8 @@ from simulation.comparing_simulations import ComparingSimulations
 from model_database_handler.model_database_handler import *
 from utils.utils import get_stocks
 
-
 available_stocks = None
+symbols_path = PYTHON_PATH + "/data/symbols.txt"
 
 
 def nothing():
@@ -28,7 +28,6 @@ def render_title():
 
 
 def help_instructions():
-
     print("\n+\n|\t% Application Description\n|")
     print("|\t\tThis application presents a tool to simulate mathematical")
     print("|\t\ttrading models, using real data from previous years\n|")
@@ -72,6 +71,8 @@ def ask_period():
         if not validate_date(start_date):
             print("\n\tPlease enter a valid date.")
             continue
+        break
+    while True:
         end_date = input("\nEnd of the simulation: (YYYY-mm-dd) ")
         if not validate_date(end_date):
             print("\n\tPlease enter a valid date.")
@@ -86,12 +87,15 @@ def ask_model_instances():
         if model_instances_raw.lower() == "l":
             print("\n\t% Available Models Instances\n")
             instances = list_instances()
-            for i in instances:
-                print("\t" + i)
+            if instances:
+                for i in instances:
+                    print("\t" + i)
+            else:
+                print("\tSorry. No model instances available.")
             continue
         elif not all(item in list_instances() for item in model_instances_clean):
-            print("\n\tPlease enter valid and available model instances.")
-            print("\n\tInsert 'l' to consult them.")
+            print("\n\tERROR: Invalid model instance(s).")
+            print("\tPlease insert 'l' to consult the available instances.")
             continue
 
         for i in range(len(model_instances_clean)):
@@ -119,7 +123,6 @@ def ask_graph():
 
 
 def ask_simulation():
-
     balance = ask_balance()
     stocks = ask_stocks()
     start_date, end_date = ask_period()
@@ -136,10 +139,10 @@ def ask_simulation():
         print("\n\n\tAborted.\n")
     except Exception as e:
         print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
+        # raise e
 
 
 def render_simulation_logs(sim: Simulation):
-
     logs_str = ""
     results = sim.get_results()
     logs_str += "\nEx."
@@ -151,7 +154,7 @@ def render_simulation_logs(sim: Simulation):
 
 
 def render_simulation_results(sim: Simulation):
-
+    stock_profit = 0
     results_str = ""
     results = sim.get_results()
     results_str += "\nEx."
@@ -160,8 +163,15 @@ def render_simulation_results(sim: Simulation):
         results_str += "\n[{}]\t\tProfit: {}".format(execution, result["profit"])
         results_str += "\n\t\tProfit (%): {}".format(result["profit_percentage"])
         results_str += "\n\t\tProfit (% / Year): {}\n".format(result["profit_percentage_year"])
-        for stock in result["stocks_performance"]:
-            results_str += "\n\t\tProfit for {} stock (%) : {}".format(stock, result["stocks_performance"][stock])
+
+    for stock in results[0]["stocks_performance"]:
+        results_str += "\n\t\tProfit for {} stock (%): {}".format(stock, results[0]["stocks_performance"][stock])
+        stock_profit += results[0]["stocks_performance"][stock]
+
+    results_str += "\n"
+    if len(sim.get_tradable_stocks()) > 1:
+        results_str += "\t\tAverage profit for chosen stocks (%): {}\n".format(
+            stock_profit / len(sim.get_tradable_stocks()))
 
     return results_str
 
@@ -199,7 +209,6 @@ def store_simulation_results(sim: Simulation):
 
 
 def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
-
     try:
         sim = Simulation(balance, stocks, start_date, end_date, model_instance)
         sim.execute(no_executions=no_exec)
@@ -216,22 +225,20 @@ def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, 
 
 
 def render_comparison_results(comp: ComparingSimulations):
-
     results_str = ""
     best_sim = comp.get_best_simulation_by_metric()
     worst_sim = comp.get_worst_simulation_by_metric()
 
-    results_str += "\n\t% Best model ({})\n".format(best_sim.get_model())
+    results_str += "\n\t% Best model ({})\n".format(best_sim.get_model().__class__.__name__)
     results_str += render_simulation_results(best_sim)
 
-    results_str += "\n\t% Worst model ({})\n".format(worst_sim.get_model())
+    results_str += "\n\t% Worst model ({})\n".format(worst_sim.get_model().__class__.__name__)
     results_str += render_simulation_results(worst_sim)
 
     return results_str
 
 
 def store_comp_results(comp: ComparingSimulations):
-
     filenames = ""
     sims = comp.get_simulations()
     filenames += store_simulation_results(sims[0])
@@ -283,6 +290,7 @@ def clear_simulation_history():
 
     except Exception as e:
         print("\n\tCaught an exception while deleting the simulation history: " + str(e) + "\n")
+        # raise e
 
 
 def quit_app():
@@ -295,7 +303,6 @@ def invalid_command():
 
 
 def parse_command(command: str):
-
     command_switcher = {
         "": nothing,
         "h": help_instructions,
@@ -309,7 +316,6 @@ def parse_command(command: str):
 
 
 def run():
-
     while True:
         try:
             command = input("traden.ai> ")
@@ -319,6 +325,6 @@ def run():
 
 
 if __name__ == "__main__":
-    available_stocks = set(get_stocks("../data/symbols.txt"))
+    available_stocks = set(get_stocks(symbols_path))
     render_title()
     run()

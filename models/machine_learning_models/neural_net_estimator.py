@@ -27,7 +27,7 @@ class NeuralNetEstimator(EstimatorInterface):
     hyperparameters = None
 
     def __init__(self, threshold):
-        self.set_threshold(percentage_threshold=threshold)
+        self.set_threshold(percentual_threshold=threshold)
 
     def preprocessing(self, stock, start, end, pred_time):
         data_raw, _, prices_raw = data_load([stock], start, end)

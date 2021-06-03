@@ -9,14 +9,23 @@ from simulation.simulation import Simulation
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras import optimizers
+from sklearn import preprocessing
+
 
 
 class StackingEstimatorsInterface(EstimatorInterface):
     trainable_component = None
 
+    x_normalizers = {}
+
+    y_normalizers = {}
+
     def __init__(self, estimators, percentual_threshold=None, nominal_threshold=None):
         self.estimators = estimators
         self.set_threshold(percentual_threshold=percentual_threshold, nominal_threshold=nominal_threshold)
+        self.set_threshold(percentual_threshold=percentual_threshold, nominal_threshold=nominal_threshold)
+        self.x_normalizers = {}
+        self.y_normalizers = {}
 
     def preprocessing(self, tradable_stocks: list, start_date: str, end_date: str, pred_time: int):
         raw_Y = []
@@ -30,7 +39,16 @@ class StackingEstimatorsInterface(EstimatorInterface):
             estimator.reset_estimations()
         raw_Y = simul.prices
         X = convert_raw_to_x(raw_X)
+        for stock in X:
+            x_normalizer = preprocessing.MinMaxScaler()
+            processed_data = x_normalizer.fit_transform(X[stock])
+            X[stock] = np.array([processed_data[:][i].copy() for i in range(len(processed_data))])
+            self.x_normalizers[stock] = x_normalizer
         Y = convert_raw_to_y(raw_Y, pred_time)
+        for stock in Y:
+            y_normalizer = preprocessing.MinMaxScaler()
+            Y[stock] = y_normalizer.fit_transform(Y[stock].reshape(-1, 1))
+            self.y_normalizers[stock] = y_normalizer
         return X, Y
 
     def train(self, X, Y):
@@ -44,9 +62,9 @@ class StackingEstimatorsInterface(EstimatorInterface):
                 self.trainable_component = Model(inputs=NNet, outputs=output)
                 adam = optimizers.Adam(lr=0.01)
                 self.trainable_component.compile(optimizer=adam, loss='mse')
-                self.trainable_component.fit(x=X[ticker], y=Y[ticker], batch_size=32, epochs=50, shuffle=True)
+                self.trainable_component.fit(x=X[ticker], y=Y[ticker], batch_size=32, epochs=150, shuffle=True)
             else:
-                self.trainable_component.fit(x=X[ticker], y=Y, batch_size=32, epochs=50, shuffle=True)
+                self.trainable_component.fit(x=X[ticker], y=Y[ticker], batch_size=32, epochs=150, shuffle=True)
 
     def estimate(self, daily_data: dict) -> dict:
         estimations = {}
@@ -55,8 +73,9 @@ class StackingEstimatorsInterface(EstimatorInterface):
             estimates = estimator.estimate(daily_data)
             estimators_results.append(estimates)
         for ticker in estimators_results[0]:
-            X = np.array([[estimate[ticker] for estimate in estimators_results]])
-            estimations[ticker] = float(self.trainable_component.predict(X))
+            daily_vec = np.array([estimate[ticker] for estimate in estimators_results])
+            X = np.array(self.x_normalizers[ticker].transform(daily_vec.reshape(1, -1)))
+            estimations[ticker] = float(self.y_normalizers[ticker].inverse_transform(self.trainable_component.predict(X))[0])
         return estimations
 
     def save_attributes(self):
@@ -100,8 +119,8 @@ if __name__ == '__main__':
     from model_database_handler.model_database_handler import get_instance, save_instance
 
     model1 = get_instance("NeuralNetEstimator")
-    model2 = get_instance("NeuralNetEstimator2")
+    model2 = get_instance("FirstTradeModel")
     stacked = StackingEstimatorsInterface([model1, model2], percentual_threshold=0.01)
-    X, Y = stacked.preprocessing(["DUK"], "2015-01-01", "2018-01-01", 1)
+    X,Y = stacked.preprocessing(["GM"], "2013-01-01", "2018-01-01", 1)
     stacked.train(X, Y)
     save_instance("FirstStacked", stacked)

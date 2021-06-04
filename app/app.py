@@ -177,14 +177,12 @@ def render_simulation_results(sim: Simulation):
 
 def store_simulation_results(sim: Simulation):
     try:
-        if not os.path.exists("simulation_history/"):
-            os.mkdir("simulation_history/")
+        dir_path = PYTHON_PATH + "/app/simulation_history/"
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
 
-        timestamp = datetime.now()
-        filepath = "simulation_history/{}.txt".format(sim.get_model().__class__.__name__ + str(timestamp.year) +
-                                                      str(timestamp.month) + str(timestamp.day) + str(timestamp.hour) +
-                                                      str(timestamp.minute) + str(timestamp.second) +
-                                                      str(timestamp.microsecond))
+        filepath = dir_path + sim.get_model().__class__.__name__ + get_storing_index(sim.get_model().__class__.__name__)
+
         with open(filepath, 'w') as f:
             f.write("+" + ("-" * 78) + "+\n")
             f.write("|" + (" " * 30) + "Simulation Details" + (" " * 30) + "|\n")
@@ -205,6 +203,23 @@ def store_simulation_results(sim: Simulation):
 
     except Exception as e:
         return "ERROR: Could not store the simulation data: " + str(e)
+
+
+def get_storing_index(name: str):
+
+    res = 0
+
+    dir_path = PYTHON_PATH + "/app/simulation_history/"
+    if not os.path.exists(dir_path):
+        return str(res)
+
+    elements = os.listdir(dir_path)
+    elements = [file for file in elements if file.startswith(name)]
+
+    for el in elements:
+        res = max(res, int(el.replace(name, "")) + 1)
+
+    return str(res)
 
 
 def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
@@ -288,7 +303,7 @@ def delete_files(dir_path: str):
             else:
                 files = re.split(", |,| ", files_raw)
                 for f in files:
-                    filepath = dir_path + "{}".format(f)
+                    filepath = dir_path + f
                     if os.path.exists(filepath):
                         os.remove(filepath)
             print("\n\tFiles removed with success.\n")

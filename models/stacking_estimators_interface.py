@@ -12,7 +12,6 @@ from keras import optimizers
 from sklearn import preprocessing
 
 
-
 class StackingEstimatorsInterface(EstimatorInterface):
     trainable_component = None
 
@@ -75,7 +74,8 @@ class StackingEstimatorsInterface(EstimatorInterface):
         for ticker in estimators_results[0]:
             daily_vec = np.array([estimate[ticker] for estimate in estimators_results])
             X = np.array(self.x_normalizers[ticker].transform(daily_vec.reshape(1, -1)))
-            estimations[ticker] = float(self.y_normalizers[ticker].inverse_transform(self.trainable_component.predict(X))[0])
+            estimations[ticker] = float(
+                self.y_normalizers[ticker].inverse_transform(self.trainable_component.predict(X))[0])
         return estimations
 
     def save_attributes(self):
@@ -121,6 +121,6 @@ if __name__ == '__main__':
     model1 = get_instance("NeuralNetEstimator")
     model2 = get_instance("FirstTradeModel")
     stacked = StackingEstimatorsInterface([model1, model2], percentual_threshold=0.01)
-    X,Y = stacked.preprocessing(["GM"], "2013-01-01", "2018-01-01", 1)
+    X, Y = stacked.preprocessing(["GM"], "2013-01-01", "2018-01-01", 1)
     stacked.train(X, Y)
     save_instance("FirstStacked", stacked)

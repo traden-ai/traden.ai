@@ -29,7 +29,7 @@ class FirstTradenModel(EstimatorInterface):
     time_steps = None
 
     def __init__(self, threshold, time_steps):
-        self.set_threshold(percentage_threshold=threshold)
+        self.set_threshold(percentual_threshold=threshold)
         self.time_steps = time_steps
 
     def preprocessing(self, stock, start, end, pred_time):
@@ -72,9 +72,9 @@ class FirstTradenModel(EstimatorInterface):
         output = Activation('linear', name='linear_output')(x)
 
         self.model = Model(inputs=NNinput, outputs=output)
-        adam = optimizers.Adam(lr=0.01)
+        adam = optimizers.Adam(lr=0.005)
         self.model.compile(optimizer=adam, loss='mse')
-        self.model.fit(x=X, y=Y, batch_size=32, epochs=500, shuffle=True)
+        self.model.fit(x=X, y=Y, batch_size=32, epochs=400, shuffle=True)
 
     @record_estimation
     def estimate(self, daily_data) -> dict:

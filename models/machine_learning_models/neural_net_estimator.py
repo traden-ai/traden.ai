@@ -62,7 +62,7 @@ class NeuralNetEstimator(EstimatorInterface):
         self.model = Model(inputs=NNinput, outputs=output)
         adam = optimizers.Adam(lr=0.005)
         self.model.compile(optimizer=adam, loss='mse')
-        self.model.fit(x=X, y=Y, batch_size=32, epochs=2000, shuffle=True)
+        self.model.fit(x=X, y=Y, batch_size=32, epochs=800, shuffle=True)
 
     @record_estimation
     def estimate(self, daily_data: dict) -> dict:

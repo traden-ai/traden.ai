@@ -16,10 +16,10 @@
 # About
 <br/>
 
-Our plataform allows users to create different models for stock trading, namely the creation of arbitrary tecniques to buy or sell a stock derived from a given understanding of the behavior of the stock's price. 
+Our platform allows users to create different models for stock trading, namely the creation of arbitrary techniques to buy or sell a stock derived from a given understanding of the behavior of the stock's price. 
 <br/>
  
-After the creation of models, the user can see how the model would perform for a given period time, and for a given number of specified stocks. 
+After the creation of models, the user can see how the model would perform for a given period time, and for a given number of specific stocks. 
 <br/>
 
 In the traden ecosystem you can also find some very interesting mechanisms to combine different models, which then can be tested using backtesting techniques.  

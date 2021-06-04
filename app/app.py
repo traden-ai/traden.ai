@@ -118,7 +118,7 @@ def ask_graph():
     while True:
         option = input("Plot results into graph? (yes/no) ")
         if option not in ("yes", "no", "y", "n"):
-            print("\n\tPlease enter valid option.")
+            print("\n\tPlease enter valid option.\n")
             continue
         return option in ("yes", "y")
 
@@ -140,7 +140,7 @@ def ask_simulation():
         print("\n\n\tAborted.\n")
     except Exception as e:
         print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
-        raise e
+        # raise e
 
 
 def render_simulation_logs(sim: Simulation):

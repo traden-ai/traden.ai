@@ -11,7 +11,7 @@ class DailyData:
         self.open = float(data["daily"]["1. open"])
         self.high = float(data["daily"]["2. high"])
         self.low = float(data["daily"]["3. low"])
-        self.close = float(data["daily"]["3. low"])
+        self.close = float(data["daily"]["4. close"])
         self.volume = float(data["daily"]["5. volume"])
 
         self.sma = float(data["sma"]["SMA"])

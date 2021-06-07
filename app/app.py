@@ -142,9 +142,9 @@ def ask_simulation():
 
     except KeyboardInterrupt:
         print("\n\n\tAborted.\n")
-    except Exception as e:
+    """except Exception as e:
         print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
-        # raise e
+        # raise e"""
 
 
 def render_simulation_logs(sim: Simulation):
@@ -167,6 +167,8 @@ def render_simulation_results(sim: Simulation):
     results_str += "\tProfit: {}".format(avg_results["profit"])
     results_str += "\n\t\tProfit (%): {}".format(avg_results["profit_percentage"])
     results_str += "\n\t\tProfit (% / Year): {}\n".format(avg_results["profit_percentage_year"])
+    results_str += "\n\t\tOperating Time (%): {}\n".format(avg_results["operating_time_percentage"])
+
 
     for stock in results[0]["stocks_performance"]:
         results_str += "\n\t\tProfit for {} stock (%): {}".format(stock, results[0]["stocks_performance"][stock])

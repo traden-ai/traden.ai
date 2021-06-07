@@ -29,3 +29,9 @@ class Ledger:
 
     def get_amount_stock(self, stock_name: str):
         return self.stocks[stock_name]
+
+    def has_stocks(self):
+        for s in self.stocks:
+            if self.stocks[s] != 0:
+                return True
+        return False

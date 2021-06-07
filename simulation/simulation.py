@@ -16,6 +16,8 @@ class Simulation(Runnable):
         self.current_date = start_date
         self.iterator = 0
 
+        self.days_with_stocks = 0
+
         self.evaluations = []
 
         for date in self.dates:
@@ -32,6 +34,8 @@ class Simulation(Runnable):
         for i in range(no_executions):
             while self.current_date != self.end_date:
                 self.execute_day()
+                if self.ledger.has_stocks():
+                    self.days_with_stocks += 1
                 self.current_date = self.dates[self.iterator]
                 self.evaluations[self.iterator][1].append(self.get_current_value())
                 self.iterator += 1
@@ -83,6 +87,7 @@ class Simulation(Runnable):
                                                                                  self.ledger.balance,
                                                                                  time_between_days(self.start_date,
                                                                                                    self.end_date)),
+                             "operating_time_percentage": (self.days_with_stocks / (self.iterator + 1)) * 100,
                              "stocks_performance": stocks_performance,
                              "logs": self.logs})
         self.avg_results = {"profit": sum(map(lambda x: x["profit"], self.results)) / len(self.results),
@@ -90,6 +95,8 @@ class Simulation(Runnable):
                                 sum(map(lambda x: x["profit_percentage"], self.results)) / len(self.results),
                             "profit_percentage_year":
                                 sum(map(lambda x: x["profit_percentage_year"], self.results)) / len(self.results),
+                            "operating_time_percentage":
+                                sum(map(lambda x: x["operating_time_percentage"], self.results)) / len(self.results),
                             "stocks_performance":
                                 sum(self.results[0]["stocks_performance"].values()) / len(tradable_stocks)}
         self.reset()

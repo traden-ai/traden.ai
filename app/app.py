@@ -82,25 +82,29 @@ def ask_period():
 
 
 def ask_model_instances():
+    instances = list_instances()
     while True:
         model_instances_raw = input("\nModel instance(s): ")
         model_instances_clean = re.split(", |,| ", model_instances_raw)
         if model_instances_raw.lower() == "l":
             print("\n\t% Available Models Instances\n")
-            instances = list_instances()
             if instances:
-                for i in instances:
-                    print("\t" + i)
+                for i, ins in enumerate(instances, start=1):
+                    print("\t[" + str(i) + "]\t" + ins)
             else:
                 print("\tSorry. No model instances available.")
             continue
-        elif not all(item in list_instances() for item in model_instances_clean):
+        elif not all(item in instances or item.isdigit() and int(item) in range(1, len(instances)+1)
+                     for item in model_instances_clean):
             print("\n\tERROR: Invalid model instance(s).")
             print("\tPlease insert 'l' to consult the available instances.")
             continue
 
         for i in range(len(model_instances_clean)):
-            model_instances_clean[i] = get_instance(model_instances_clean[i])
+            instance = model_instances_clean[i]
+            if instance.isdigit():
+                instance = instances[int(instance)-1]
+            model_instances_clean[i] = get_instance(instance)
 
         return model_instances_clean
 

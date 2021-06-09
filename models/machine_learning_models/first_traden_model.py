@@ -28,8 +28,8 @@ class FirstTradenModel(EstimatorInterface):
 
     time_steps = None
 
-    def __init__(self, threshold, time_steps):
-        self.set_threshold(percentual_threshold=threshold)
+    def __init__(self, buy_threshold, sell_threshold, time_steps):
+        self.set_threshold(buy_percentual_threshold=buy_threshold, sell_percentual_threshold=sell_threshold)
         self.time_steps = time_steps
 
     def preprocessing(self, stock, start, end, pred_time):
@@ -104,7 +104,7 @@ class FirstTradenModel(EstimatorInterface):
 
 
 if __name__ == '__main__':
-    model = FirstTradenModel(0.01, 5)
+    model = FirstTradenModel(0.01, 0.0001, 5)
     X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
     save_instance("FirstTradenModel", model)

@@ -26,8 +26,8 @@ class NeuralNetEstimator(EstimatorInterface):
 
     hyperparameters = None
 
-    def __init__(self, threshold):
-        self.set_threshold(percentual_threshold=threshold)
+    def __init__(self, buy_threshold, sell_threshold):
+        self.set_threshold(buy_percentual_threshold=buy_threshold, sell_percentual_threshold=sell_threshold)
 
     def preprocessing(self, stock, start, end, pred_time):
         _, data_raw, prices_raw = data_load([stock], start, end)
@@ -83,7 +83,7 @@ class NeuralNetEstimator(EstimatorInterface):
 
 
 if __name__ == '__main__':
-    model = NeuralNetEstimator(0.01)
+    model = NeuralNetEstimator(0.01, 0.0001)
     X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
     save_instance("NeuralNetEstimator", model)

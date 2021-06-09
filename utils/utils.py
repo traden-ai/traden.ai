@@ -204,3 +204,24 @@ def majority_voting(actions):
         elif no_sells > len(actions_dict[s]) / 2:
             final_actions.append({"Ticker": s, "Action": Action.SELL, "Intensity": sell_intensity_sum / no_sells})
     return final_actions
+
+def convert_nominal_to_variation_2D(np_arr, eps=0.001):
+    new_arr = []
+    for i in range(1, len(np_arr)):
+        features = []
+        for j in range(len(np_arr[i])):
+            if np_arr[i-1][j] != 0:
+                features.append( np_arr[i][j] / np_arr[i-1][j])
+            else:
+                features.append(np_arr[i][j] / eps)
+        new_arr.append(features)
+    return new_arr
+
+def convert_nominal_to_variation_1D(np_arr, eps=0.001):
+    new_arr = []
+    for i in range(1,len(np_arr)):
+        if np_arr[i-1]!=0:
+            new_arr.append(np_arr[i]/np_arr[i-1])
+        else:
+            new_arr.append(np_arr[i] / eps)
+    return new_arr

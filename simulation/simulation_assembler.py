@@ -1,15 +1,32 @@
+import threading
 import matplotlib.pyplot as plt
+from simulation.simulation import Simulation
+from utils.utils import data_load
 
 
-class ComparingSimulations:
-    def __init__(self, list_of_simulations, executed=False):
-        self.simulations = list_of_simulations
-        self.executed = executed
+class SimulationAssembler:
+
+    def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model_instances: list):
+
+        dates, data, prices = data_load(tradable_stocks, start_date, end_date)
+
+        self.simulations = []
+        for instance in model_instances:
+            self.simulations.append(Simulation(balance, tradable_stocks, instance, dates, data, prices))
+
+        self.executed = False
 
     def execute(self, no_executions=1):
-        for sim in self.simulations:
-            sim.execute(no_executions)
+        def execute_simulation(s: Simulation, no_exec: int):
+            s.execute(no_exec)
 
+        threads = [threading.Thread(target=execute_simulation, args=(sim, no_executions))
+                   for sim in self.simulations]
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
         self.executed = True
 
     def get_simulations(self):

@@ -1,25 +1,30 @@
-from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month, data_load
+from ledger.ledger import Ledger
+from models.model_interface import ModelInterface
+from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
 import matplotlib.pyplot as plt
-from simulation.runnable_interface import *
+from simulation.runnable_interface import Runnable
 from simulation.daily_data import DailyData
 
 
 class Simulation(Runnable):
 
-    def __init__(self, balance: float, tradable_stocks: list, start_date: str, end_date: str, model: ModelInterface):
+    def __init__(self, balance: float, tradable_stocks: list, model: ModelInterface, dates: list, data: dict,
+                 prices: dict):
+
         super().__init__(balance, tradable_stocks, model)
         self.initial_balance = balance
-        self.data, self.dates, self.prices = data_load(tradable_stocks, start_date, end_date)
+        self.data = data
+        self.dates = dates
+        self.prices = prices
 
-        self.start_date = start_date
+        self.start_date = self.dates[0]
+        self.current_date = self.start_date
         self.end_date = self.dates[-1]
-        self.current_date = start_date
         self.iterator = 0
 
-        self.days_with_stocks = 0
+        self.operating_days = 0
 
         self.evaluations = []
-
         for date in self.dates:
             self.evaluations.append((date, []))
 
@@ -35,7 +40,7 @@ class Simulation(Runnable):
             while self.current_date != self.end_date:
                 self.execute_day()
                 if self.ledger.has_stocks():
-                    self.days_with_stocks += 1
+                    self.operating_days += 1
                 self.current_date = self.dates[self.iterator]
                 self.evaluations[self.iterator][1].append(self.get_current_value())
                 self.iterator += 1
@@ -87,7 +92,7 @@ class Simulation(Runnable):
                                                                                  self.ledger.balance,
                                                                                  time_between_days(self.start_date,
                                                                                                    self.end_date)),
-                             "operating_time_percentage": (self.days_with_stocks / (self.iterator + 1)) * 100,
+                             "operating_time_percentage": (self.operating_days / (self.iterator + 1)) * 100,
                              "stocks_performance": stocks_performance,
                              "logs": self.logs})
         self.avg_results = {"profit": sum(map(lambda x: x["profit"], self.results)) / len(self.results),

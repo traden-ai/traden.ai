@@ -33,7 +33,7 @@ class FirstTradenModel(EstimatorInterface):
         self.time_steps = time_steps
 
     def preprocessing(self, stock, start, end, pred_time):
-        data_raw, _, prices_raw = data_load([stock], start, end)
+        _, data_raw, prices_raw = data_load([stock], start, end)
         data = convert_data_to_np(data_raw)
         self.x_normalizer = preprocessing.MinMaxScaler()
         processed_data = self.x_normalizer.fit_transform(data[stock])

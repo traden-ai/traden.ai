@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from simulation.simulation import Simulation
-from simulation.comparing_simulations import ComparingSimulations
+from simulation.simulation_assembler import SimulationAssembler
 from model_database_handler.model_database_handler import *
 from utils.utils import get_stocks
 
@@ -94,7 +94,7 @@ def ask_model_instances():
             else:
                 print("\tSorry. No model instances available.")
             continue
-        elif not all(item in instances or item.isdigit() and int(item) in range(1, len(instances)+1)
+        elif not all(item in instances or item.isdigit() and int(item) in range(1, len(instances) + 1)
                      for item in model_instances_clean):
             print("\n\tERROR: Invalid model instance(s).")
             print("\tPlease insert 'l' to consult the available instances.")
@@ -103,7 +103,7 @@ def ask_model_instances():
         for i in range(len(model_instances_clean)):
             instance = model_instances_clean[i]
             if instance.isdigit():
-                instance = instances[int(instance)-1]
+                instance = instances[int(instance) - 1]
             model_instances_clean[i] = get_instance(instance)
 
         return model_instances_clean
@@ -118,15 +118,6 @@ def ask_executions():
             print("\n\tPlease enter a number.")
 
 
-def ask_graph():
-    while True:
-        option = input("Plot results into graph? (yes/no) ")
-        if option not in ("yes", "no", "y", "n"):
-            print("\n\tPlease enter valid option.\n")
-            continue
-        return option in ("yes", "y")
-
-
 def ask_simulation():
     balance = ask_balance()
     stocks = ask_stocks()
@@ -134,17 +125,25 @@ def ask_simulation():
     model_instances = ask_model_instances()
     no_exec = ask_executions()
 
-    try:
-        if len(model_instances) == 1:
-            do_simulation(balance, stocks, start_date, end_date, model_instances[0], no_exec)
-        else:
-            do_simulation_comparison(balance, stocks, start_date, end_date, model_instances, no_exec)
+    return balance, stocks, start_date, end_date, model_instances, no_exec
 
-    except KeyboardInterrupt:
-        print("\n\n\tAborted.\n")
-    """except Exception as e:
-        print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
-        # raise e"""
+
+def ask_results():
+    while True:
+        option = input("Store simulation results? (yes/no) ")
+        if option not in ("yes", "no", "y", "n"):
+            print("\n\tPlease enter valid option.\n")
+            continue
+        return option in ("yes", "y")
+
+
+def ask_graph():
+    while True:
+        option = input("Plot results into graph? (yes/no) ")
+        if option not in ("yes", "no", "y", "n"):
+            print("\n\tPlease enter valid option.\n")
+            continue
+        return option in ("yes", "y")
 
 
 def render_simulation_logs(sim: Simulation):
@@ -166,9 +165,8 @@ def render_simulation_results(sim: Simulation):
 
     results_str += "\tProfit: {}".format(avg_results["profit"])
     results_str += "\n\t\tProfit (%): {}".format(avg_results["profit_percentage"])
-    results_str += "\n\t\tProfit (% / Year): {}\n".format(avg_results["profit_percentage_year"])
-    results_str += "\n\t\tOperating Time (%): {}\n".format(avg_results["operating_time_percentage"])
-
+    results_str += "\n\t\tProfit (% / Year): {}".format(avg_results["profit_percentage_year"])
+    results_str += "\n\t\tOperating time (%): {}\n".format(avg_results["operating_time_percentage"])
 
     for stock in results[0]["stocks_performance"]:
         results_str += "\n\t\tProfit for {} stock (%): {}".format(stock, results[0]["stocks_performance"][stock])
@@ -212,7 +210,6 @@ def store_simulation_results(sim: Simulation):
 
 
 def get_storing_index(name: str):
-
     res = 0
 
     dir_path = PYTHON_PATH + "/app/simulation_history/"
@@ -228,23 +225,7 @@ def get_storing_index(name: str):
     return str(res)
 
 
-def do_simulation(balance: float, stocks: list, start_date: str, end_date: str, model_instance, no_exec: int):
-    try:
-        sim = Simulation(balance, stocks, start_date, end_date, model_instance)
-        sim.execute(no_executions=no_exec)
-
-        print("\n\t\t% {}\n".format(sim.get_model().__class__.__name__) + render_simulation_results(sim))
-        print("For more details: " + store_simulation_results(sim) + "\n")
-
-        if ask_graph():
-            sim.get_graph()
-        print("")
-
-    except Exception as e:
-        raise e
-
-
-def render_comparison_results(comp: ComparingSimulations):
+def render_comparison_results(comp: SimulationAssembler):
     results_str = ""
     sims = comp.get_ordered_simulations()
 
@@ -255,36 +236,41 @@ def render_comparison_results(comp: ComparingSimulations):
     return results_str
 
 
-def store_comp_results(comp: ComparingSimulations):
-    filenames = ""
+def store_comp_results(comp: SimulationAssembler):
+    filenames = "\n\t"
     sims = comp.get_simulations()
     filenames += store_simulation_results(sims[0])
 
     for sim in sims[1:]:
-        filenames += ", "
+        filenames += ",\n\t"
         filenames += store_simulation_results(sim)
 
     return filenames
 
 
-def do_simulation_comparison(balance: float, stocks: list, start_date: str, end_date: str, model_instances,
-                             no_exec: int):
+def do_simulation():
+
+    balance, stocks, start_date, end_date, model_instances, no_exec = ask_simulation()
+
     try:
-        sims = []
-        for instance in model_instances:
-            sims.append(Simulation(balance, stocks, start_date, end_date, instance))
+        assembler = SimulationAssembler(balance, stocks, start_date, end_date, model_instances)
+        assembler.execute(no_executions=no_exec)
 
-        comp = ComparingSimulations(sims)
-        comp.execute(no_executions=no_exec)
+        print(render_comparison_results(assembler))
 
-        print(render_comparison_results(comp))
-        print("For more details: " + store_comp_results(comp) + "\n")
+        if ask_results():
+            print("\n\tResults stored at: " + store_comp_results(assembler) + "\n")
+        else:
+            print("")
 
         if ask_graph():
-            comp.get_graph_comparison()
+            assembler.get_graph_comparison()
         print("")
 
+    except KeyboardInterrupt:
+        print("\n\n\tAborted.\n")
     except Exception as e:
+        print("\n\tAborted.\n\tCaught an exception while executing the simulation: " + str(e) + "\n")
         raise e
 
 
@@ -334,7 +320,7 @@ def parse_command(command: str):
     command_switcher = {
         "": nothing,
         "h": help_instructions,
-        "s": ask_simulation,
+        "s": do_simulation,
         "xh": clear_simulation_history,
         "xi": clear_model_instances,
         "q": quit_app

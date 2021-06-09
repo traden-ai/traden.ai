@@ -151,7 +151,7 @@ def data_load(stocks: list, start: str, end: str):
     for day in json_data[0]["Data"]:
         if start <= day <= end and all(day in sd["Data"] for sd in json_data):
             dates.append(day)
-    return return_data, dates, prices
+    return dates, return_data, prices
 
 
 def vector_proj_of_vec1_on_vec2(vec1: list, vec2: list):

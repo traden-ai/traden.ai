@@ -69,23 +69,23 @@ class VariationLstmModel(EstimatorInterface):
         return X, Y
 
     def train(self, X, Y):
+        if self.model == None:
+            NNinput = Input(shape=(X.shape[1], 1), name='input')
+            x = LSTM(50, name='lstm_0', return_sequences=True)(NNinput)
+            x = Dropout(0.2, name='dropout_0')(x)
+            x = Activation('relu', name='relu_0')(x)
+            x = LSTM(64, name='dense_1')(x)
+            x = Dropout(0.2, name='dropout_1')(x)
+            x = Activation('relu', name='relu_1')(x)
+            x = Dense(50, name='dense_2')(x)
+            x = Activation('relu', name='relu_2')(x)
+            x = Dense(1, name='dense_3')(x)
+            output = Activation('linear', name='linear_output')(x)
 
-        NNinput = Input(shape=(X.shape[1], 1), name='input')
-        x = LSTM(50, name='lstm_0', return_sequences=True)(NNinput)
-        x = Dropout(0.2, name='dropout_0')(x)
-        x = Activation('relu', name='relu_0')(x)
-        x = LSTM(64, name='dense_1')(x)
-        x = Dropout(0.2, name='dropout_1')(x)
-        x = Activation('relu', name='relu_1')(x)
-        x = Dense(50, name='dense_2')(x)
-        x = Activation('relu', name='relu_2')(x)
-        x = Dense(1, name='dense_3')(x)
-        output = Activation('linear', name='linear_output')(x)
-
-        self.model = Model(inputs=NNinput, outputs=output)
-        adam = optimizers.Adam(lr=0.005)
-        self.model.compile(optimizer=adam, loss='mse')
-        self.model.fit(x=X, y=Y, batch_size=32, epochs=1000, shuffle=True)
+            self.model = Model(inputs=NNinput, outputs=output)
+            adam = optimizers.Adam(lr=0.005)
+            self.model.compile(optimizer=adam, loss='mse')
+        self.model.fit(x=X, y=Y, batch_size=32, epochs=500, shuffle=True)
 
     @record_estimation
     def estimate(self, daily_data) -> dict:
@@ -125,5 +125,7 @@ class VariationLstmModel(EstimatorInterface):
 if __name__ == '__main__':
     model = VariationLstmModel(0.01, 0.0001, 10)
     X, Y = model.preprocessing("CVS", "2013-01-01", "2018-01-01", 1)
+    model.train(X, Y)
+    X, Y = model.preprocessing("NVDA", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
     save_instance("VariationLstmModel", model)

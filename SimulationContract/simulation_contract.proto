@@ -1,0 +1,85 @@
+syntax = "proto3";
+package Simulation;
+
+message CtrlPingRequest {
+  string input = 1;
+}
+
+message CtrlPingResponse {
+	string output = 1;
+}
+
+message TimeInterval {
+  string initial_date = 2;
+  string end_date = 3;
+}
+
+message DoSimulationRequest {
+  repeated string tickers = 1;
+  double balance = 2;
+  TimeInterval interval = 3;
+  int32 id = 4;
+  int32 number_executions = 5;
+  float transaction_fee = 6;
+}
+
+message DoSimulationResponse {
+  int32 simulationId = 1;
+  double nominal_profit = 2;
+  double percentage_profit = 3;
+  double yearly_percentage_profit = 4;
+  double operating_time_percentage = 5;
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
+}
+
+message DataPoint {
+  int32 iterator = 1;
+  double value = 2;
+}
+
+message Graph {
+  string Name = 1;
+  repeated DataPoint point = 2;
+}
+
+message SimulationGraphRequest{
+  int32 simulation_id = 1;
+}
+
+message SimulationGraphResponse{
+  repeated Graph graph = 1;
+}
+
+message Log {
+
+}
+
+message SimulationLogsRequest{
+  int32 simulation_id = 1;
+}
+
+message SimulationLogsResponse{
+  repeated Log logs = 1;
+}
+
+message CloseSimulationRequest{
+  int32 simulation_id = 1;
+}
+
+message CloseSimulationResponse{
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
+}
+
+service SimulationService {
+  rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc do_simulation(DoSimulationRequest) returns (DoSimulationResponse);
+  rpc simulation_graph(SimulationGraphRequest) returns (stream SimulationGraphResponse);
+  rpc simulation_logs(SimulationLogsRequest) returns (stream SimulationLogsResponse);
+  rpc close_simulation(CloseSimulationRequest) returns (CloseSimulationResponse);
+}

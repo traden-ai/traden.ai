@@ -1,0 +1,65 @@
+syntax = "proto3";
+package DataProvider;
+
+message CtrlPingRequest {
+  string input = 1;
+}
+
+message CtrlPingResponse {
+	string output = 1;
+}
+
+message TimeInterval {
+  string initial_date = 2;
+  string end_date = 3;
+}
+
+message TickerData {
+  string ticker = 1;
+
+}
+
+message StockData {
+  repeated string date = 1;
+  repeated TickerData ticker_data = 2;
+}
+
+message PastDataRequest {
+  repeated string tickers = 1;
+  TimeInterval interval = 2;
+}
+
+message PastDataResponse {
+  oneof Response {
+    StockData data = 1;
+    TimeInterval interval = 2;
+  }
+  enum Status {
+    OK = 0;
+    DATE_NOT_ALLOWED = 1;
+    NOK = 2;
+  }
+}
+
+message ExchangeDailyData{
+
+}
+
+message CurrentDailyDataRequest {
+  ExchangeDailyData exchange_data = 1;
+}
+
+message CurrentDailyDataResponse {
+  StockData daily_data = 1;
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
+}
+
+service DataProviderService {
+  rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc get_past_data(PastDataRequest) returns (stream PastDataResponse);
+  rpc get_daily_data(CurrentDailyDataRequest) returns (CurrentDailyDataResponse);
+  // rpc get_intra_daily_data(CurrentIntraDailyDataRequest) returns (CurrentIntraDailyDataResponse);
+}

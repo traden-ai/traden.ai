@@ -148,3 +148,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# gRPC auto-generated code
+**/generated_files/

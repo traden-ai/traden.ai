@@ -10,23 +10,28 @@ message CtrlPingResponse {
 }
 
 message TimeInterval {
-  string initial_date = 2;
-  string end_date = 3;
+  string initial_date = 1;
+  string end_date = 2;
 }
 
 message TickerData {
   string ticker = 1;
+  map<string, string> indicators_to_values = 2;
+}
 
+message DayData{
+  string date = 1;
+  repeated TickerData ticker_data = 2;
 }
 
 message StockData {
-  repeated string date = 1;
-  repeated TickerData ticker_data = 2;
+  repeated DayData multiple_days_data = 1;
 }
 
 message PastDataRequest {
   repeated string tickers = 1;
-  TimeInterval interval = 2;
+  repeated string indicators = 2;
+  TimeInterval interval = 3;
 }
 
 message PastDataResponse {
@@ -39,7 +44,11 @@ message PastDataResponse {
     DATE_NOT_ALLOWED = 1;
     NOK = 2;
   }
+
+  Status status = 3;
 }
+
+/*
 
 message ExchangeDailyData{
 
@@ -55,11 +64,11 @@ message CurrentDailyDataResponse {
     OK = 0;
     NOK = 1;
   }
-}
+} */
 
-service DataProviderService {
+service DataProvider {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
   rpc get_past_data(PastDataRequest) returns (stream PastDataResponse);
-  rpc get_daily_data(CurrentDailyDataRequest) returns (CurrentDailyDataResponse);
+  // rpc get_daily_data(CurrentDailyDataRequest) returns (CurrentDailyDataResponse);
   // rpc get_intra_daily_data(CurrentIntraDailyDataRequest) returns (CurrentIntraDailyDataResponse);
 }

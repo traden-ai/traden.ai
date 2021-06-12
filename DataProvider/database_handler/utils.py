@@ -1,5 +1,5 @@
-from database_handler.connection import get_client
-from database_handler.constants import TABLE_NAME
+from DataProvider.database_handler.connection import get_client
+from DataProvider.database_handler.constants import TABLE_NAME
 from boto3.dynamodb.conditions import Key
 import json
 
@@ -12,12 +12,23 @@ def insert_items(items, batch_size=25):
             new_item = {"Symbol": {"S": item["Symbol"]},
                         "Date": {"S": date},
                         "Data": {"S": json.dumps(item["Data"][date])}}
-            batch.append({"PutRequest" : {"Item": new_item}})
+            batch.append({"PutRequest": {"Item": new_item}})
             if len(batch) == batch_size:
-                client.batch_write_item(RequestItems={TABLE_NAME : batch})
+                client.batch_write_item(RequestItems={TABLE_NAME: batch})
                 batch = []
         if len(batch) != 0:
             client.batch_write_item(RequestItems={TABLE_NAME: batch})
+
+
+def get_item(ticker, date):
+    client = get_client()
+    response = client.query(TableName=TABLE_NAME, KeyConditions={
+        "Symbol": {"ComparisonOperator": "EQ", "AttributeValueList": [{"S": ticker}]},
+        "Date": {"ComparisonOperator": "EQ", "AttributeValueList": [{"S": date}]}})
+    new_item = {"Symbol": ticker, "Data": {}}
+    for item in response['Items']:
+        new_item["Data"][item["Date"]["S"]] = json.loads(item["Data"]["S"])
+    return new_item
 
 
 def remove_item(ticker):
@@ -33,7 +44,7 @@ def query_item(ticker, start_date, end_date, exclusive_start_key=None):
         response = client.query(TableName=TABLE_NAME, KeyConditions={
             "Symbol": {"ComparisonOperator": "EQ", "AttributeValueList": [{"S": ticker}]},
             "Date": {"ComparisonOperator": "BETWEEN", "AttributeValueList": [{"S": start_date}, {"S": end_date}]}},
-            ExclusiveStartKey=exclusive_start_key)
+                                ExclusiveStartKey=exclusive_start_key)
     else:
         response = client.query(TableName=TABLE_NAME, KeyConditions={
             "Symbol": {"ComparisonOperator": "EQ", "AttributeValueList": [{"S": ticker}]},
@@ -42,6 +53,6 @@ def query_item(ticker, start_date, end_date, exclusive_start_key=None):
     for item in response['Items']:
         new_item["Data"][item["Date"]["S"]] = json.loads(item["Data"]["S"])
     if "LastEvaluatedKey" in response:
-        new_item["Data"].update(query_item(ticker,start_date,end_date, exclusive_start_key=response["LastEvaluatedKey"])["Data"])
+        new_item["Data"].update(
+            query_item(ticker, start_date, end_date, exclusive_start_key=response["LastEvaluatedKey"])["Data"])
     return new_item
-

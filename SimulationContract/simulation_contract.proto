@@ -1,6 +1,14 @@
 syntax = "proto3";
 package Simulation;
 
+enum Status {
+  OK = 0;
+  NOK = 1;
+  // INTERVAL_NOT_AVAILABLE = 2;
+}
+
+// ping
+
 message CtrlPingRequest {
   string input = 1;
 }
@@ -9,39 +17,47 @@ message CtrlPingResponse {
 	string output = 1;
 }
 
-message TimeInterval {
-  string initial_date = 2;
-  string end_date = 3;
-}
+// simulation
 
-message DoSimulationRequest {
-  repeated string tickers = 1;
+message StartSimulationRequest {
   double balance = 2;
-  TimeInterval interval = 3;
-  int32 id = 4;
-  int32 number_executions = 5;
-  float transaction_fee = 6;
+  repeated string tickers = 3;
+  string initial_date = 4;
+  string end_date = 5;
+  repeated string models = 6;
+  float transaction_fee = 7;
+  int32 number_executions = 8;
 }
 
-message DoSimulationResponse {
-  int32 simulationId = 1;
+message ModelResults {
+  string model = 1;
   double nominal_profit = 2;
   double percentage_profit = 3;
   double yearly_percentage_profit = 4;
   double operating_time_percentage = 5;
-  enum Status {
-    OK = 0;
-    NOK = 1;
-  }
 }
 
+message TickerResults {
+  string ticker = 1;
+  double percentage_profit = 3;
+}
+
+message StartSimulationResponse {
+  int32 simulation_id = 1;
+  repeated ModelResults model_results = 2;
+  repeated TickerResults ticker_results = 3;
+  Status status = 4;
+}
+
+// simulation graphs
+
 message DataPoint {
-  int32 iterator = 1;
-  double value = 2;
+  int32 time = 1;
+  double capital = 2;
 }
 
 message Graph {
-  string Name = 1;
+  string name = 1;
   repeated DataPoint point = 2;
 }
 
@@ -50,36 +66,54 @@ message SimulationGraphRequest{
 }
 
 message SimulationGraphResponse{
-  repeated Graph graph = 1;
+  repeated Graph graphs = 1;
 }
 
-message Log {
+// simulation logs
 
+message Log {
+  enum Action {
+    BUY = 0;
+    SELL = 1;
+  }
+  Action action = 1;
+  float shares = 2;
+  float price_per_share = 3;
+  string date = 4;
+}
+
+message ModelExecutionLogs {
+  int32 execution_no = 1;
+  repeated Log logs = 2;
+}
+
+message ModelLogs {
+  string model = 1;
+  repeated ModelExecutionLogs execution_logs = 2;
 }
 
 message SimulationLogsRequest{
-  int32 simulation_id = 1;
+  int32 id = 1;
 }
 
 message SimulationLogsResponse{
-  repeated Log logs = 1;
+  repeated ModelLogs model_logs = 1;
 }
+
+// simulation termination
 
 message CloseSimulationRequest{
   int32 simulation_id = 1;
 }
 
 message CloseSimulationResponse{
-  enum Status {
-    OK = 0;
-    NOK = 1;
-  }
+  Status status = 1;
 }
 
 service SimulationService {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
-  rpc do_simulation(DoSimulationRequest) returns (DoSimulationResponse);
-  rpc simulation_graph(SimulationGraphRequest) returns (stream SimulationGraphResponse);
-  rpc simulation_logs(SimulationLogsRequest) returns (stream SimulationLogsResponse);
+  rpc start_simulation(StartSimulationRequest) returns (StartSimulationResponse);
+  rpc simulation_graph(SimulationGraphRequest) returns (SimulationGraphResponse);
+  rpc simulation_logs(SimulationLogsRequest) returns (SimulationLogsResponse);
   rpc close_simulation(CloseSimulationRequest) returns (CloseSimulationResponse);
 }

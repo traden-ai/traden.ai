@@ -1,12 +1,6 @@
 syntax = "proto3";
 package Simulation;
 
-enum Status {
-  OK = 0;
-  NOK = 1;
-  // INTERVAL_NOT_AVAILABLE = 2;
-}
-
 // ping
 
 message CtrlPingRequest {
@@ -17,12 +11,35 @@ message CtrlPingResponse {
 	string output = 1;
 }
 
+// list model instances
+
+message ListInstancesRequest {
+}
+
+message ListInstancesResponse {
+  repeated string instances = 1;
+}
+
+// delete model instances
+
+message DeleteInstancesRequest {
+  repeated string instances = 1;
+}
+
+message DeleteInstancesResponse {
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
+  Status status = 1;
+}
+
 // simulation
 
 message StartSimulationRequest {
   double balance = 2;
   repeated string tickers = 3;
-  string initial_date = 4;
+  string start_date = 4;
   string end_date = 5;
   repeated string models = 6;
   float transaction_fee = 7;
@@ -42,11 +59,29 @@ message TickerResults {
   double percentage_profit = 3;
 }
 
-message StartSimulationResponse {
+message SimulationResult {
   int32 simulation_id = 1;
   repeated ModelResults model_results = 2;
   repeated TickerResults ticker_results = 3;
-  Status status = 4;
+}
+
+message TimeInterval {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message StartSimulationResponse {
+  oneof response {
+    SimulationResult simulation_result = 1;
+    TimeInterval interval = 2;
+  }
+  enum Status {
+    OK = 0;
+    TICKER_NOT_AVAILABLE = 1;
+    INTERVAL_NOT_AVAILABLE = 2;
+    MODEL_INSTANCE_NOT_AVAILABLE = 3;
+  }
+  Status status = 3;
 }
 
 // simulation graphs
@@ -107,11 +142,17 @@ message CloseSimulationRequest{
 }
 
 message CloseSimulationResponse{
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
   Status status = 1;
 }
 
-service SimulationService {
+service Simulation {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc list_model_instances(ListInstancesRequest) returns (ListInstancesResponse);
+  rpc delete_model_instances(DeleteInstancesRequest) returns (DeleteInstancesResponse);
   rpc start_simulation(StartSimulationRequest) returns (StartSimulationResponse);
   rpc simulation_graph(SimulationGraphRequest) returns (SimulationGraphResponse);
   rpc simulation_logs(SimulationLogsRequest) returns (SimulationLogsResponse);

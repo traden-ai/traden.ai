@@ -27,11 +27,6 @@ message DeleteInstancesRequest {
 }
 
 message DeleteInstancesResponse {
-  enum Status {
-    OK = 0;
-    NOK = 1;
-  }
-  Status status = 1;
 }
 
 // simulation
@@ -79,7 +74,8 @@ message StartSimulationResponse {
     OK = 0;
     TICKER_NOT_AVAILABLE = 1;
     INTERVAL_NOT_AVAILABLE = 2;
-    MODEL_INSTANCE_NOT_AVAILABLE = 3;
+    MODEL_INSTANCES_NOT_AVAILABLE = 3;
+    NOK = 4;
   }
   Status status = 3;
 }
@@ -113,8 +109,9 @@ message Log {
   }
   Action action = 1;
   float shares = 2;
-  float price_per_share = 3;
-  string date = 4;
+  string ticker = 3;
+  float price_per_share = 4;
+  string date = 5;
 }
 
 message ModelExecutionLogs {
@@ -154,7 +151,7 @@ service Simulation {
   rpc list_model_instances(ListInstancesRequest) returns (ListInstancesResponse);
   rpc delete_model_instances(DeleteInstancesRequest) returns (DeleteInstancesResponse);
   rpc start_simulation(StartSimulationRequest) returns (StartSimulationResponse);
-  rpc simulation_graph(SimulationGraphRequest) returns (SimulationGraphResponse);
-  rpc simulation_logs(SimulationLogsRequest) returns (SimulationLogsResponse);
+  rpc simulation_graph(SimulationGraphRequest) returns (stream SimulationGraphResponse);
+  rpc simulation_logs(SimulationLogsRequest) returns (stream SimulationLogsResponse);
   rpc close_simulation(CloseSimulationRequest) returns (CloseSimulationResponse);
 }

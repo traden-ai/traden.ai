@@ -33,7 +33,7 @@ if __name__ == '__main__':
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
     data_provider_frontend = DataProviderFrontend(data_provider_host, data_provider_port)
     simulation_pb2_grpc.add_SimulationServicer_to_server(SimulationServicer(data_provider_frontend), server)
-    # TODO change server port to be reachable, this should be a secure_port however this requires ssl creds
+    # FIXME change server port to be reachable, this should be a secure_port however this requires ssl credentials
     server.add_insecure_port(f"{host}:{port}")
 
     # server running

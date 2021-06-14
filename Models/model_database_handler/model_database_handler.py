@@ -2,20 +2,23 @@ import os
 import jsonpickle
 
 from constants import PYTHON_PATH
-from models.model_interface import ModelInterface
-from models import *
+from Models.models.model_interface import ModelInterface
+from Models.models import *
 import inspect
 import json
 
-path = PYTHON_PATH + "/instances/"
+path = PYTHON_PATH + "/Models/instances/"
 
 
 def get_instance(name: str):
-    with open(path + name, 'r') as f:
-        json_string = f.read()
-    instance = jsonpickle.decode(json_string)
-    instance.retrieve_attributes()
-    return instance
+    if os.path.exists(path + name):
+        with open(path + name, 'r') as f:
+            json_string = f.read()
+        instance = jsonpickle.decode(json_string)
+        instance.retrieve_attributes()
+        return instance
+    else:
+        return None
 
 
 def save_instance(name: str, instance: ModelInterface):

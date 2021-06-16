@@ -1,42 +1,48 @@
-from ledger.ledger import Ledger
-from models.model_interface import ModelInterface
+from Simulation.ledger.ledger import Ledger
+from Models.models.model_interface import ModelInterface, Action
 from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
-import matplotlib.pyplot as plt
-from simulation.runnable_interface import Runnable
-from simulation.daily_data import DailyData
+from Simulation.simulation_data.daily_data import DailyData
 
 
-class Simulation(Runnable):
+class Simulation:
 
     def __init__(self, balance: float, tradable_stocks: list, model: ModelInterface, dates: list, data: dict,
-                 prices: dict):
+                 prices: dict, no_executions: int):
 
-        super().__init__(balance, tradable_stocks, model)
+        self.tradable_stocks = tradable_stocks
+        self.ledger = Ledger(balance, tradable_stocks)
+        self.model = model
         self.initial_balance = balance
         self.data = data
         self.dates = dates
         self.prices = prices
+        self.no_executions = no_executions
 
         self.start_date = self.dates[0]
         self.current_date = self.start_date
         self.end_date = self.dates[-1]
         self.iterator = 0
-
         self.operating_days = 0
 
-        self.evaluations = []
-        for date in self.dates:
-            self.evaluations.append((date, []))
-
+        self.logs = []
         self.results = []
         self.avg_results = {}
-        self.no_executions = 0
+        self.evaluations = [(date, []) for date in self.dates]
 
-        self.logs = []
+    def execute_day(self):
+        daily_data = self.get_daily_data()
+        results = self.model.execute(daily_data)
+        for result in results:
+            if result["Action"] == Action.BUY:
+                current_balance = self.ledger.get_balance()
+                max_buy = current_balance // self.get_current_stock_price(result["Ticker"])
+                self.buy(result["Ticker"], max_buy*result["Intensity"])
+            elif result["Action"] == Action.SELL:
+                max_sell = self.ledger.get_amount_stock(result["Ticker"])
+                self.sell(result["Ticker"], max_sell*result["Intensity"])
 
-    def execute(self, no_executions=1):
-        self.no_executions = no_executions
-        for i in range(no_executions):
+    def execute(self):
+        for i in range(self.no_executions):
             while self.current_date != self.end_date:
                 self.execute_day()
                 if self.ledger.has_stocks():
@@ -48,6 +54,7 @@ class Simulation(Runnable):
             self.current_date = self.dates[self.iterator]
             self.sell_all()
             self.store_result()
+            self.reset()
 
     def buy(self, stock_name: str, amount: int):
         if amount > 0:
@@ -104,7 +111,6 @@ class Simulation(Runnable):
                                 sum(map(lambda x: x["operating_time_percentage"], self.results)) / len(self.results),
                             "stocks_performance":
                                 sum(self.results[0]["stocks_performance"].values()) / len(tradable_stocks)}
-        self.reset()
 
     def get_daily_data(self):
         daily_data = {}
@@ -163,16 +169,6 @@ class Simulation(Runnable):
     def get_no_executions(self):
         return self.no_executions
 
-    def get_graph(self, mode="daily"):
-        plt.xlabel("Time ({})".format(mode))
-        plt.ylabel("Capital")
-        y = []
-        for el in self.get_evaluations(mode=mode):
-            y.append(sum(el[1]) / len(el[1]))
-        x = range(1, len(y) + 1)
-        plt.plot(x, y, label="{}".format(self.model.__class__.__name__))
-        plt.show()
-
     def get_evaluations(self, mode="daily"):
         if mode == "daily":
             return self.evaluations
@@ -193,6 +189,7 @@ class Simulation(Runnable):
                     filtered_evaluations.append(self.evaluations[i])
             return filtered_evaluations
 
+    # FIXME not useful anymore (deletable)
     def logs_str(self, no_execution=0):
         if len(self.results) == 0:
             return

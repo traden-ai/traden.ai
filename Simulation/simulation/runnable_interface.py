@@ -1,7 +1,8 @@
-from ledger.ledger import Ledger
-from models.model_interface import ModelInterface, Action
+from Simulation.ledger.ledger import Ledger
+from Models.models.model_interface import ModelInterface, Action
 
 
+# FIXME not useful anymore (deletable)
 class Runnable:
 
     def __init__(self, balance: float, tradable_stocks: list, model: ModelInterface):
@@ -21,10 +22,10 @@ class Runnable:
             if result["Action"] == Action.BUY:
                 current_balance = self.ledger.get_balance()
                 max_buy = current_balance // self.get_current_stock_price(result["Ticker"])
-                self.buy(result["Ticker"], round(max_buy*result["Intensity"]))
+                self.buy(result["Ticker"], round(max_buy * result["Intensity"]))
             elif result["Action"] == Action.SELL:
                 max_sell = self.ledger.get_amount_stock(result["Ticker"])
-                self.sell(result["Ticker"], round(max_sell*result["Intensity"]))
+                self.sell(result["Ticker"], round(max_sell * result["Intensity"]))
 
     def get_current_stock_price(self, stock_name: str) -> float:
         """Gets the stock price for the corresponding stock_name"""

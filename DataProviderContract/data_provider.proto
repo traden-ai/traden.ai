@@ -10,7 +10,7 @@ message CtrlPingResponse {
 }
 
 message TimeInterval {
-  string initial_date = 1;
+  string start_date = 1;
   string end_date = 2;
 }
 
@@ -41,8 +41,9 @@ message PastDataResponse {
   }
   enum Status {
     OK = 0;
-    DATE_NOT_ALLOWED = 1;
-    NOK = 2;
+    DATE_NOT_AVAILABLE = 1;
+    TICKERS_NOT_AVAILABLE = 2;
+    NOK = 3;
   }
 
   Status status = 3;

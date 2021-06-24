@@ -11,6 +11,8 @@ from DataProvider.data_resources.resources.utils import retry_if_value_error
 
 
 class AlphaVantage(DataResourceInterface):
+    name = "AlphaVantage"
+
     description = "API for stock indicators"
 
     def __init__(self, key="E9NN094GU5JX53JA"):

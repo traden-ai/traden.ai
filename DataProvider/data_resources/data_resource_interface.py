@@ -1,8 +1,8 @@
 class DataResourceInterface:
 
-    description = "default description for data resource"
+    name = "name for specific resource, should be globally unique"
 
-    indicators_to_python_object = {} # For each indicator there is a function to retrieve string object into py object
+    description = "default description for data resource"
 
     def get_description(self):
         return self.description
@@ -13,7 +13,7 @@ class DataResourceInterface:
         """
         pass
 
-    def get_past_data(self, tickers: list, indicators: list, init_date: str, end_date: str):
+    def get_past_data(self, tickers: list, indicators: list, start_date: str, end_date: str):
         """Data Resource should return past data in the format
         {ticker : {date: {indicator: data in string format, ...}, ...}, ...}
         """

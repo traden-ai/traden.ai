@@ -34,14 +34,20 @@ message PastDataRequest {
   TimeInterval interval = 3;
 }
 
+message TickerList{
+  repeated string available_tickers = 1;
+  repeated string not_available_tickers= 2;
+}
+
 message PastDataResponse {
   oneof Response {
     StockData data = 1;
     TimeInterval interval = 2;
+    TickerList tickers = 3;
   }
   enum Status {
     OK = 0;
-    DATE_NOT_AVAILABLE = 1;
+    INTERVAL_NOT_AVAILABLE = 1;
     TICKERS_NOT_AVAILABLE = 2;
     NOK = 3;
   }

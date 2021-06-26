@@ -52,7 +52,7 @@ message PastDataResponse {
     NOK = 3;
   }
 
-  Status status = 3;
+  Status status = 4;
 }
 
 /*

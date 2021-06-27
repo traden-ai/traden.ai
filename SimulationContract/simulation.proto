@@ -60,6 +60,11 @@ message SimulationResult {
   repeated TickerResults ticker_results = 3;
 }
 
+message TickerList{
+  repeated string available_tickers = 1;
+  repeated string not_available_tickers= 2;
+}
+
 message TimeInterval {
   string start_date = 1;
   string end_date = 2;
@@ -68,16 +73,17 @@ message TimeInterval {
 message StartSimulationResponse {
   oneof response {
     SimulationResult simulation_result = 1;
-    TimeInterval interval = 2;
+    TickerList tickers = 2;
+    TimeInterval interval = 3;
   }
   enum Status {
     OK = 0;
-    TICKER_NOT_AVAILABLE = 1;
+    TICKERS_NOT_AVAILABLE = 1;
     INTERVAL_NOT_AVAILABLE = 2;
     MODEL_INSTANCES_NOT_AVAILABLE = 3;
     NOK = 4;
   }
-  Status status = 3;
+  Status status = 4;
 }
 
 // simulation graphs
@@ -87,17 +93,13 @@ message DataPoint {
   double capital = 2;
 }
 
-message Graph {
-  string name = 1;
-  repeated DataPoint point = 2;
-}
-
 message SimulationGraphRequest{
   int32 simulation_id = 1;
 }
 
 message SimulationGraphResponse{
-  repeated Graph graphs = 1;
+  string name = 1;
+  repeated DataPoint data_points = 2;
 }
 
 // simulation logs
@@ -108,20 +110,10 @@ message Log {
     SELL = 1;
   }
   Action action = 1;
-  float shares = 2;
+  float amount = 2;
   string ticker = 3;
   float price_per_share = 4;
   string date = 5;
-}
-
-message ModelExecutionLogs {
-  int32 execution_no = 1;
-  repeated Log logs = 2;
-}
-
-message ModelLogs {
-  string model = 1;
-  repeated ModelExecutionLogs execution_logs = 2;
 }
 
 message SimulationLogsRequest{
@@ -129,7 +121,9 @@ message SimulationLogsRequest{
 }
 
 message SimulationLogsResponse{
-  repeated ModelLogs model_logs = 1;
+  string model = 1;
+  int32 no_execution = 2;
+  repeated Log logs = 3;
 }
 
 // simulation termination
@@ -145,6 +139,8 @@ message CloseSimulationResponse{
   }
   Status status = 1;
 }
+
+// services
 
 service Simulation {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);

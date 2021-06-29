@@ -1,11 +1,13 @@
 import random
-from models.model_interface import *
-from model_database_handler.model_database_handler import *
+from Models.models.model_interface import *
+from Models.model_database_handler.model_database_handler import *
 
 
 class EMACrossing(ModelInterface):
 
     description = "Buys and sells when EMA and Close price cross."
+
+    input_data = [InputData.PRICE_DATA, InputData.TECHNICAL_INDICATORS]
 
     def execute(self, daily_data: dict):
 
@@ -13,7 +15,7 @@ class EMACrossing(ModelInterface):
 
         for s in daily_data:
             close = daily_data[s].close
-            ema = daily_data[s].ema
+            ema = daily_data[s].technical_indicators.ema
 
             if close < ema:
                 output.append({"Ticker": s, "Action": Action.SELL, "Intensity": 1})

@@ -1,11 +1,13 @@
 import random
-from models.model_interface import *
-from model_database_handler.model_database_handler import *
+from Models.models.model_interface import *
+from Models.model_database_handler.model_database_handler import *
 
 
 class MACDCrossing(ModelInterface):
 
     description = "Buys and sells when MACDs cross."
+
+    input_data = [InputData.TECHNICAL_INDICATORS]
 
     prev = {}
 
@@ -14,8 +16,8 @@ class MACDCrossing(ModelInterface):
         output = []
 
         for s in daily_data:
-            macd = daily_data[s].macd
-            macd_signal = daily_data[s].macd_signal
+            macd = daily_data[s].technical_indicators.macd
+            macd_signal = daily_data[s].technical_indicators.macd_signal
             diff = macd - macd_signal
 
             if s in self.prev:

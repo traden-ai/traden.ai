@@ -1,10 +1,12 @@
-from models.model_interface import *
-from model_database_handler.model_database_handler import *
+from Models.models.model_interface import *
+from Models.model_database_handler.model_database_handler import *
 
 
 class TrendFollowing(ModelInterface):
 
     description = "Follows market trends."
+
+    input_data = [InputData.PRICE_DATA]
 
     prev = {}
     prices_bought = {}

@@ -1,11 +1,13 @@
-class Earnings:
+from dataclasses import dataclass, field
 
+
+@dataclass(frozen=True)
+class Earnings:
     """class for representing fundamental data regarding earnings"""
 
-    def __init__(self, data):
-        self.fiscalDateEnding = data["fiscalDateEnding"]
-        self.reportedDate = data["reportedDate"]
-        self.reportedEPS = data["reportedEPS"]
-        self.estimatedEPS = data["estimatedEPS"]
-        self.surprise = data["surprise"]
-        self.surprisePercentage = data["surprisePercentage"]
+    fiscalDateEnding: str = field(default=None)
+    reportedDate: str = field(default=None)
+    reportedEPS: float = field(default=None)
+    estimatedEPS: float = field(default=None)
+    surprise: float = field(default=None)
+    surprisePercentage: float = field(default=None)

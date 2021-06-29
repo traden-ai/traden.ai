@@ -1,19 +1,18 @@
 import threading
-import matplotlib.pyplot as plt
 from Simulation.simulation.simulation import Simulation
 
 
 class SimulationAssembler:
 
-    def __init__(self, balance: float, tradable_stocks: list, model_instances: list, historical_data: dict,
-                 no_executions: int):
+    def __init__(self, balance: float, tradable_tickers: list, model_instances: list, dates: list, daily_data: dict,
+                 prices: list, transaction_fee: float, no_executions: int):
 
-        # TODO parse data for simulations
-        dates, data, prices = historical_data
+        self.tradable_tickers = tradable_tickers
 
         self.simulations = []
         for instance in model_instances:
-            self.simulations.append(Simulation(balance, tradable_stocks, instance, dates, data, prices, no_executions))
+            self.simulations.append(Simulation(balance, tradable_tickers, instance, dates, daily_data, prices,
+                                               transaction_fee, no_executions))
         self.no_executions = no_executions
         self.executed = False
 
@@ -36,7 +35,7 @@ class SimulationAssembler:
     def get_expected_metric(self, metric="profit"):
         if not self.executed:
             self.execute()
-        return [sum(map(lambda x: float(x[metric]), sim.get_results())) / len(sim.get_results())
+        return [sum(map(lambda x: float(x[metric]), sim.results)) / len(sim.results)
                 for sim in self.simulations]
 
     def get_best_simulation_by_metric(self, metric="profit"):
@@ -55,22 +54,18 @@ class SimulationAssembler:
         if not self.executed:
             self.execute()
         return sorted(self.simulations,
-                      key=lambda sim: sum(map(lambda x: float(x[metric]), sim.get_results())) / len(sim.get_results()),
+                      key=lambda sim: sum(map(lambda x: float(x[metric]), sim.results)) / len(sim.results),
                       reverse=True)
 
     def get_graph(self, no_simulation, mode="daily"):
-        # FIXME return data points instead of plotting graph
-        plt.xlabel("Time ({})".format(mode))
-        plt.ylabel("Capital")
-        for sim in self.simulations:
-            y = []
-            for el in sim.get_evaluations(mode=mode):
-                y.append(sum(el[1]) / len(el[1]))
-            x = range(1, len(y) + 1)
-            plt.plot(x, y, label="{}".format(sim.get_model().__class__.__name__))
-        plt.legend(loc='best')
-        plt.show()
+        x = 0
+        graph = []
+        sim = self.simulations[no_simulation]
+        evaluations = sim.get_evaluations(mode=mode)
+        for _, ev in evaluations:
+            graph.append((x, sum(ev) / len(ev)))
+            x = x + 1
+        return graph
 
     def get_logs(self, no_simulation: int, no_execution: int):
-        # TODO
-        pass
+        return self.simulations[no_simulation].results[no_execution]["logs"]

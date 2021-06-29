@@ -4,8 +4,8 @@ import keras
 import os
 
 from constants import PYTHON_PATH
-from models.estimator_interface import EstimatorInterface
-from simulation.simulation import Simulation
+from Models.models.estimator_interface import EstimatorInterface
+from Simulation.simulation.simulation import Simulation
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras import optimizers
@@ -116,7 +116,7 @@ def convert_raw_to_y(raw_Y, pred_time):
 
 
 if __name__ == '__main__':
-    from model_database_handler.model_database_handler import get_instance, save_instance
+    from Models.model_database_handler.model_database_handler import get_instance, save_instance
 
     model1 = get_instance("NeuralNetEstimator")
     model2 = get_instance("FirstTradeModel")

@@ -1,31 +1,33 @@
-class IncomeStatement:
+from dataclasses import dataclass, field
 
+
+@dataclass(frozen=True)
+class IncomeStatement:
     """class for representing fundamental data regarding income_statement"""
 
-    def __init__(self, data):
-        self.fiscalDateEnding = data["fiscalDateEnding"]
-        self.reportedCurrency = data["reportedCurrency"]
-        self.grossProfit = data["grossProfit"]
-        self.totalRevenue = data["totalRevenue"]
-        self.costOfRevenue = data["costOfRevenue"]
-        self.costofGoodsAndServicesSold = data["costofGoodsAndServicesSold"]
-        self.operatingIncome = data["operatingIncome"]
-        self.sellingGeneralAndAdministrative = data["sellingGeneralAndAdministrative"]
-        self.researchAndDevelopment = data["researchAndDevelopment"]
-        self.operatingExpenses = data["operatingExpenses"]
-        self.investmentIncomeNet = data["investmentIncomeNet"]
-        self.netInterestIncome = data["netInterestIncome"]
-        self.interestIncome = data["interestIncome"]
-        self.interestExpense = data["interestExpense"]
-        self.nonInterestIncome = data["nonInterestIncome"]
-        self.otherNonOperatingIncome = data["otherNonOperatingIncome"]
-        self.depreciation = data["depreciation"]
-        self.depreciationAndAmortization = data["depreciationAndAmortization"]
-        self.incomeBeforeTax = data["incomeBeforeTax"]
-        self.incomeTaxExpense = data["incomeTaxExpense"]
-        self.interestAndDebtExpense = data["interestAndDebtExpense"]
-        self.netIncomeFromContinuingOperations = data["netIncomeFromContinuingOperations"]
-        self.comprehensiveIncomeNetOfTax = data["comprehensiveIncomeNetOfTax"]
-        self.ebit = data["ebit"]
-        self.ebitda = data["ebitda"]
-        self.netIncome = data["netIncome"]
+    fiscalDateEnding: str = field(default=None)
+    reportedCurrency: str = field(default=None)
+    grossProfit: float = field(default=None)
+    totalRevenue: float = field(default=None)
+    costOfRevenue: float = field(default=None)
+    costOfGoodsAndServicesSold: float = field(default=None)
+    operatingIncome: float = field(default=None)
+    sellingGeneralAndAdministrative: float = field(default=None)
+    researchAndDevelopment: float = field(default=None)
+    operatingExpenses: float = field(default=None)
+    investmentIncomeNet: float = field(default=None)
+    netInterestIncome: float = field(default=None)
+    interestIncome: float = field(default=None)
+    interestExpense: float = field(default=None)
+    nonInterestIncome: float = field(default=None)
+    otherNonOperatingIncome: float = field(default=None)
+    depreciation: float = field(default=None)
+    depreciationAndAmortization: float = field(default=None)
+    incomeBeforeTax: float = field(default=None)
+    incomeTaxExpense: float = field(default=None)
+    interestAndDebtExpense: float = field(default=None)
+    netIncomeFromContinuingOperations: float = field(default=None)
+    comprehensiveIncomeNetOfTax: float = field(default=None)
+    ebit: float = field(default=None)
+    ebitda: float = field(default=None)
+    netIncome: float = field(default=None)

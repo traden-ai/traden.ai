@@ -1,9 +1,10 @@
+from Simulation.utils.utils import *
+from Models.models.model_interface import Action, InputData
+from Simulation.utils.data_translator import InputData2Keys
 from Simulation.simulation.simulation_assembler import SimulationAssembler
 from DataProviderContract.generated_files import data_provider_pb2
 from SimulationContract.generated_files import simulation_pb2_grpc, simulation_pb2
 from Models.model_database_handler.model_database_handler import list_instances, delete_instance, get_instance
-
-MAX_SIMULATIONS = 1000
 
 
 class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
@@ -26,33 +27,6 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
 
     def start_simulation(self, request, context):
 
-        # get data from data provider
-        response = self.data_provider_frontend.get_past_data(
-            data_provider_pb2.PastDataRequest(
-                tickers=request.tickers,
-                # indicators= # TODO
-                interval=data_provider_pb2.TimeInterval(initial_date=request.start_date, end_date=request.end_date)
-            )
-        )
-        if response.status == data_provider_pb2.PastDataResponse.Status.NOK:
-            return simulation_pb2.StartSimulationResponse(
-                status=simulation_pb2.StartSimulationResponse.Status.NOK
-            )
-        if response.status == data_provider_pb2.PastDataResponse.Status.TICKERS_NOT_AVAILABLE:
-            return simulation_pb2.StartSimulationResponse(
-                status=simulation_pb2.StartSimulationResponse.Status.TICKERS_NOT_AVAILABLE
-            )
-        if response.status == data_provider_pb2.PastDataResponse.Status.DATE_NOT_AVAILABLE:
-            return simulation_pb2.StartSimulationResponse(
-                status=simulation_pb2.StartSimulationResponse.Status.INTERVAL_NOT_AVAILABLE,
-                interval=simulation_pb2.TimeInterval(
-                    start_date=response.interval.initial_date, end_date=response.interval.end_date
-                )
-            )
-
-        # parse data from data_provider
-        # data =  # TODO
-
         # get model instances
         model_instances = []
         for model in request.models:
@@ -64,44 +38,119 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
                     status=simulation_pb2.StartSimulationResponse.Status.MODEL_INSTANCES_NOT_AVAILABLE
                 )
 
-        # create and execute simulation assembler
-        try:
-            assembler = SimulationAssembler(
-                # request.balance, request.tickers, model_instances, data, request.no_executions
+        # get data requested by models
+        data_groups = set()
+        data_requested = ["4. close"]  # close is always needed
+        for instance in model_instances:
+            for data in instance.get_input_data():
+                if data not in data_groups:
+                    data_groups.add(data)
+                    data_requested += InputData2Keys[data]
+
+        # get data from data provider
+        response = self.data_provider_frontend.get_past_data(data_provider_pb2.PastDataRequest(
+                tickers=request.tickers,
+                indicators=data_requested,
+                interval=data_provider_pb2.TimeInterval(start_date=request.start_date, end_date=request.end_date)
+            ))
+
+        if response[0].status == data_provider_pb2.PastDataResponse.Status.NOK:
+            return simulation_pb2.StartSimulationResponse(
+                status=simulation_pb2.StartSimulationResponse.Status.NOK
             )
-            assembler.execute()
-        except Exception as e:
-            print("Caught an exception during a simulation: " + str(e))
-            return simulation_pb2.StartSimulationResponse(status=simulation_pb2.StartSimulationResponse.Status.NOK)
+        if response[0].status == data_provider_pb2.PastDataResponse.Status.TICKERS_NOT_AVAILABLE:
+            return simulation_pb2.StartSimulationResponse(
+                status=simulation_pb2.StartSimulationResponse.Status.TICKERS_NOT_AVAILABLE,
+                tickers=simulation_pb2.TimeInterval(
+                    available_tickers=response[0].tickers.available_tickers,
+                    not_available_tickers=response[0].tickers.not_available_tickers
+                )
+            )
+        if response[0].status == data_provider_pb2.PastDataResponse.Status.INTERVAL_NOT_AVAILABLE:
+            return simulation_pb2.StartSimulationResponse(
+                status=simulation_pb2.StartSimulationResponse.Status.INTERVAL_NOT_AVAILABLE,
+                interval=simulation_pb2.TimeInterval(
+                    start_date=response[0].interval.initial_date, end_date=response[0].interval.end_date
+                )
+            )
 
-        # save opened simulation assembler
-        assembler_id = 0
-        while assembler_id in self.open_assemblers:
-            assembler_id += 1
-            if assembler_id >= MAX_SIMULATIONS:
+        if response[0].status == data_provider_pb2.PastDataResponse.Status.OK:
+
+            # process data
+            raw_data = []
+            for partition in response:
+                raw_data = raw_data + partition.data
+            dates, data, prices = data_load(raw_data, data_groups)
+
+            # create and execute simulation assembler
+            try:
+                assembler = SimulationAssembler(request.balance, request.tickers, model_instances, dates, data, prices,
+                                                request.transaction_fee, request.no_executions)
+                assembler.execute()
+            except Exception as e:
+                print("Caught an exception during a simulation: " + str(e))
                 return simulation_pb2.StartSimulationResponse(status=simulation_pb2.StartSimulationResponse.Status.NOK)
-        self.open_assemblers[assembler_id] = assembler
 
-        # send simulation results
-        return simulation_pb2.StartSimulationResponse(
-            # TODO
-        )
+            # save opened simulation assembler
+            assembler_id = 0
+            while assembler_id in self.open_assemblers:
+                assembler_id += 1
+            self.open_assemblers[assembler_id] = assembler
+
+            # send simulation results
+            return simulation_pb2.StartSimulationResponse(
+                status=simulation_pb2.StartSimulationResponse.Status.OK,
+                simulation_result=simulation_pb2.SimulationResult(
+                    simulation_id=assembler_id,
+                    model_results=[simulation_pb2.ModelResults(
+                        model=simulation.model.__class__.__name__,
+                        nominal_profit=simulation.avg_results["profit"],
+                        percentage_profit=simulation.avg_results["profit_percentage"],
+                        yearly_percentage_profit=simulation.avg_results["profit_percentage_year"],
+                        operating_time_percentage=simulation.avg_results["operating_time_percentage"]
+                    ) for simulation in assembler.get_ordered_simulations()],
+                    ticker_results=[simulation_pb2.TickerResults(
+                        ticker=ticker,
+                        percentage_profit=assembler.simulations[0].results[0]["stocks_performance"][ticker]  # FIXME
+                    ) for ticker in assembler.tradable_tickers]
+                )
+            )
+
+        else:
+            return simulation_pb2.StartSimulationResponse(
+                status=simulation_pb2.StartSimulationResponse.Status.NOK
+            )
 
     def simulation_graph(self, request, context):
         assembler = self.open_assemblers[request.simulation_id]
         for no_sim in range(len(assembler.simulations)):
+            graph_name = assembler.simulations[no_sim].model.__class__.__name__
+            graph = assembler.get_graph(no_sim)
             yield simulation_pb2.SimulationGraphResponse(
-                # TODO
-                graphs=assembler.get_graph(no_sim)
+                name=graph_name,
+                data_points=[simulation_pb2.DataPoint(
+                    time=data_point[0],
+                    capital=data_point[1]
+                ) for data_point in graph]
             )
 
     def simulation_logs(self, request, context):
         assembler = self.open_assemblers[request.simulation_id]
         for no_sim in range(len(assembler.simulations)):
             for no_ex in range(1, assembler.no_executions + 1):
+                model = assembler.simulations[no_sim].model.__class__.__name__
+                logs = assembler.get_logs(no_sim, no_ex)
                 yield simulation_pb2.SimulationLogsResponse(
-                    # TODO
-                    logs=assembler.get_logs(no_sim, no_ex)
+                    model=model,
+                    no_execution=no_ex,
+                    logs=[simulation_pb2.Log(
+                        action=simulation_pb2.Log.Action.BUY if log["action"] == Action.BUY
+                        else simulation_pb2.Log.Action.SELL,
+                        amount=log["amount"],
+                        ticker=log["ticker"],
+                        price_per_share=log["price"],
+                        date=log["date"]
+                    ) for log in logs]
                 )
 
     def close_simulation(self, request, context):

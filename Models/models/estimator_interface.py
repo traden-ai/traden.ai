@@ -1,5 +1,5 @@
 from enum import Enum
-from models.model_interface import ModelInterface, Action
+from Models.models.model_interface import ModelInterface, Action
 
 
 def record_estimation(func):

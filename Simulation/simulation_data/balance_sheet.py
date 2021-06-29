@@ -1,43 +1,45 @@
+from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
 class BalanceSheet:
+    """class for representing fundamental data regarding balance sheet"""
 
-    """class for representing fundamental data regarding balance_sheet"""
-
-    def __init__(self, data):
-        self.fiscalDateEnding = data["fiscalDateEnding"]
-        self.reportedCurrency = data["reportedCurrency"]
-        self.totalAssets = data["totalAssets"]
-        self.totalCurrentAssets = data["totalCurrentAssets"]
-        self.cashAndCashEquivalentsAtCarryingValue = data["cashAndCashEquivalentsAtCarryingValue"]
-        self.cashAndShortTermInvestments = data["cashAndShortTermInvestments"]
-        self.inventory = data["inventory"]
-        self.currentNetReceivables = data["currentNetReceivables"]
-        self.totalNonCurrentAssets = data["totalNonCurrentAssets"]
-        self.propertyPlantEquipment = data["propertyPlantEquipment"]
-        self.accumulatedDepreciationAmortizationPPE = data["accumulatedDepreciationAmortizationPPE"]
-        self.intangibleAssets = data["intangibleAssets"]
-        self.intangibleAssetsExcludingGoodwill = data["intangibleAssetsExcludingGoodwill"]
-        self.goodwill = data["goodwill"]
-        self.investments = data["investments"]
-        self.longTermInvestments = data["longTermInvestments"]
-        self.shortTermInvestments = data["shortTermInvestments"]
-        self.otherCurrentAssets = data["otherCurrentAssets"]
-        self.otherNonCurrrentAssets = data["otherNonCurrrentAssets"]
-        self.totalLiabilities = data["totalLiabilities"]
-        self.totalCurrentLiabilities = data["totalCurrentLiabilities"]
-        self.currentAccountsPayable = data["currentAccountsPayable"]
-        self.deferredRevenue = data["deferredRevenue"]
-        self.currentDebt = data["currentDebt"]
-        self.shortTermDebt = data["shortTermDebt"]
-        self.totalNonCurrentLiabilities = data["totalNonCurrentLiabilities"]
-        self.capitalLeaseObligations = data["capitalLeaseObligations"]
-        self.longTermDebt = data["longTermDebt"]
-        self.currentLongTermDebt = data["currentLongTermDebt"]
-        self.longTermDebtNoncurrent = data["longTermDebtNoncurrent"]
-        self.shortLongTermDebtTotal = data["shortLongTermDebtTotal"]
-        self.otherCurrentLiabilities = data["otherCurrentLiabilities"]
-        self.otherNonCurrentLiabilities = data["otherNonCurrentLiabilities"]
-        self.totalShareholderEquity = data["totalShareholderEquity"]
-        self.treasuryStock = data["treasuryStock"]
-        self.retainedEarnings = data["retainedEarnings"]
-        self.commonStock = data["commonStock"]
-        self.commonStockSharesOutstanding = data["commonStockSharesOutstanding"]
+    fiscalDateEnding: str = field(default=None)
+    reportedCurrency: str = field(default=None)
+    totalAssets: float = field(default=None)
+    totalCurrentAssets: float = field(default=None)
+    cashAndCashEquivalentsAtCarryingValue: float = field(default=None)
+    cashAndShortTermInvestments: float = field(default=None)
+    inventory: float = field(default=None)
+    currentNetReceivables: float = field(default=None)
+    totalNonCurrentAssets: float = field(default=None)
+    propertyPlantEquipment: float = field(default=None)
+    accumulatedDepreciationAmortizationPPE: float = field(default=None)
+    intangibleAssets: float = field(default=None)
+    intangibleAssetsExcludingGoodwill: float = field(default=None)
+    goodwill: float = field(default=None)
+    investments: float = field(default=None)
+    longTermInvestments: float = field(default=None)
+    shortTermInvestments: float = field(default=None)
+    otherCurrentAssets: float = field(default=None)
+    otherNonCurrentAssets: float = field(default=None)
+    totalLiabilities: float = field(default=None)
+    totalCurrentLiabilities: float = field(default=None)
+    currentAccountsPayable: float = field(default=None)
+    deferredRevenue: float = field(default=None)
+    currentDebt: float = field(default=None)
+    shortTermDebt: float = field(default=None)
+    totalNonCurrentLiabilities: float = field(default=None)
+    capitalLeaseObligations: float = field(default=None)
+    longTermDebt: float = field(default=None)
+    currentLongTermDebt: float = field(default=None)
+    longTermDebtNonCurrent: float = field(default=None)
+    shortLongTermDebtTotal: float = field(default=None)
+    otherCurrentLiabilities: float = field(default=None)
+    otherNonCurrentLiabilities: float = field(default=None)
+    totalShareholderEquity: float = field(default=None)
+    treasuryStock: float = field(default=None)
+    retainedEarnings: float = field(default=None)
+    commonStock: float = field(default=None)
+    commonStockSharesOutstanding: float = field(default=None)

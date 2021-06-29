@@ -11,13 +11,15 @@ def data_load(data_provider_data, input_groups):
     """ This method processes the raw data provided by the data_provided
     and transforms it into clean data for a simulation execution
     """
+
     def daily_data_load(values):
         clean_data = {"technical_indicators": {}, "earnings": {}, "cash_flow": {}, "balance_sheet": {},
                       "income_statement": {}}
 
         for key, value in values:
-            key_type, key_groups = Keys2InputData[key]["type"], set(set(Keys2InputData[key]["group"]) and input_groups)
-            clean_key = DatabaseNames2CorrectNames[key] if key in DatabaseNames2CorrectNames else key
+            clean_key = DatabaseKeySpecification[key]["clean_name"]
+            key_type = DatabaseKeySpecification[key]["type"]
+            key_groups = set(set(DatabaseKeySpecification[key]["group"]) and input_groups)
 
             if InputData.PRICE_DATA in key_groups:
                 clean_data[clean_key] = key_type(value)

@@ -1,6 +1,6 @@
 import boto3
 
-from database_handler.constants import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
+from DataProvider.database_handler.constants import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
 
 
 def get_client():

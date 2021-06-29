@@ -27,8 +27,6 @@ def insert_items(items, batch_size=25):
 def insert_items_metadata(items, batch_size=25):
     client = get_client()
     start_date, end_date = get_start_and_end_date(items)
-    print(items)
-    print(start_date, end_date)
     for ticker in items:
         batch = []
         for indicator in start_date[ticker]:

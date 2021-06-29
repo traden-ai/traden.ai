@@ -91,18 +91,3 @@ class DatabaseHandler:
                 if possible_end_date > metadata["EndDate"]:
                     possible_end_date = metadata["EndDate"]
         return start_date > possible_start_date and end_date < possible_end_date, possible_start_date, possible_end_date
-
-if __name__=="__main__":
-    db = DatabaseHandler()
-    """db.insert_indicators_for_resource_identifier(["daily", "sma", "ema", "macd", "rsi", "cci", "adx", "stoch", "aroon",
-                                                  "bbands", "ad", "obv", "cash_flow", "balance_sheet",
-                                                  "income_statement", "earnings"], "AlphaVantage")"""
-    """print(db.get_indicators(resource_identifier="AlphaVantage"))"""
-    """f = open("../data/cryptos.txt", "r")
-    l = f.readlines()
-    stock_list = []
-    for s in l:
-        stock_list.append(s.replace('\n', ''))
-    db.insert_tickers(stock_list, "CRYPTOS")"""
-    """print(db.get_stocks())"""
-    """print(db.are_tickers_possible(["AAPL", "AMZN"]))"""

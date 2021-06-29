@@ -27,4 +27,3 @@ class DataUpdaterPlanner:
                                   "EndDate": update_date})
                 if len(tasks) > chunk_size*id:
                     return tasks[chunk_size*(id-1):chunk_size*id]
-        return tasks[chunk_size*(id-1):chunk_size*id]

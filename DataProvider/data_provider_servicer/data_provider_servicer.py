@@ -12,7 +12,7 @@ class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
     def ctrl_ping(self, request, context):
         return data_provider_pb2.CtrlPingResponse(output=request.input)
 
-    def get_past_data(self, request, context):
+    def get_past_data(self, request, context): # TODO this can and should be otimized, this is a stream
         tickers, indicators, interval = request.tickers, request.indicators, request.interval
         start_date, end_date = interval.start_date, interval.end_date
 

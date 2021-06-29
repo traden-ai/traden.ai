@@ -20,7 +20,7 @@ class ResourceHandler(DataResourceInterface):
 
     def reset_indicators(self):
         for resource in self.data_resources:
-            indicators = self.db_handler.get_indicators(resourceIdentifier=resource.name)
+            indicators = self.db_handler.get_indicators(resource_identifier=resource.name)
             for indicator in indicators:
                 if resource.name in self.indicators_by_resource_name:
                     self.indicators_by_resource_name[resource.name].append(indicator)

@@ -1,35 +1,36 @@
+from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
 class CashFlow:
-    """class for representing fundamental data regarding cash_flows"""
+    """class for representing fundamental data regarding cash flows"""
 
-    def __init__(self, data):
-        self.fiscalDateEnding = data["fiscalDateEnding"]
-        self.reportedCurrency = data["reportedCurrency"]
-        self.operatingCashflow = data["operatingCashflow"]
-        self.paymentsForOperatingActivities = data["paymentsForOperatingActivities"]
-        self.proceedsFromOperatingActivities = data["proceedsFromOperatingActivities"]
-        self.changeInOperatingLiabilities = data["changeInOperatingLiabilities"]
-        self.changeInOperatingAssets = data["changeInOperatingAssets"]
-        self.depreciationDepletionAndAmortization = data["depreciationDepletionAndAmortization"]
-        self.capitalExpenditures = data["capitalExpenditures"]
-        self.changeInReceivables = data["changeInReceivables"]
-        self.changeInInventory = data["changeInInventory"]
-        self.profitLoss = data["profitLoss"]
-        self.cashflowFromInvestment = data["cashflowFromInvestment"]
-        self.cashflowFromFinancing = data["cashflowFromFinancing"]
-        self.proceedsFromRepaymentsOfShortTermDebt = data["proceedsFromRepaymentsOfShortTermDebt"]
-        self.paymentsForRepurchaseOfCommonStock = data["paymentsForRepurchaseOfCommonStock"]
-        self.paymentsForRepurchaseOfEquity = data["paymentsForRepurchaseOfEquity"]
-        self.paymentsForRepurchaseOfPreferredStock = data["paymentsForRepurchaseOfPreferredStock"]
-        self.dividendPayout = data["dividendPayout"]
-        self.dividendPayoutCommonStock = data["dividendPayoutCommonStock"]
-        self.dividendPayoutPreferredStock = data["dividendPayoutPreferredStock"]
-        self.proceedsFromIssuanceOfCommonStock = data["proceedsFromIssuanceOfCommonStock"]
-        self.proceedsFromIssuanceOfLongTermDebtAndCapitalSecuritiesNet = data[
-            "proceedsFromIssuanceOfLongTermDebtAndCapitalSecuritiesNet"]
-        self.proceedsFromIssuanceOfPreferredStock = data["proceedsFromIssuanceOfPreferredStock"]
-        self.proceedsFromRepurchaseOfEquity = data["proceedsFromRepurchaseOfEquity"]
-        self.proceedsFromSaleOfTreasuryStock = data["proceedsFromSaleOfTreasuryStock"]
-        self.changeInCashAndCashEquivalents = data["changeInCashAndCashEquivalents"]
-        self.changeInExchangeRate = data["changeInExchangeRate"]
-        self.netIncome = data["netIncome"]
-
+    fiscalDateEnding: str = field(default=None)
+    reportedCurrency: str = field(default=None)
+    operatingCashFlow: float = field(default=None)
+    paymentsForOperatingActivities: float = field(default=None)
+    proceedsFromOperatingActivities: float = field(default=None)
+    changeInOperatingLiabilities: float = field(default=None)
+    changeInOperatingAssets: float = field(default=None)
+    depreciationDepletionAndAmortization: float = field(default=None)
+    capitalExpenditures: float = field(default=None)
+    changeInReceivables: float = field(default=None)
+    changeInInventory: float = field(default=None)
+    profitLoss: float = field(default=None)
+    cashFlowFromInvestment: float = field(default=None)
+    cashFlowFromFinancing: float = field(default=None)
+    proceedsFromRepaymentsOfShortTermDebt: float = field(default=None)
+    paymentsForRepurchaseOfCommonStock: float = field(default=None)
+    paymentsForRepurchaseOfEquity: float = field(default=None)
+    paymentsForRepurchaseOfPreferredStock: float = field(default=None)
+    dividendPayout: float = field(default=None)
+    dividendPayoutCommonStock: float = field(default=None)
+    dividendPayoutPreferredStock: float = field(default=None)
+    proceedsFromIssuanceOfCommonStock: float = field(default=None)
+    proceedsFromIssuanceOfLongTermDebtAndCapitalSecuritiesNet: float = field(default=None)
+    proceedsFromIssuanceOfPreferredStock: float = field(default=None)
+    proceedsFromRepurchaseOfEquity: float = field(default=None)
+    proceedsFromSaleOfTreasuryStock: float = field(default=None)
+    changeInCashAndCashEquivalents: float = field(default=None)
+    changeInExchangeRate: float = field(default=None)
+    netIncome: float = field(default=None)

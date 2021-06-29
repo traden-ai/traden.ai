@@ -1,4 +1,4 @@
-from models.model_interface import ModelInterface
+from Models.models.model_interface import ModelInterface
 from utils.utils import filter_by_ticket, majority_voting
 
 
@@ -27,7 +27,7 @@ class EnsembleInterface(ModelInterface):
 
 
 if __name__ == "__main__":
-    from model_database_handler.model_database_handler import get_instance, save_instance
+    from Models.model_database_handler.model_database_handler import get_instance, save_instance
 
     model1 = get_instance("NeuralNetEstimator")
     model2 = get_instance("NeuralNet")

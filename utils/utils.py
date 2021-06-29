@@ -3,7 +3,7 @@ import datetime as dt
 import numpy as np
 from DataProvider.database_handler.handler_calls import get_data
 from Models.models.model_interface import Action
-from Simulation.simulation_data.daily_data import DailyData
+from Simulation.simulation_data.day_data import DailyData
 
 symbols_filepath = "../data/symbols.txt"
 keys_filepath = "../data/keys.txt"

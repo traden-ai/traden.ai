@@ -14,17 +14,17 @@ class Ledger:
     def get_amount_stock(self, stock_name: str):
         return self.stocks[stock_name]
 
-    def buy(self, stock_name: str, stock_price: float, amount: float):
+    def buy(self, stock_name: str, stock_price: float, amount: float, transaction_fee: float = .0):
         if stock_name in self.stocks and self.balance >= stock_price * amount:
             self.balance -= stock_price * amount
-            self.stocks[stock_name] += amount
+            self.stocks[stock_name] += amount * (1 - transaction_fee)
             return True
         else:
             return False
 
-    def sell(self, stock_name: str, stock_price: float, amount: float):
+    def sell(self, stock_name: str, stock_price: float, amount: float, transaction_fee: float = .0):
         if stock_name in self.stocks and self.stocks[stock_name] >= amount:
-            self.balance += stock_price * amount
+            self.balance += stock_price * amount * (1 - transaction_fee)
             self.stocks[stock_name] -= amount
             return True
         else:

@@ -6,13 +6,25 @@ class Action(Enum):
     SELL = 2
 
 
-class InputData(Enum):
-    PRICE_DATA = 1
-    TECHNICAL_INDICATORS = 2
-    EARNINGS = 3
-    CASH_FLOW = 4
-    INCOME_STATEMENT = 5
-    BALANCE_SHEET = 6
+class TradingData(Enum):
+    dailyAdjusted = 1
+    sma = 3
+    ema = 2
+    macd = 4
+    rsi = 5
+    vwap = 6
+    cci = 7
+    adx = 8
+    stoch = 9
+    aroon = 10
+    bbands = 11
+    ad = 12
+    obv = 13
+    companyOverview = 14
+    earnings = 15
+    cashFlow = 16
+    balanceSheet = 17
+    incomeStatement = 18
 
 
 class ModelInterface:

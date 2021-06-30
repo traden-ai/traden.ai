@@ -7,7 +7,7 @@ class MACDCrossing(ModelInterface):
 
     description = "Buys and sells when MACDs cross."
 
-    input_data = [InputData.TECHNICAL_INDICATORS]
+    input_data = [TradingData.macd]
 
     prev = {}
 
@@ -16,8 +16,8 @@ class MACDCrossing(ModelInterface):
         output = []
 
         for s in daily_data:
-            macd = daily_data[s].technical_indicators.macd
-            macd_signal = daily_data[s].technical_indicators.macd_signal
+            macd = daily_data[s].macd.macd
+            macd_signal = daily_data[s].macd.macdSignal
             diff = macd - macd_signal
 
             if s in self.prev:

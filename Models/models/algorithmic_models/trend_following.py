@@ -6,7 +6,7 @@ class TrendFollowing(ModelInterface):
 
     description = "Follows market trends."
 
-    input_data = [InputData.PRICE_DATA]
+    input_data = [TradingData.dailyAdjusted]
 
     prev = {}
     prices_bought = {}
@@ -25,10 +25,10 @@ class TrendFollowing(ModelInterface):
 
         for s in daily_data:
 
-            prev_close = self.prev[s].close
-            prev_volume = self.prev[s].volume
-            close = daily_data[s].close
-            volume = daily_data[s].volume
+            prev_close = self.prev[s].dailyAdjusted.close
+            prev_volume = self.prev[s].dailyAdjusted.volume
+            close = daily_data[s].dailyAdjusted.close
+            volume = daily_data[s].dailyAdjusted.volume
 
             pp = (close - prev_close) / prev_close
             vp = (volume - prev_volume) / prev_volume

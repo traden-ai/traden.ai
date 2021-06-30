@@ -7,14 +7,14 @@ class RSISignals(ModelInterface):
 
     description = "Buys and sells as RSI indicates gives oversold and overbought signals."
 
-    input_data = [InputData.TECHNICAL_INDICATORS]
+    input_data = [TradingData.rsi]
 
     def execute(self, daily_data: dict):
 
         output = []
 
         for s in daily_data:
-            rsi = daily_data[s].technical_indicators.rsi
+            rsi = daily_data[s].rsi.rsi
 
             if rsi < 33.3:
                 output.append({"Ticker": s, "Action": Action.BUY, "Intensity": random.uniform(0.5, 1)})

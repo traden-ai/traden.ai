@@ -124,4 +124,4 @@ class AlphaVantage(DataResourceInterface):
 
 if __name__=="__main__":
     av = AlphaVantage()
-    av.get_past_data(["GM"], ["sma"], "2020-01-01","2021-01-01")
+    av.get_past_data(["GM"], ["sma", "macd"], "2020-01-01","2021-01-01")

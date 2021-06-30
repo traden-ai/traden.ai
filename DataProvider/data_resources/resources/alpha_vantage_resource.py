@@ -69,11 +69,21 @@ class AlphaVantage(DataResourceInterface):
         ts = TechIndicators(key=self.key, output_format='json')
         data, meta_data = None, None
         if indicator == "sma":
-            data, meta_data = ts.get_sma(symbol=stock)  # FIXME sma20, sma50, sma100 {"sma": {"sma20": 53.61, ..., ...}}
-            data = transform_key_to(data, smaOld2NewNames)
+            data20, meta_data = ts.get_sma(symbol=stock, time_period=20)
+            data20 = transform_key_to(data20, {"SMA": "sma20"})
+            data50, meta_data = ts.get_sma(symbol=stock, time_period=50)
+            data50 = transform_key_to(data50, {"SMA": "sma50"})
+            data100, meta_data = ts.get_sma(symbol=stock, time_period=100)
+            data100 = transform_key_to(data100, {"SMA": "sma100"})
+            data = unite_data(unite_data(data20, data50), data100)
         elif indicator == "ema":
-            data, meta_data = ts.get_ema(symbol=stock)  # FIXME ema20, ema50, ema100
-            data = transform_key_to(data, emaOld2NewNames)
+            data20, meta_data = ts.get_ema(symbol=stock, time_period=20)
+            data20 = transform_key_to(data20, {"EMA": "ema20"})
+            data50, meta_data = ts.get_ema(symbol=stock, time_period=50)
+            data50 = transform_key_to(data50, {"EMA": "ema50"})
+            data100, meta_data = ts.get_ema(symbol=stock, time_period=100)
+            data100 = transform_key_to(data100, {"EMA": "ema100"})
+            data = unite_data(unite_data(data20, data50), data100)
         elif indicator == "macd":
             data, meta_data = ts.get_macd(symbol=stock)
             data = transform_key_to(data, macdOld2NewNames)
@@ -109,7 +119,7 @@ class AlphaVantage(DataResourceInterface):
 
     @retry(retry_on_exception=retry_if_value_error, wait_exponential_multiplier=1000, wait_exponential_max=10000,
            stop_max_delay=30000)
-    def get_fundamental_indicator(self, stock, indicator):  # TODO fix fundamental data to return data correctly
+    def get_fundamental_indicator(self, stock, indicator):
         ts = FundamentalData(key=self.key, output_format='json')
         data, meta_data = None, None
         if indicator == "companyOverview":
@@ -119,17 +129,31 @@ class AlphaVantage(DataResourceInterface):
         elif indicator == "earnings":
             url = "https://www.alphavantage.co/query?function=EARNINGS&symbol={}&apikey={}".format(stock, self.key)
             raw = requests.get(url)
-            data = raw.json()
-            data = transform_key_to(data, earningsOld2NewNames)
-            print(data)
+            data = raw.json()["quarterlyEarnings"]
+            processed_data = {}
+            for it in data:
+                processed_data[it["fiscalDateEnding"]] = it
+            data = transform_key_to(processed_data, earningsOld2NewNames)
         elif indicator == "cashFlow":
             data, meta_data = ts.get_cash_flow_quarterly(symbol=stock)
+            data = json.loads(data.to_json(orient="index"))
+            processed_data = {}
+            for it in data:
+                processed_data[data[it]["fiscalDateEnding"]] = data[it]
+            data = processed_data
         elif indicator == "incomeStatement":
             data, meta_data = ts.get_income_statement_quarterly(symbol=stock)
-            data = data.to_json(orient="index")
-            data = transform_key_to(data, incomeStatementOld2NewNames)
+            data = json.loads(data.to_json(orient="index"))
+            processed_data = {}
+            for it in data:
+                processed_data[data[it]["fiscalDateEnding"]] = data[it]
+            data = transform_key_to(processed_data, incomeStatementOld2NewNames)
         elif indicator == "balanceSheet":
             data, meta_data = ts.get_balance_sheet_quarterly(symbol=stock)
+            data = json.loads(data.to_json(orient="index"))
+            processed_data = {}
+            for it in data:
+                processed_data[data[it]["fiscalDateEnding"]] = data[it]
             data = transform_key_to(data, balanceSheetOld2NewNames)
         return data, meta_data
 
@@ -139,8 +163,3 @@ class AlphaVantage(DataResourceInterface):
             if start_date <= date <= end_date:
                 filtered_date[date] = data[date]
         return filtered_date
-
-
-if __name__ == "__main__":
-    av = AlphaVantage()
-    av.get_past_data(["GM"], ["sma", "macd"], "2020-01-01", "2021-01-01")

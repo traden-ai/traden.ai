@@ -7,7 +7,7 @@ from alpha_vantage.timeseries import TimeSeries
 from retrying import retry
 
 from DataProvider.data_resources.data_resource_interface import DataResourceInterface
-from DataProvider.data_resources.resources.utils import retry_if_value_error
+from DataProvider.data_resources.resources.utils import retry_if_value_error, transform_key_to
 
 
 class AlphaVantage(DataResourceInterface):
@@ -121,3 +121,7 @@ class AlphaVantage(DataResourceInterface):
             if start_date <= date <= end_date:
                 filtered_date[date] = data[date]
         return filtered_date
+
+if __name__=="__main__":
+    av = AlphaVantage()
+    av.get_past_data(["GM"], ["sma"], "2020-01-01","2021-01-01")

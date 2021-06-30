@@ -14,9 +14,13 @@ message TimeInterval {
   string end_date = 2;
 }
 
+message Indicator{
+  map<string, string> components_to_values = 1;
+}
+
 message TickerData {
   string ticker = 1;
-  map<string, string> indicators_to_values = 2;
+  map<string, Indicator> indicators_to_values = 2;
 }
 
 message DayData{

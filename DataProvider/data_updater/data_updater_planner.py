@@ -3,10 +3,11 @@ from DataProvider.data_updater.utils import chunks
 
 class DataUpdaterPlanner:
 
-    def __init__(self, database_handler):
+    def __init__(self, database_handler, id=1):
+        self.id = id
         self.database_handler = database_handler
 
-    def get_tasks(self, update_date, id=1, chunk_size=1):
+    def get_tasks(self, update_date, chunk_size=1):
         """returns a list of future actions, the list should have the following format
         [action_item1, action_item2, action_item3, ...]"""
         stocks = self.database_handler.get_stocks()
@@ -25,5 +26,5 @@ class DataUpdaterPlanner:
                                   "Indicator": indicator,
                                   "StartDate": metadata["EndDate"],
                                   "EndDate": update_date})
-                if len(tasks) > chunk_size*id:
-                    return tasks[chunk_size*(id-1):chunk_size*id]
+                if len(tasks) > chunk_size*self.id:
+                    return tasks[chunk_size*(self.id-1):chunk_size*self.id]

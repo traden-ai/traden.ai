@@ -9,10 +9,11 @@ import concurrent.futures
 
 class DataUpdater:
 
-    def __init__(self, resource_handler, database_handler, no_workers=1):
+    def __init__(self, resource_handler, database_handler, no_workers=1, id=1):
+        self.id = id
         self.resource_handler = resource_handler
         self.database_handler = database_handler
-        self.planner = DataUpdaterPlanner(database_handler)
+        self.planner = DataUpdaterPlanner(database_handler, id=id)
         self.workers = []
         for i in range(no_workers):
             self.workers.append(DataUpdaterWorker(resource_handler, database_handler))

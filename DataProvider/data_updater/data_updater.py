@@ -19,11 +19,11 @@ class DataUpdater:
             self.workers.append(DataUpdaterWorker(resource_handler, database_handler))
 
     def update_database(self, chunk_size=30):
-        executor = concurrent.futures.ProcessPoolExecutor(5)
+        executor = concurrent.futures.ProcessPoolExecutor(len(self.workers))
         while True:
             futures = []
             for i in range(len(self.workers)):
-                tasks = self.planner.get_tasks(MAXIMUM_DATE, id=i+1, chunk_size=chunk_size)
+                tasks = self.planner.get_tasks(MAXIMUM_DATE, chunk_size=chunk_size)
                 if tasks:
                     futures.append(executor.submit(self.workers[i].execute_tasks, tasks))
             concurrent.futures.wait(futures)

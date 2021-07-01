@@ -9,7 +9,7 @@ from DataProvider.data_updater.data_updater import DataUpdater
 from DataProvider.database_handler.database_handler import DatabaseHandler
 from DataProviderContract.generated_files import data_provider_pb2_grpc
 from DataProviderContract.generated_files.data_provider_pb2_grpc import DataProviderServicer
-MAX_ARGS = 5
+MAX_ARGS = 4
 
 if __name__ == '__main__':
     args = sys.argv

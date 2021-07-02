@@ -1,5 +1,7 @@
 from Simulation.ledger.ledger import Ledger
+from Simulation.utils.utils import update_today_data
 from Models.models.model_interface import ModelInterface, Action
+from Simulation.simulation_data.SimulationData import SimulationData
 from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
 
 
@@ -13,6 +15,7 @@ class Simulation:
         self.model = model
         self.initial_balance = balance
         self.daily_data = daily_data
+        self.today_data = {ticker: SimulationData() for ticker in self.tradable_tickers}
         self.dates = dates
         self.prices = prices
         self.transaction_fee = transaction_fee
@@ -79,7 +82,8 @@ class Simulation:
     def execute(self):
         for i in range(self.no_executions):
             while self.current_date != self.end_date:
-                self.execute_day(self.daily_data[self.iterator])
+                self.today_data = update_today_data(self.today_data, self.daily_data[self.dates[self.iterator]])
+                self.execute_day(self.today_data)
                 if self.ledger.has_stocks():
                     self.operating_days += 1
                 self.current_date = self.dates[self.iterator]

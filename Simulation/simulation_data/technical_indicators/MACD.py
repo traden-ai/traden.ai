@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True)
+@dataclass
 class MACD:
     """class for representing the MACD technical indicator"""
 

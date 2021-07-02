@@ -7,7 +7,7 @@ class Random(ModelInterface):
 
     description = "Buys and sells randomly."
 
-    input_data = []
+    input_data = {}
 
     def execute(self, daily_data: dict):
 

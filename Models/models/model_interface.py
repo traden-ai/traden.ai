@@ -8,8 +8,8 @@ class Action(Enum):
 
 class TradingData(Enum):
     dailyAdjusted = 1
-    sma = 3
-    ema = 2
+    sma = 2
+    ema = 3
     macd = 4
     rsi = 5
     vwap = 6
@@ -31,7 +31,7 @@ class ModelInterface:
 
     description = "default description for model"
 
-    input_data = []
+    input_data = {}
 
     def get_description(self):
         return self.description

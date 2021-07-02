@@ -7,7 +7,7 @@ class EMACrossing(ModelInterface):
 
     description = "Buys and sells when EMA and Close price cross."
 
-    input_data = [TradingData.dailyAdjusted, TradingData.ema]
+    input_data = {TradingData.dailyAdjusted, TradingData.ema}
 
     def execute(self, daily_data: dict):
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True)
+@dataclass
 class STOCH:
     """class for representing the STOCH technical indicator"""
 

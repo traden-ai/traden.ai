@@ -14,9 +14,9 @@ from Simulation.simulation_data.technical_indicators.AD import AD
 from Simulation.simulation_data.technical_indicators.OBV import OBV
 from Simulation.simulation_data.fundamental_data.CompanyOverview import CompanyOverview
 from Simulation.simulation_data.fundamental_data.Earnings import Earnings
-from Simulation.simulation_data.fundamental_data.BalanceSheet import BalanceSheet
 from Simulation.simulation_data.fundamental_data.CashFlow import CashFlow
 from Simulation.simulation_data.fundamental_data.IncomeStatement import IncomeStatement
+from Simulation.simulation_data.fundamental_data.BalanceSheet import BalanceSheet
 
 
 @dataclass(frozen=True)
@@ -39,5 +39,8 @@ class SimulationData:
     companyOverview: CompanyOverview = field(default=None)
     earnings: Earnings = field(default=None)
     cashFlow: CashFlow = field(default=None)
-    balanceSheet: BalanceSheet = field(default=None)
     incomeStatement: IncomeStatement = field(default=None)
+    balanceSheet: BalanceSheet = field(default=None)
+
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)

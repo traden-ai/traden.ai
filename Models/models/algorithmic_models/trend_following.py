@@ -6,7 +6,7 @@ class TrendFollowing(ModelInterface):
 
     description = "Follows market trends."
 
-    input_data = [TradingData.dailyAdjusted]
+    input_data = {TradingData.dailyAdjusted}
 
     prev = {}
     prices_bought = {}

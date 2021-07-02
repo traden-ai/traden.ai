@@ -7,7 +7,7 @@ class RSISignals(ModelInterface):
 
     description = "Buys and sells as RSI indicates gives oversold and overbought signals."
 
-    input_data = [TradingData.rsi]
+    input_data = {TradingData.rsi}
 
     def execute(self, daily_data: dict):
 

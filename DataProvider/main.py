@@ -8,7 +8,7 @@ from DataProvider.data_resources.resources.alpha_vantage_resource import AlphaVa
 from DataProvider.data_updater.data_updater import DataUpdater
 from DataProvider.database_handler.database_handler import DatabaseHandler
 from DataProviderContract.generated_files import data_provider_pb2_grpc
-from DataProviderContract.generated_files.data_provider_pb2_grpc import DataProviderServicer
+from DataProvider.data_provider_servicer.data_provider_servicer import DataProviderServicer
 MAX_ARGS = 4
 
 if __name__ == '__main__':
@@ -31,18 +31,16 @@ if __name__ == '__main__':
     id = 1 if len(args) == MAX_ARGS - 1 else int(args[MAX_ARGS - 1])
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    data_provider_pb2_grpc.add_DataProviderServicer_to_server(
-        DataProviderServicer(), server)
-    server.add_insecure_port(f"{host}:{port}")
-
     db = DatabaseHandler()
-
     du = DataUpdater(ResourceHandler([AlphaVantage()], db), DatabaseHandler(), no_workers=5, id=id)
 
-    p = Process(target=du.update_database(), args=())
+    data_provider_pb2_grpc.add_DataProviderServicer_to_server(
+        DataProviderServicer(db), server)
+    server.add_insecure_port(f"{host}:{port}")
 
     # server running
     server.start()
+    p = Process(target=du.update_database(), args=())
     p.start()
     p.join()
     server.wait_for_termination()

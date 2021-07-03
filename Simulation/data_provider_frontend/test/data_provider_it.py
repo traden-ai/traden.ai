@@ -48,3 +48,7 @@ class DataProviderTestMethods(unittest.TestCase):
         request = data_provider_pb2.PastDataRequest(tickers=self.VALID_TICKER_LIST,
                                                     indicators=self.VALID_INDICATOR_LIST, interval=time_interval)
         response = self.client.get_past_data(request)
+
+
+if __name__ == '__main__':
+    unittest.main()

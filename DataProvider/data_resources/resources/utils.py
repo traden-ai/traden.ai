@@ -15,7 +15,8 @@ def transform_key_to(data, oldToNewName):
 
 def unite_data(data1, data2):
     for date in data2:
-        data1[date].update(data2[date])
+        if date in data1:
+            data1[date].update(data2[date])
     return data1
 
 dailyAdjustedOld2NewNames = {

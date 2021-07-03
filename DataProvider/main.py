@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     db = DatabaseHandler()
-    du = DataUpdater(ResourceHandler([AlphaVantage()], db), DatabaseHandler(), no_workers=5, id=id)
+    du = DataUpdater(ResourceHandler([AlphaVantage()], db), DatabaseHandler(), no_workers=100, id=id)
 
     data_provider_pb2_grpc.add_DataProviderServicer_to_server(
         DataProviderServicer(db), server)

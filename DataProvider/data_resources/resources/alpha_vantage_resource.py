@@ -75,7 +75,7 @@ class AlphaVantage(DataResourceInterface):
             data50 = transform_key_to(data50, {"SMA": "sma50"})
             data100, meta_data = ts.get_sma(symbol=stock, time_period=100)
             data100 = transform_key_to(data100, {"SMA": "sma100"})
-            data = unite_data(unite_data(data20, data50), data100)
+            data = unite_data(unite_data(data100, data50), data20)
         elif indicator == "ema":
             data20, meta_data = ts.get_ema(symbol=stock, time_period=20)
             data20 = transform_key_to(data20, {"EMA": "ema20"})
@@ -83,7 +83,7 @@ class AlphaVantage(DataResourceInterface):
             data50 = transform_key_to(data50, {"EMA": "ema50"})
             data100, meta_data = ts.get_ema(symbol=stock, time_period=100)
             data100 = transform_key_to(data100, {"EMA": "ema100"})
-            data = unite_data(unite_data(data20, data50), data100)
+            data = unite_data(unite_data(data100, data50), data20)
         elif indicator == "macd":
             data, meta_data = ts.get_macd(symbol=stock)
             data = transform_key_to(data, macdOld2NewNames)
@@ -154,7 +154,7 @@ class AlphaVantage(DataResourceInterface):
             processed_data = {}
             for it in data:
                 processed_data[data[it]["fiscalDateEnding"]] = data[it]
-            data = transform_key_to(data, balanceSheetOld2NewNames)
+            data = transform_key_to(processed_data, balanceSheetOld2NewNames)
         return data, meta_data
 
     def filter_using_dates(self, data, start_date, end_date):
@@ -163,3 +163,8 @@ class AlphaVantage(DataResourceInterface):
             if start_date <= date <= end_date:
                 filtered_date[date] = data[date]
         return filtered_date
+
+if __name__ == "__main__":
+    av = AlphaVantage()
+    data = av.get_past_data(["A"], ["balanceSheet"], "2020-01-01", "2021-01-01")
+    print(data)

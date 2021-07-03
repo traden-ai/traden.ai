@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True)
+@dataclass
 class VWAP:
     """class for representing the VWAP technical indicator"""
 

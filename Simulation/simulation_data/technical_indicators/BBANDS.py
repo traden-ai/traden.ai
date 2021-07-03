@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True)
+@dataclass
 class BBANDS:
     """class for representing the BBANDS technical indicator"""
 

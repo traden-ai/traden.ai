@@ -1,53 +1,50 @@
-from Simulation.utils.data_translator import *
-from Simulation.simulation_data.day_data import DayData
-from Simulation.simulation_data.technical_indicators import TechnicalIndicators
-from Simulation.simulation_data.earnings import Earnings
-from Simulation.simulation_data.cash_flow import CashFlow
-from Simulation.simulation_data.balance_sheet import BalanceSheet
-from Simulation.simulation_data.income_statement import IncomeStatement
+from Simulation.simulation_data.SimulationData import SimulationData
+from Simulation.simulation_data.stock_time_series.DailyAdjusted import DailyAdjusted
+from Simulation.simulation_data.technical_indicators.EMA import EMA
+from Simulation.simulation_data.technical_indicators.SMA import SMA
+from Simulation.simulation_data.technical_indicators.MACD import MACD
+from Simulation.simulation_data.technical_indicators.RSI import RSI
+from Simulation.simulation_data.technical_indicators.VWAP import VWAP
+from Simulation.simulation_data.technical_indicators.CCI import CCI
+from Simulation.simulation_data.technical_indicators.ADX import ADX
+from Simulation.simulation_data.technical_indicators.STOCH import STOCH
+from Simulation.simulation_data.technical_indicators.AROON import AROON
+from Simulation.simulation_data.technical_indicators.BBANDS import BBANDS
+from Simulation.simulation_data.technical_indicators.AD import AD
+from Simulation.simulation_data.technical_indicators.OBV import OBV
+from Simulation.simulation_data.fundamental_data.CompanyOverview import CompanyOverview
+from Simulation.simulation_data.fundamental_data.Earnings import Earnings
+from Simulation.simulation_data.fundamental_data.BalanceSheet import BalanceSheet
+from Simulation.simulation_data.fundamental_data.CashFlow import CashFlow
+from Simulation.simulation_data.fundamental_data.IncomeStatement import IncomeStatement
 
 
-def data_load(data_provider_data, input_groups):
+def update_today_data(yesterday_data: dict, today_data: dict):
+    """ This method updates the SimulationData dataclass instances from 'yesterday'
+        with the provided data from 'today'
+    """
+    for ticker, data in today_data:
+        aux_data = {}
+        for indicator, components in data:
+            aux_data[indicator] = SimulationDataClasses[indicator](**components)
+        yesterday_data[ticker].__init__(**aux_data)
+
+    return yesterday_data
+
+
+def data_load(data_provider_data):
     """ This method processes the raw data provided by the data_provided
     and transforms it into clean data for a simulation execution
     """
 
     def daily_data_load(values):
-        clean_data = {"technical_indicators": {}, "earnings": {}, "cash_flow": {}, "balance_sheet": {},
-                      "income_statement": {}}
+        typed_data = {trading_data: {} for trading_data in SimulationDataClasses}
 
-        for key, value in values:
-            clean_key = DatabaseKeySpecification[key]["clean_name"]
-            key_type = DatabaseKeySpecification[key]["type"]
-            key_groups = set(set(DatabaseKeySpecification[key]["group"]) and input_groups)
+        for key, components in values:
+            for component, value in components.components_to_values:
+                typed_data[key][component] = type(getattr(SimulationDataClasses[key], component))(value)
 
-            if InputData.PRICE_DATA in key_groups:
-                clean_data[clean_key] = key_type(value)
-            if InputData.TECHNICAL_INDICATORS in key_groups:
-                clean_data["technical_indicators"][clean_key] = key_type(value)
-            if InputData.EARNINGS in key_groups:
-                clean_data["earnings"][clean_key] = key_type(value)
-            if InputData.CASH_FLOW in key_groups:
-                clean_data["cash_flow"][clean_key] = key_type(value)
-            if InputData.BALANCE_SHEET in key_groups:
-                clean_data["balance_sheet"][clean_key] = key_type(value)
-            if InputData.INCOME_STATEMENT in key_groups:
-                clean_data["income_statement"][clean_key] = key_type(value)
-
-        for key in clean_data:
-            if isinstance(clean_data[key], dict) and clean_data[key] != {}:
-                if key == "technical_indicators":
-                    clean_data[key] = TechnicalIndicators(**clean_data[key])
-                elif key == "earnings":
-                    clean_data[key] = Earnings(**clean_data[key])
-                elif key == "cash_flow":
-                    clean_data[key] = CashFlow(**clean_data[key])
-                elif key == "balance_sheet":
-                    clean_data[key] = BalanceSheet(**clean_data[key])
-                elif key == "income_statement":
-                    clean_data[key] = IncomeStatement(**clean_data[key])
-
-        return DayData(**clean_data)
+        return typed_data
 
     dates = []
     data = {}
@@ -59,6 +56,15 @@ def data_load(data_provider_data, input_groups):
         prices.append({})
         for ticker_data in day_data.ticker_data:
             data[day_data.date][ticker_data.ticker] = daily_data_load(ticker_data.indicators_to_values)
-            prices[-1][ticker_data.ticker] = float(ticker_data.indicators_to_values["1. close"])
+            prices[-1][ticker_data.ticker] = float(ticker_data.indicators_to_values["dailyAdjusted"]
+                                                   .components_to_values["adjustedClose"])
 
     return dates, data, prices
+
+
+SimulationDataClasses = {
+    "dailyAdjusted": DailyAdjusted, "sma": SMA, "ema": EMA, "macd": MACD, "rsi": RSI, "vwap": VWAP, "cci": CCI,
+    "adx": ADX, "stoch": STOCH, "aroon": AROON, "bbands": BBANDS, "ad": AD, "obv": OBV,
+    "companyOverview": CompanyOverview, "earnings": Earnings, "cashFlow": CashFlow, "incomeStatement": IncomeStatement,
+    "balanceSheet": BalanceSheet
+}

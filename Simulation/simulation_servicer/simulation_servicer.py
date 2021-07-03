@@ -1,6 +1,5 @@
 from Simulation.utils.utils import *
-from Models.models.model_interface import Action, InputData
-from Simulation.utils.data_translator import InputData2Keys
+from Models.models.model_interface import Action, TradingData
 from Simulation.simulation.simulation_assembler import SimulationAssembler
 from DataProviderContract.generated_files import data_provider_pb2
 from SimulationContract.generated_files import simulation_pb2_grpc, simulation_pb2
@@ -39,18 +38,14 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
                 )
 
         # get data requested by models
-        data_groups = set()
-        data_requested = ["4. close"]  # close is always needed
+        data_request = {TradingData.dailyAdjusted}  # price is always needed
         for instance in model_instances:
-            for data in instance.get_input_data():
-                if data not in data_groups:
-                    data_groups.add(data)
-                    data_requested += InputData2Keys[data]
+            data_request += instance.get_input_data()
 
         # get data from data provider
         response = self.data_provider_frontend.get_past_data(data_provider_pb2.PastDataRequest(
                 tickers=request.tickers,
-                indicators=data_requested,
+                indicators=map(lambda trading_data: trading_data.name, data_request),
                 interval=data_provider_pb2.TimeInterval(start_date=request.start_date, end_date=request.end_date)
             ))
 
@@ -80,7 +75,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             raw_data = []
             for partition in response:
                 raw_data = raw_data + partition.data
-            dates, data, prices = data_load(raw_data, data_groups)
+            dates, data, prices = data_load(raw_data)
 
             # create and execute simulation assembler
             try:

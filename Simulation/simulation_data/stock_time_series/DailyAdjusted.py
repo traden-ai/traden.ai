@@ -1,15 +1,15 @@
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True)
+@dataclass
 class DailyAdjusted:
     """class for representing daily price data"""
 
-    open: float = field(default=None)
-    high: float = field(default=None)
-    low: float = field(default=None)
-    close: float = field(default=None)
-    adjustedClose: float = field(default=None)
-    volume: float = field(default=None)
-    dividendAmount: float = field(default=None)
-    splitCoefficient: float = field(default=None)
+    open: float = field(default=.0)
+    high: float = field(default=.0)
+    low: float = field(default=.0)
+    close: float = field(default=.0)
+    adjustedClose: float = field(default=.0)
+    volume: float = field(default=.0)
+    dividendAmount: float = field(default=.0)
+    splitCoefficient: float = field(default=.0)

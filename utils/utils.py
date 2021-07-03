@@ -3,7 +3,7 @@ import datetime as dt
 import numpy as np
 from DataProvider.database_handler.handler_calls import get_data
 from Models.models.model_interface import Action
-from Simulation.simulation_data.day_data import DailyData
+from Simulation.simulation_data.SimulationData import SimulationData
 
 symbols_filepath = "../data/symbols.txt"
 keys_filepath = "../data/keys.txt"
@@ -84,7 +84,7 @@ def convert_data_to_np(data_raw):
 
     for stock in data_raw:
         for index in range(len(data_raw[stock])):
-            stock_matrix.append([convert_daily_data_to_np({stock: DailyData(data_raw[stock][index])})[stock]])
+            stock_matrix.append([convert_daily_data_to_np({stock: SimulationData(data_raw[stock][index])})[stock]])
         matrix[stock] = np.concatenate(stock_matrix, axis=0)
         stock_matrix = []
     return matrix

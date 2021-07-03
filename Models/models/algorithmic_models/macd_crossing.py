@@ -7,7 +7,7 @@ class MACDCrossing(ModelInterface):
 
     description = "Buys and sells when MACDs cross."
 
-    input_data = [TradingData.macd]
+    input_data = {TradingData.macd}
 
     prev = {}
 

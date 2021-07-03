@@ -7,9 +7,10 @@ class DataUpdaterPlanner:
         self.id = id
         self.database_handler = database_handler
 
-    def get_tasks(self, update_date, chunk_size=1):
+    def get_tasks(self, update_date, chunk_size=1, worker=1):
         """returns a list of future actions, the list should have the following format
         [action_item1, action_item2, action_item3, ...]"""
+        task_no = self.id + worker
         stocks = self.database_handler.get_stocks()
         indicators = self.database_handler.get_indicators()
         tasks = []
@@ -26,5 +27,5 @@ class DataUpdaterPlanner:
                                   "Indicator": indicator,
                                   "StartDate": metadata["EndDate"],
                                   "EndDate": update_date})
-                if len(tasks) > chunk_size*self.id:
-                    return tasks[chunk_size*(self.id-1):chunk_size*self.id]
+                if len(tasks) > chunk_size*task_no:
+                    return tasks[chunk_size*(task_no-1):chunk_size*task_no]

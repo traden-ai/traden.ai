@@ -23,15 +23,14 @@ if __name__ == '__main__':
     # Check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
-        print(f"Usage: python main.py host port [id = 1][maxWorkers = 10]\n")
+        print(f"Usage: python main.py host port [id = 1]\n")
 
     # Parse arguments
     host = args[1]
     port = args[2]
-    id = 1 if len(args) == MAX_ARGS - 2 else int(args[MAX_ARGS - 2])
-    workers = 10 if len(args) == MAX_ARGS - 1 else int(args[MAX_ARGS - 1])
+    id = 1 if len(args) == MAX_ARGS - 1 else int(args[MAX_ARGS - 1])
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     data_provider_pb2_grpc.add_DataProviderServicer_to_server(
         DataProviderServicer(), server)
     server.add_insecure_port(f"{host}:{port}")

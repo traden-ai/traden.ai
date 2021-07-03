@@ -23,7 +23,7 @@ class DataUpdater:
         while True:
             futures = []
             for i in range(len(self.workers)):
-                tasks = self.planner.get_tasks(MAXIMUM_DATE, chunk_size=chunk_size)
+                tasks = self.planner.get_tasks(MAXIMUM_DATE, chunk_size=chunk_size, worker=self.id+i)
                 if tasks:
                     futures.append(executor.submit(self.workers[i].execute_tasks, tasks))
             concurrent.futures.wait(futures)

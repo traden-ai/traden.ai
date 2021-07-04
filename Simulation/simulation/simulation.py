@@ -1,8 +1,7 @@
 from Simulation.ledger.ledger import Ledger
-from Simulation.utils.utils import update_today_data
+from Simulation.utils.utils import *
 from Models.models.model_interface import ModelInterface, Action
 from Simulation.simulation_data.SimulationData import SimulationData
-from utils.utils import profit_percentage_by_year, time_between_days, get_year, get_month
 
 
 class Simulation:

@@ -4,7 +4,7 @@ from concurrent import futures
 
 from SimulationContract.generated_files import simulation_pb2_grpc
 from Simulation.simulation_servicer.simulation_servicer import SimulationServicer
-from Simulation.data_provider_frontend.data_provider_frontend import DataProviderFrontend
+from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 
 MAX_ARGS = 6
 
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
-        print(f"Usage: python main.py data_provider_host data_provider_port host port [maxWorkers = 10]\n")
+        print(f"Usage: python3 main.py data_provider_host data_provider_port host port [maxWorkers = 10]\n")
 
     # parse arguments
     data_provider_host = args[1]
@@ -36,9 +36,9 @@ if __name__ == '__main__':
     # FIXME change server port to be reachable, this should be a secure_port however this requires ssl credentials
     server.add_insecure_port(f"{host}:{port}")
 
-    # server running
-    server.start()
-    server.wait_for_termination()
-
-    # finally
-    data_provider_frontend.close()
+    try:
+        # server running
+        server.start()
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        data_provider_frontend.close()

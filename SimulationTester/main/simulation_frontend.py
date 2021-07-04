@@ -7,10 +7,8 @@ class SimulationFrontend:
     def __init__(self, simulation_host, simulation_port):
         self.simulation_host = simulation_host
         self.simulation_port = simulation_port
-        self.channel = grpc.insecure_channel(
-            f"{simulation_host}:{simulation_port}")
-        self.stub = simulation_pb2_grpc.SimulationStub(
-            channel=self.channel)
+        self.channel = grpc.insecure_channel(f"{simulation_host}:{simulation_port}")
+        self.stub = simulation_pb2_grpc.SimulationStub(channel=self.channel)
 
     def ctrl_ping(self, ctrl_ping_request):
         return self.stub.ctrl_ping(ctrl_ping_request)

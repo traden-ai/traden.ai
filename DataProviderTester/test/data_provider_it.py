@@ -1,8 +1,8 @@
 import unittest
 
-from Simulation.data_provider_frontend.data_provider_frontend import DataProviderFrontend
+from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 from DataProviderContract.generated_files import data_provider_pb2
-from Simulation.data_provider_frontend.test.constants import DP_HOST, DP_PORT
+from DataProviderTester.test.constants import DP_HOST, DP_PORT
 
 
 class DataProviderTestMethods(unittest.TestCase):

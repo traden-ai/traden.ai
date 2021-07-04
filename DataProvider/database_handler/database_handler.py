@@ -89,6 +89,8 @@ class DatabaseHandler:
         for ticker in tickers:
             for indicator in indicators:
                 metadata = get_item_metadata(ticker, indicator)
+                if metadata["StartDate"] is None or metadata["EndDate"] is None:
+                    return False, None, None
                 if not possible_start_date:
                     possible_start_date = metadata["StartDate"]
                 if not possible_end_date:

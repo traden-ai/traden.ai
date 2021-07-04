@@ -63,6 +63,13 @@ class DatabaseHandler:
             remove_item(ticker)
             remove_item_metadata(ticker)
 
+    def are_indicators_possible(self, received_indicators):
+        indicators = get_indicators()
+        for indicator in received_indicators:
+            if indicator not in indicators:
+                return False
+        return True
+
     def are_tickers_possible(self, tickers):
         stocks = get_stocks()
         available_tickers = []

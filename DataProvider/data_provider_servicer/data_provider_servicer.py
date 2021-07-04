@@ -20,18 +20,26 @@ class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
         are_tickers_available, available_tickers, not_available_tickers = self.database_handler.are_tickers_possible(
             tickers)
         if not are_tickers_available:
-            return data_provider_pb2.PastDataResponse(
+            yield data_provider_pb2.PastDataResponse(
                 tickers=data_provider_pb2.TickerList(available_tickers=available_tickers,
                                                      not_available_tickers=not_available_tickers),
                 status=data_provider_pb2.PastDataResponse.TICKERS_NOT_AVAILABLE)
+            return None
+
+        are_indicators_possible = self.database_handler.are_indicators_possible(indicators)
+        if not are_indicators_possible:
+            yield data_provider_pb2.PastDataResponse(
+                status=data_provider_pb2.PastDataResponse.NOK)
+            return None
 
         is_date_possible, new_start_date, new_end_date = self.database_handler.is_interval_possible(tickers, indicators,
                                                                                                     start_date,
                                                                                                     end_date)
         if not is_date_possible:
-            return data_provider_pb2.PastDataResponse(
+            yield data_provider_pb2.PastDataResponse(
                 interval=data_provider_pb2.TimeInterval(start_date=new_start_date, end_date=new_end_date),
                 status=data_provider_pb2.PastDataResponse.DATE_NOT_AVAILABLE)
+            return None
 
         data = self.database_handler.get_data_by_date(tickers, indicators, start_date, end_date)
 

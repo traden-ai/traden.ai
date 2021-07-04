@@ -31,14 +31,18 @@ message DeleteInstancesResponse {
 
 // simulation
 
+message TimeInterval {
+  string start_date = 1;
+  string end_date = 2;
+}
+
 message StartSimulationRequest {
-  double balance = 2;
-  repeated string tickers = 3;
-  string start_date = 4;
-  string end_date = 5;
-  repeated string models = 6;
-  float transaction_fee = 7;
-  int32 number_executions = 8;
+  double balance = 1;
+  repeated string tickers = 2;
+  TimeInterval interval = 3;
+  repeated string models = 4;
+  float transaction_fee = 5;
+  int32 number_executions = 6;
 }
 
 message ModelResults {
@@ -60,14 +64,9 @@ message SimulationResult {
   repeated TickerResults ticker_results = 3;
 }
 
-message TickerList{
+message TickerList {
   repeated string available_tickers = 1;
   repeated string not_available_tickers= 2;
-}
-
-message TimeInterval {
-  string start_date = 1;
-  string end_date = 2;
 }
 
 message StartSimulationResponse {
@@ -93,13 +92,19 @@ message DataPoint {
   double capital = 2;
 }
 
-message SimulationGraphRequest{
+message SimulationGraphRequest {
   int32 simulation_id = 1;
 }
 
-message SimulationGraphResponse{
-  string name = 1;
+message SimulationGraphResponse {
+  string model = 1;
   repeated DataPoint data_points = 2;
+  enum Status {
+    OK = 0;
+    SIMULATION_NOT_FOUND = 1;
+    NOK = 2;
+  }
+  Status status = 3;
 }
 
 // simulation logs
@@ -116,28 +121,35 @@ message Log {
   string date = 5;
 }
 
-message SimulationLogsRequest{
-  int32 id = 1;
+message SimulationLogsRequest {
+  int32 simulation_id = 1;
 }
 
-message SimulationLogsResponse{
+message SimulationLogsResponse {
   string model = 1;
-  int32 no_execution = 2;
+  int32 number_execution = 2;
   repeated Log logs = 3;
+  enum Status {
+    OK = 0;
+    SIMULATION_NOT_FOUND = 1;
+    NOK = 2;
+  }
+  Status status = 4;
 }
 
 // simulation termination
 
-message CloseSimulationRequest{
+message CloseSimulationRequest {
   int32 simulation_id = 1;
 }
 
-message CloseSimulationResponse{
+message CloseSimulationResponse {
   enum Status {
     OK = 0;
-    NOK = 1;
+    SIMULATION_NOT_FOUND = 1;
+    NOK = 2;
   }
-  Status status = 1;
+  Status status = 2;
 }
 
 // services

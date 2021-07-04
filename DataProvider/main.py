@@ -3,9 +3,6 @@ from multiprocessing import Process
 import grpc
 import sys
 
-from DataProvider.data_resources.resource_handler.resource_handler import ResourceHandler
-from DataProvider.data_resources.resources.alpha_vantage_resource import AlphaVantage
-from DataProvider.data_updater.data_updater import DataUpdater
 from DataProvider.database_handler.database_handler import DatabaseHandler
 from DataProviderContract.generated_files import data_provider_pb2_grpc
 from DataProvider.data_provider_servicer.data_provider_servicer import DataProviderServicer
@@ -24,7 +21,7 @@ if __name__ == '__main__':
     # Check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
-        print(f"Usage: python main.py host port [workers = 10]\n")
+        print(f"Usage: python3 main.py host port [workers = 10]\n")
 
     # Parse arguments
     host = args[1]

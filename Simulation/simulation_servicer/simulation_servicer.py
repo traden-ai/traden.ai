@@ -40,42 +40,43 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
         # get data requested by models
         data_request = {TradingData.dailyAdjusted}  # price is always needed
         for instance in model_instances:
-            data_request += instance.get_input_data()
+            data_request = data_request or instance.get_input_data()
 
         # get data from data provider
-        response = self.data_provider_frontend.get_past_data(data_provider_pb2.PastDataRequest(
+        response, status = self.data_provider_frontend.get_past_data(data_provider_pb2.PastDataRequest(
                 tickers=request.tickers,
                 indicators=map(lambda trading_data: trading_data.name, data_request),
-                interval=data_provider_pb2.TimeInterval(start_date=request.start_date, end_date=request.end_date)
+                interval=data_provider_pb2.TimeInterval(
+                    start_date=request.interval.start_date,
+                    end_date=request.interval.end_date
+                )
             ))
 
-        if response[0].status == data_provider_pb2.PastDataResponse.Status.NOK:
+        if status == data_provider_pb2.PastDataResponse.Status.NOK:
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.NOK
             )
-        if response[0].status == data_provider_pb2.PastDataResponse.Status.TICKERS_NOT_AVAILABLE:
+        if status == data_provider_pb2.PastDataResponse.Status.TICKERS_NOT_AVAILABLE:
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.TICKERS_NOT_AVAILABLE,
                 tickers=simulation_pb2.TimeInterval(
-                    available_tickers=response[0].tickers.available_tickers,
-                    not_available_tickers=response[0].tickers.not_available_tickers
+                    available_tickers=response["tickers"].available_tickers,
+                    not_available_tickers=response["tickers"].not_available_tickers
                 )
             )
-        if response[0].status == data_provider_pb2.PastDataResponse.Status.INTERVAL_NOT_AVAILABLE:
+        if status == data_provider_pb2.PastDataResponse.Status.INTERVAL_NOT_AVAILABLE:
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.INTERVAL_NOT_AVAILABLE,
                 interval=simulation_pb2.TimeInterval(
-                    start_date=response[0].interval.initial_date, end_date=response[0].interval.end_date
+                    start_date=response["interval"].initial_date,
+                    end_date=response["interval"].end_date
                 )
             )
 
-        if response[0].status == data_provider_pb2.PastDataResponse.Status.OK:
+        if status == data_provider_pb2.PastDataResponse.Status.OK:
 
             # process data
-            raw_data = []
-            for partition in response:
-                raw_data = raw_data + partition.data
-            dates, data, prices = data_load(raw_data)
+            dates, data, prices = data_load(response["data"])
 
             # create and execute simulation assembler
             try:
@@ -117,41 +118,59 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_graph(self, request, context):
-        assembler = self.open_assemblers[request.simulation_id]
-        for no_sim in range(len(assembler.simulations)):
-            graph_name = assembler.simulations[no_sim].model.__class__.__name__
-            graph = assembler.get_graph(no_sim)
+        assembler_id = request.simulation_id
+        if assembler_id in self.open_assemblers:
+            assembler = self.open_assemblers[assembler_id]
+            for no_sim in range(len(assembler.simulations)):
+                model_name = assembler.simulations[no_sim].model.__class__.__name__
+                graph = assembler.get_graph(no_sim)
+                yield simulation_pb2.SimulationGraphResponse(
+                    model=model_name,
+                    data_points=[simulation_pb2.DataPoint(
+                        time=data_point[0],
+                        capital=data_point[1]
+                    ) for data_point in graph],
+                    status=simulation_pb2.SimulationGraphResponse.Status.OK
+                )
+        else:
             yield simulation_pb2.SimulationGraphResponse(
-                name=graph_name,
-                data_points=[simulation_pb2.DataPoint(
-                    time=data_point[0],
-                    capital=data_point[1]
-                ) for data_point in graph]
+                status=simulation_pb2.SimulationGraphResponse.Status.SIMULATION_NOT_FOUND
             )
 
     def simulation_logs(self, request, context):
-        assembler = self.open_assemblers[request.simulation_id]
-        for no_sim in range(len(assembler.simulations)):
-            for no_ex in range(1, assembler.no_executions + 1):
-                model = assembler.simulations[no_sim].model.__class__.__name__
-                logs = assembler.get_logs(no_sim, no_ex)
-                yield simulation_pb2.SimulationLogsResponse(
-                    model=model,
-                    no_execution=no_ex,
-                    logs=[simulation_pb2.Log(
-                        action=simulation_pb2.Log.Action.BUY if log["action"] == Action.BUY
-                        else simulation_pb2.Log.Action.SELL,
-                        amount=log["amount"],
-                        ticker=log["ticker"],
-                        price_per_share=log["price"],
-                        date=log["date"]
-                    ) for log in logs]
-                )
+        assembler_id = request.simulation_id
+        if assembler_id in self.open_assemblers:
+            assembler = self.open_assemblers[assembler_id]
+            for no_sim in range(len(assembler.simulations)):
+                for no_ex in range(1, assembler.no_executions + 1):
+                    model = assembler.simulations[no_sim].model.__class__.__name__
+                    logs = assembler.get_logs(no_sim, no_ex)
+                    yield simulation_pb2.SimulationLogsResponse(
+                        model=model,
+                        number_execution=no_ex,
+                        logs=[simulation_pb2.Log(
+                            action=simulation_pb2.Log.Action.BUY if log["action"] == Action.BUY
+                            else simulation_pb2.Log.Action.SELL,
+                            amount=log["amount"],
+                            ticker=log["ticker"],
+                            price_per_share=log["price"],
+                            date=log["date"]
+                        ) for log in logs],
+                        status=simulation_pb2.SimulationLogsResponse.Status.OK
+                    )
+        else:
+            yield simulation_pb2.SimulationLogsResponse(
+                status=simulation_pb2.SimulationLogsResponse.Status.SIMULATION_NOT_FOUND
+            )
 
     def close_simulation(self, request, context):
         assembler_id = request.simulation_id
         if assembler_id in self.open_assemblers:
             self.open_assemblers.pop(assembler_id)
-            return simulation_pb2.CloseSimulationResponse(status=simulation_pb2.CloseSimulationResponse.Status.OK)
+            return simulation_pb2.CloseSimulationResponse(
+                status=simulation_pb2.CloseSimulationResponse.Status.OK
+            )
         else:
-            return simulation_pb2.CloseSimulationResponse(status=simulation_pb2.CloseSimulationResponse.Status.NOK)
+            return simulation_pb2.CloseSimulationResponse(
+                status=simulation_pb2.CloseSimulationResponse.Status.SIMULATION_NOT_FOUND
+            )

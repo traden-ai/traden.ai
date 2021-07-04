@@ -4,6 +4,7 @@ from SimulationContract.generated_files import simulation_pb2_grpc
 
 
 class SimulationFrontend:
+
     def __init__(self, simulation_host, simulation_port):
         self.simulation_host = simulation_host
         self.simulation_port = simulation_port
@@ -23,10 +24,20 @@ class SimulationFrontend:
         return self.stub.start_simulation(start_simulation_request)
 
     def simulation_graph(self, simulation_graph_request):
-        return self.stub.simulation_graph(simulation_graph_request)
+        clean_response, status = {}, None
+        stream = self.stub.simulation_graph(simulation_graph_request)
+        for response in stream:
+            status = response.status if not status else status
+            clean_response[response.model] = response.data_points
+        return clean_response, status
 
     def simulation_logs(self, simulation_logs_request):
-        return self.stub.simulation_logs(simulation_logs_request)
+        clean_response, status = {}, None
+        stream = self.stub.simulation_logs(simulation_logs_request)
+        for response in stream:
+            status = response.status if not status else status
+            clean_response[(response.model, response.number_execution)] = response.logs
+        return clean_response, status
 
     def close_simulation(self, close_simulation_request):
         return self.stub.close_simulation(close_simulation_request)

@@ -25,7 +25,7 @@ class DatabaseHandler:
     def get_data_by_stock(self, tickers, indicators, start_date, end_date):
         data = []
         for ticker in tickers:
-            data += [query_item(ticker,  indicators, start_date, end_date)]
+            data.append(query_item(ticker,  indicators, start_date, end_date))
         return data
 
     def get_metadata_by_stock_and_indicator(self, stock, indicator):

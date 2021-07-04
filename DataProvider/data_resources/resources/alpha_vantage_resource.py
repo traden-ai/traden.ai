@@ -40,9 +40,9 @@ class AlphaVantage(DataResourceInterface):
                 filtered_data = self.filter_using_dates(data, start_date, end_date)
                 for date in filtered_data:
                     if date in past_data[ticker]:
-                        past_data[ticker][date].update({indicator: json.dumps(filtered_data[date])})
+                        past_data[ticker][date].update({indicator: filtered_data[date]})
                     else:
-                        past_data[ticker][date] = {indicator: json.dumps(filtered_data[date])}
+                        past_data[ticker][date] = {indicator: filtered_data[date]}
         return past_data
 
     def get_type_by_indicator(self, indicator):

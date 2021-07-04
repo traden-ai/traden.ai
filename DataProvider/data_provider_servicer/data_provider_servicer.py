@@ -1,5 +1,6 @@
 from DataProvider.data_provider_servicer.constants import MAX_DATES
 from DataProviderContract.generated_files import data_provider_pb2_grpc, data_provider_pb2
+import json
 
 
 class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
@@ -14,7 +15,7 @@ class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
         return data_provider_pb2.CtrlPingResponse(output=request.input)
 
     def get_past_data(self, request, context):  # TODO this can and should be otimized, this is a stream
-        tickers, indicators, interval = request.tickers, request.indicators, request.interval
+        tickers, indicators, interval = list(request.tickers), list(request.indicators), request.interval
         start_date, end_date = interval.start_date, interval.end_date
 
         are_tickers_available, available_tickers, not_available_tickers = self.database_handler.are_tickers_possible(
@@ -38,7 +39,7 @@ class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
         if not is_date_possible:
             yield data_provider_pb2.PastDataResponse(
                 interval=data_provider_pb2.TimeInterval(start_date=new_start_date, end_date=new_end_date),
-                status=data_provider_pb2.PastDataResponse.DATE_NOT_AVAILABLE)
+                status=data_provider_pb2.PastDataResponse.INTERVAL_NOT_AVAILABLE)
             return None
 
         data = self.database_handler.get_data_by_date(tickers, indicators, start_date, end_date)

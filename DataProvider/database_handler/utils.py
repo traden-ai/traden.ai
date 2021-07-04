@@ -2,8 +2,6 @@ from DataProvider.database_handler.connection import get_client
 from DataProvider.database_handler.constants import STOCK_TABLE_NAME, METADATA_TABLE_NAME, INDICATORS_TABLE_NAME, \
     TICKERS_TABLE_NAME
 from datetime import datetime
-import json
-
 
 def insert_items(items, batch_size=25):
     client = get_client()
@@ -182,6 +180,10 @@ def query_item(ticker, indicators, start_date, end_date, exclusive_start_key=Non
         new_item["Data"][item["Date"]["S"]] = {}
         for indicator in indicators:
             new_item["Data"][item["Date"]["S"]][indicator] = json.loads(item[indicator]["S"])
+            print(item[indicator]["S"])
+            print(type(item[indicator]["S"]))
+            print(json.loads(item[indicator]["S"]))
+            print(type(json.loads(item[indicator]["S"])))
     if "LastEvaluatedKey" in response:
         new_item["Data"].update(
             query_item(ticker, start_date, end_date, exclusive_start_key=response["LastEvaluatedKey"])["Data"])
@@ -233,11 +235,11 @@ def get_start_and_end_date(items):
 def convert_to_data_by_date(raw_data):
     final_data = {}
     for data in raw_data:
-        for ticker in data:
-            for date in data[ticker]:
-                if date not in final_data:
-                    final_data[date] = {}
-                if ticker not in final_data[data]:
-                    final_data[date][ticker] = {}
-                final_data[date][ticker].update(data[ticker][date])
+        ticker = data["Symbol"]
+        for date in data["Data"]:
+            if date not in final_data:
+                final_data[date] = {}
+            if ticker not in final_data[date]:
+                final_data[date][ticker] = {}
+            final_data[date][ticker].update(data["Data"][date])
     return final_data

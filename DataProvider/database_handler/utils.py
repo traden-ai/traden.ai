@@ -2,6 +2,7 @@ from DataProvider.database_handler.connection import get_client
 from DataProvider.database_handler.constants import STOCK_TABLE_NAME, METADATA_TABLE_NAME, INDICATORS_TABLE_NAME, \
     TICKERS_TABLE_NAME
 from datetime import datetime
+import json
 
 def insert_items(items, batch_size=25):
     client = get_client()

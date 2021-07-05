@@ -59,7 +59,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
         if status == data_provider_pb2.PastDataResponse.Status.TICKERS_NOT_AVAILABLE:
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.TICKERS_NOT_AVAILABLE,
-                tickers=simulation_pb2.TimeInterval(
+                tickers=simulation_pb2.TickerList(
                     available_tickers=response["tickers"].available_tickers,
                     not_available_tickers=response["tickers"].not_available_tickers
                 )
@@ -68,7 +68,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.INTERVAL_NOT_AVAILABLE,
                 interval=simulation_pb2.TimeInterval(
-                    start_date=response["interval"].initial_date,
+                    start_date=response["interval"].start_date,
                     end_date=response["interval"].end_date
                 )
             )

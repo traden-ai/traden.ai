@@ -9,8 +9,7 @@ import concurrent.futures
 
 class DataUpdater:
 
-    def __init__(self, resource_handler, database_handler, no_workers=1, id=1):
-        self.id = id
+    def __init__(self, resource_handler, database_handler, no_workers=1):
         self.resource_handler = resource_handler
         self.database_handler = database_handler
         self.planner = DataUpdaterPlanner(database_handler, id=id)
@@ -18,12 +17,15 @@ class DataUpdater:
         for i in range(no_workers):
             self.workers.append(DataUpdaterWorker(resource_handler, database_handler))
 
-    def update_database(self, chunk_size=30):
+    def plan_database(self):
+        self.planner.update_task_list(MAXIMUM_DATE, workers=len(self.workers))
+
+    def update_database(self, no_tasks):
         executor = concurrent.futures.ProcessPoolExecutor(len(self.workers))
         while True:
             futures = []
             for i in range(len(self.workers)):
-                tasks = self.planner.get_tasks(MAXIMUM_DATE, chunk_size=chunk_size, worker=self.id+i)
+                tasks = self.database_handler.get_tasks(round(no_tasks/len(self.workers)))
                 if tasks:
                     futures.append(executor.submit(self.workers[i].execute_tasks, tasks))
             concurrent.futures.wait(futures)

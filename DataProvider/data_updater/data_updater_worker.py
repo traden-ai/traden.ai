@@ -10,10 +10,10 @@ class DataUpdaterWorker:
 
     def execute_task(self, task, confirmation=True): # TODO confirmation is a way of veryfing if the task was succefully accomplished or not
         print("Started executing task for ticker {}, and indicator {}".format(task["Ticker"], task["Indicator"]))
-        if task["StartDate"] == None and task["EndDate"] == None:
+        if task["StartDate"] == None:
             items = self.resource_handler.get_past_data([task["Ticker"]], [task["Indicator"]], MINIMUM_DATE, get_current_date())
         else:
-            items = self.resource_handler.get_past_data([task["Ticker"]], [task["Indicator"]], task["StartDate"], task["EndDate"])
+            items = self.resource_handler.get_past_data([task["Ticker"]], [task["Indicator"]], task["StartDate"], get_current_date())
         self.database_handler.update_data(items)
         print("Finished executing task for ticker {}, and indicator {}".format(task["Ticker"], task["Indicator"]))
 

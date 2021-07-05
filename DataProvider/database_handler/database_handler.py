@@ -1,6 +1,6 @@
 from DataProvider.database_handler.utils import insert_items, remove_item, query_item, remove_item_metadata, \
     insert_items_metadata, get_item_metadata, get_stocks, get_item, insert_indicators_for_resource_identifier, \
-    get_indicators, convert_to_data_by_date, insert_stocks
+    get_indicators, convert_to_data_by_date, insert_stocks, get_tasks, remove_task, insert_tasks
 
 
 class DatabaseHandler:
@@ -18,6 +18,15 @@ class DatabaseHandler:
 
     def insert_tickers(self, tickers, type):
         insert_stocks(tickers, type)
+
+    def insert_tasks(self, tasks):
+        insert_tasks(tasks)
+
+    def get_tasks(self, no_tasks):
+        tasks = get_tasks(no_tasks)
+        for task in tasks:
+            remove_task(task["Ticker"], task["Indicator"])
+        return tasks
 
     def get_item(self, ticker, date):
         return get_item(ticker, date)

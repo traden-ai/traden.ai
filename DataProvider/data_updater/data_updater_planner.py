@@ -1,4 +1,8 @@
+from DataProvider.data_updater.constants import MAXIMUM_DATE
 from DataProvider.data_updater.utils import chunks
+import concurrent.futures
+
+from DataProvider.database_handler.database_handler import DatabaseHandler
 
 
 class DataUpdaterPlanner:
@@ -7,25 +11,27 @@ class DataUpdaterPlanner:
         self.id = id
         self.database_handler = database_handler
 
-    def get_tasks(self, update_date, chunk_size=1, worker=1):
-        """returns a list of future actions, the list should have the following format
-        [action_item1, action_item2, action_item3, ...]"""
-        task_no = self.id + worker
+    def update_task_list(self, update_date, workers=10):
         stocks = self.database_handler.get_stocks()
         indicators = self.database_handler.get_indicators()
-        tasks = []
+        futures = []
+        executor = concurrent.futures.ProcessPoolExecutor(workers)
         for stock in stocks:
-            for indicator in indicators:
-                metadata = self.database_handler.get_metadata_by_stock_and_indicator(stock, indicator)
-                if metadata["EndDate"] is None or metadata["StartDate"] is None:
-                    tasks.append({"Ticker": stock,
-                                  "Indicator": indicator,
-                                  "StartDate": None,
-                                  "EndDate": None})
-                elif update_date > metadata["EndDate"]: #TODO probably also necessary to check if update was done recently
-                    tasks.append({"Ticker": stock,
-                                  "Indicator": indicator,
-                                  "StartDate": metadata["EndDate"],
-                                  "EndDate": update_date})
-                if len(tasks) > chunk_size*task_no:
-                    return tasks[chunk_size*(task_no-1):chunk_size*task_no]
+            futures.append(executor.submit(self.update_ticker_tasks, stock, indicators, update_date))
+        concurrent.futures.wait(futures)
+
+    def update_ticker_tasks(self, stock, indicators, update_date):
+        tasks = []
+        for indicator in indicators:
+            metadata = self.database_handler.get_metadata_by_stock_and_indicator(stock, indicator)
+            if metadata["EndDate"] is None or metadata["StartDate"] is None:
+                tasks.append({"Ticker": stock,
+                              "Indicator": indicator,
+                              "StartDate": None})
+            elif update_date > metadata["EndDate"]:
+                tasks.append({"Ticker": stock,
+                              "Indicator": indicator,
+                              "StartDate": metadata["EndDate"]})
+        print("Planned tasks for {}".format(stock))
+        self.database_handler.insert_tasks(tasks)
+

@@ -20,15 +20,20 @@ if __name__ == '__main__':
     # Check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
-        print(f"Usage: python main.py id [AlphaVantageKey]\n")
+        print(f"Usage: python main.py no_tasks [AlphaVantageKey]\n")
 
     # Parse arguments
-    id = int(args[1])
+    no_tasks = int(args[1])
     alpha_vantage_key = "E9NN094GU5JX53JA" if len(args) == MAX_ARGS - 1 else args[MAX_ARGS - 1]
 
     db = DatabaseHandler()
-    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=20, id=id)
+    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=20)
 
-    p = Process(target=du.update_database(), args=())
-    p.start()
-    p.join()
+    if no_tasks==0:
+        p1 = Process(target=du.plan_database())
+        p1.start()
+        p1.join()
+    else:
+        p2 = Process(target=du.update_database(no_tasks=no_tasks))
+        p2.start()
+        p2.join()

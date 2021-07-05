@@ -1,6 +1,6 @@
 from DataProvider.database_handler.connection import get_client
 from DataProvider.database_handler.constants import STOCK_TABLE_NAME, METADATA_TABLE_NAME, INDICATORS_TABLE_NAME, \
-    TICKERS_TABLE_NAME
+    TICKERS_TABLE_NAME, TASKS_TABLE_NAME
 from datetime import datetime
 import json
 
@@ -80,6 +80,33 @@ def insert_indicators_for_resource_identifier(indicators, resource_identifier, b
     if len(batch) != 0:
         client.batch_write_item(RequestItems={INDICATORS_TABLE_NAME: batch})
 
+def insert_tasks(tasks, batch_size=25):
+    client = get_client()
+    batch = []
+    for task in tasks:
+        new_item = {"Symbol": {"S": task["Ticker"]},
+                    "Indicator": {"S": task["Indicator"]},
+                    "StartDate": {"S": "0000-00-00" if task["StartDate"] is None else task["StartDate"]}}
+        batch.append({"PutRequest": {"Item": new_item}})
+        if len(batch) == batch_size:
+            client.batch_write_item(RequestItems={TASKS_TABLE_NAME: batch})
+            batch = []
+    if len(batch) != 0:
+        client.batch_write_item(RequestItems={TASKS_TABLE_NAME: batch})
+
+def get_tasks(no_tasks):
+    client = get_client()
+    response = client.scan(TableName=TASKS_TABLE_NAME)
+    items = response['Items']
+    final_items = []
+    for item in items:
+        task = {"Ticker": item["Symbol"]["S"],
+                "Indicator": item["Indicator"]["S"],
+                "StartDate": item["StartDate"]["S"] if item["StartDate"]["S"] != "0000-00-00" else None}
+        final_items.append(task)
+        if len(final_items) == no_tasks:
+            return final_items
+    return final_items[:no_tasks]
 
 def get_indicators(resource_identifier=None):
     client = get_client()
@@ -160,6 +187,9 @@ def remove_item_metadata(ticker):
     for indicator in item["IndicatorData"]:
         client.delete_item(TableName=METADATA_TABLE_NAME, Key={"Symbol": {"S": ticker}, "Indicator": {"S": indicator}})
 
+def remove_task(ticker, indicator):
+    client = get_client()
+    client.delete_item(TableName=TASKS_TABLE_NAME, Key={"Symbol": {"S": ticker}, "Indicator": {"S": indicator}})
 
 def query_item(ticker, indicators, start_date, end_date, exclusive_start_key=None):
     client = get_client()

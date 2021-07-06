@@ -23,19 +23,11 @@ dailyAdjustedOld2NewNames = {
     "1. open": "open",
     "2. high": "high",
     "3. low": "low",
-    "4. close": " close",
+    "4. close": "close",
     "5. adjusted close": "adjustedClose",
     "6. volume": "volume",
     "7. dividend amount": "dividendAmount",
     "8. split coefficient": "splitCoefficient"
-}
-
-smaOld2NewNames = {
-    "SMA": "sma"
-}
-
-emaOld2NewNames = {
-    "EMA": "ema"
 }
 
 macdOld2NewNames = {

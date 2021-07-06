@@ -6,7 +6,7 @@ from DataProvider.data_resources.resources.alpha_vantage_resource import AlphaVa
 from DataProvider.data_updater.data_updater import DataUpdater
 from DataProvider.database_handler.database_handler import DatabaseHandler
 
-MAX_ARGS = 2
+MAX_ARGS = 3
 
 if __name__ == '__main__':
     args = sys.argv
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # Check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
-        print(f"Usage: python main.py no_tasks [AlphaVantageKey]\n")
+        print(f"Usage: python3 main.py no_tasks [AlphaVantageKey]\n")
 
     # Parse arguments
     no_tasks = int(args[1])

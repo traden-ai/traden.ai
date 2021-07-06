@@ -15,20 +15,17 @@ class SimulationIT(unittest.TestCase):
     MODEL_INSTANCES_PATH = "/Models/instances/"
     MODEL_INSTANCE_NAME = "model_instance_test"
 
-    VALID_MODEL_INSTANCES = ["MACDCrossing", "EMACrossing"]
+    VALID_MODEL_INSTANCES = ["RSISignals"]
     INVALID_MODEL_INSTANCES = ["invalid", "not_model_instance"]
 
-    VALID_START_DATE = "2020-01-01"
+    VALID_START_DATE = "2019-04-30"
     INVALID_START_DATE = "2800-01-01"
 
-    VALID_END_DATE = "2021-01-01"
+    VALID_END_DATE = "2019-06-28"
     INVALID_END_DATE = "2900-01-01"
 
-    VALID_TICKERS = ["AMZN", "MSFT"]
+    VALID_TICKERS = ["FOX"]
     INVALID_TICKERS = ["invalid", "not_ticker"]
-
-    VALID_INDICATORS = ["bbands", "macd"]
-    INVALID_INDICATORS = ["invalid", "not_indicator"]
 
     BALANCE = 100000.0
     TRANSACTION_FEE = .0

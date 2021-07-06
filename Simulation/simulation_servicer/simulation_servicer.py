@@ -8,24 +8,28 @@ from Models.model_database_handler.model_database_handler import list_instances,
 
 class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
 
-    def __init__(self, data_provider_frontend):
+    def __init__(self, data_provider_frontend, logger):
         self.open_assemblers = {}
         self.data_provider_frontend = data_provider_frontend
+        self.logger = logger
 
     def ctrl_ping(self, request, context):
+        self.logger.info(f"Received 'ctrl_ping'")
         return simulation_pb2.CtrlPingResponse(output=request.input)
 
     def list_model_instances(self, request, context):
+        self.logger.info("Received 'list_model_instances'")
         return simulation_pb2.ListInstancesResponse(instances=list_instances())
 
     def delete_model_instances(self, request, context):
+        self.logger.info(f"Received 'delete_model_instances'")
         instances = request.instances
         for instance in instances:
             delete_instance(instance)
         return simulation_pb2.DeleteInstancesResponse()
 
     def start_simulation(self, request, context):
-
+        self.logger.info("Received 'start_simulation'")
         # get model instances
         model_instances = []
         for model in request.models:
@@ -75,24 +79,28 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
 
         if status == data_provider_pb2.PastDataResponse.Status.OK:
 
+            self.logger.debug("data load")
             # process data
             dates, data, prices = data_load(response["data"])
 
+            self.logger.debug("execute")
             # create and execute simulation assembler
             try:
                 assembler = SimulationAssembler(request.balance, request.tickers, model_instances, dates, data, prices,
-                                                request.transaction_fee, request.no_executions)
+                                                request.transaction_fee, request.number_executions)
                 assembler.execute()
-            except Exception as e:
-                print("Caught an exception during a simulation: " + str(e))
+            except Exception:
+                self.logger.exception("Caught an exception while execution a simulation")
                 return simulation_pb2.StartSimulationResponse(status=simulation_pb2.StartSimulationResponse.Status.NOK)
 
+            self.logger.debug("save")
             # save opened simulation assembler
             assembler_id = 0
             while assembler_id in self.open_assemblers:
                 assembler_id += 1
             self.open_assemblers[assembler_id] = assembler
 
+            self.logger.debug("return")
             # send simulation results
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.OK,
@@ -118,6 +126,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_graph(self, request, context):
+        self.logger.info("Received 'simulation_graph'")
         assembler_id = request.simulation_id
         if assembler_id in self.open_assemblers:
             assembler = self.open_assemblers[assembler_id]
@@ -138,6 +147,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_logs(self, request, context):
+        self.logger.info("Received 'simulation_logs'")
         assembler_id = request.simulation_id
         if assembler_id in self.open_assemblers:
             assembler = self.open_assemblers[assembler_id]
@@ -164,6 +174,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def close_simulation(self, request, context):
+        self.logger.info("Received 'close_simulation'")
         assembler_id = request.simulation_id
         if assembler_id in self.open_assemblers:
             self.open_assemblers.pop(assembler_id)

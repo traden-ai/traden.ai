@@ -57,10 +57,10 @@ def update_today_data(yesterday_data: dict, today_data: dict):
     """ This method updates the SimulationData dataclass instances from 'yesterday'
         with the provided data from 'today'
     """
-    for ticker, data in today_data:
+    for ticker in today_data:
         aux_data = {}
-        for indicator, components in data:
-            aux_data[indicator] = SimulationDataClasses[indicator](**components)
+        for indicator in today_data[ticker]:
+            aux_data[indicator] = SimulationDataClasses[indicator](**today_data[ticker][indicator])
         yesterday_data[ticker].__init__(**aux_data)
 
     return yesterday_data
@@ -71,12 +71,19 @@ def data_load(data_provider_data):
     and transforms it into clean data for a simulation execution
     """
 
-    def daily_data_load(values):
+    def daily_data_load(indicators_to_values):
         typed_data = {trading_data: {} for trading_data in SimulationDataClasses}
 
-        for key, components in values:
-            for component, value in components.components_to_values:
-                typed_data[key][component] = type(getattr(SimulationDataClasses[key], component))(value)
+        for indicator in indicators_to_values:
+            components_to_values = indicators_to_values[indicator].components_to_values
+            for component in components_to_values:
+                # FIXME DB
+                if component == " close":
+                    typed_data[indicator]["close"] =\
+                        type(getattr(SimulationDataClasses[indicator], "close"))(components_to_values[component])
+                else:
+                    typed_data[indicator][component] =\
+                        type(getattr(SimulationDataClasses[indicator], component))(components_to_values[component])
 
         return typed_data
 

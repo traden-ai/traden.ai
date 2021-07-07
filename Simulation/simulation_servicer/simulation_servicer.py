@@ -122,10 +122,9 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_graph(self, request, context):
-        self.logger.info("Received 'simulation_graph'")
-        assembler_id = request.simulation_id
-        if assembler_id in self.open_assemblers:
-            assembler = self.open_assemblers[assembler_id]
+        self.logger.info("Received 'simulation_graph'" + str(self.open_assemblers.keys()))
+        if request.simulation_id in self.open_assemblers:
+            assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
                 model_name = assembler.simulations[no_sim].model.__class__.__name__
                 graph = assembler.get_graph(no_sim)
@@ -143,12 +142,11 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_logs(self, request, context):
-        self.logger.info("Received 'simulation_logs'")
-        assembler_id = request.simulation_id
-        if assembler_id in self.open_assemblers:
-            assembler = self.open_assemblers[assembler_id]
+        self.logger.info("Received 'simulation_logs'" + str(self.open_assemblers.keys()))
+        if request.simulation_id in self.open_assemblers:
+            assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
-                for no_ex in range(1, assembler.no_executions + 1):
+                for no_ex in range(0, assembler.no_executions):
                     model = assembler.simulations[no_sim].model.__class__.__name__
                     logs = assembler.get_logs(no_sim, no_ex)
                     yield simulation_pb2.SimulationLogsResponse(
@@ -170,14 +168,13 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def close_simulation(self, request, context):
-        self.logger.info("Received 'close_simulation'")
-        assembler_id = request.simulation_id
-        if assembler_id in self.open_assemblers:
-            self.open_assemblers.pop(assembler_id)
+        self.logger.info("Received 'close_simulation'" + str(self.open_assemblers.keys()))
+        try:
+            del self.open_assemblers[request.simulation_id]
             return simulation_pb2.CloseSimulationResponse(
                 status=simulation_pb2.CloseSimulationResponse.Status.OK
             )
-        else:
+        except KeyError:
             return simulation_pb2.CloseSimulationResponse(
                 status=simulation_pb2.CloseSimulationResponse.Status.SIMULATION_NOT_FOUND
             )

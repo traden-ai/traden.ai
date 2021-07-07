@@ -1,13 +1,22 @@
-import grpc
 import sys
+import grpc
 import logging
 from concurrent import futures
 
 from SimulationContract.generated_files import simulation_pb2_grpc
+from SimulationContract.generated_files import simulation_pb2
 from Simulation.simulation_servicer.simulation_servicer import SimulationServicer
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 
 MAX_ARGS = 6
+PING_MESSAGE = "ping"
+
+
+def terminate():
+    data_provider_frontend.close()
+    logger.info("Terminating...")
+    exit()
+
 
 if __name__ == '__main__':
     args = sys.argv
@@ -45,7 +54,6 @@ if __name__ == '__main__':
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
     data_provider_frontend = DataProviderFrontend(data_provider_host, data_provider_port)
     simulation_pb2_grpc.add_SimulationServicer_to_server(SimulationServicer(data_provider_frontend, logger), server)
-    # FIXME change server port to be reachable, this should be a secure_port however this requires ssl credentials
     server.add_insecure_port(f"{host}:{port}")
 
     try:
@@ -55,3 +63,4 @@ if __name__ == '__main__':
         server.wait_for_termination()
     except KeyboardInterrupt:
         data_provider_frontend.close()
+        terminate()

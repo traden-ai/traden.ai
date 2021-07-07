@@ -1,20 +1,21 @@
 from DataProvider.data_provider_servicer.constants import MAX_DATES
 from DataProviderContract.generated_files import data_provider_pb2_grpc, data_provider_pb2
-import json
 
 
 class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
-    database_handler = None
     current_stocks = None
 
-    def __init__(self, database_handler):
+    def __init__(self, database_handler, logger):
         super(DataProviderServicer, self).__init__()
         self.database_handler = database_handler
+        self.logger = logger
 
     def ctrl_ping(self, request, context):
+        self.logger.info(f"Received 'ctrl_ping' request")
         return data_provider_pb2.CtrlPingResponse(output=request.input)
 
-    def get_past_data(self, request, context):  # TODO this can and should be otimized, this is a stream
+    def get_past_data(self, request, context):  # TODO this can and should be optimized, this is a stream
+        self.logger.info(f"Received 'get_past_data' request")
         tickers, indicators, interval = list(request.tickers), list(request.indicators), request.interval
         start_date, end_date = interval.start_date, interval.end_date
 

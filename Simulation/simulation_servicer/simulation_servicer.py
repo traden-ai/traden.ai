@@ -9,27 +9,28 @@ from Models.model_database_handler.model_database_handler import list_instances,
 class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
 
     def __init__(self, data_provider_frontend, logger):
+        super(SimulationServicer, self).__init__()
         self.open_assemblers = {}
         self.data_provider_frontend = data_provider_frontend
         self.logger = logger
 
     def ctrl_ping(self, request, context):
-        self.logger.info(f"Received 'ctrl_ping'")
+        self.logger.info(f"Received 'ctrl_ping' request")
         return simulation_pb2.CtrlPingResponse(output=request.input)
 
     def list_model_instances(self, request, context):
-        self.logger.info("Received 'list_model_instances'")
+        self.logger.info("Received 'list_model_instances' request")
         return simulation_pb2.ListInstancesResponse(instances=list_instances())
 
     def delete_model_instances(self, request, context):
-        self.logger.info(f"Received 'delete_model_instances'")
+        self.logger.info(f"Received 'delete_model_instances' request")
         instances = request.instances
         for instance in instances:
             delete_instance(instance)
         return simulation_pb2.DeleteInstancesResponse()
 
     def start_simulation(self, request, context):
-        self.logger.info("Received 'start_simulation'")
+        self.logger.info("Received 'start_simulation' request")
         # get model instances
         model_instances = []
         for model in request.models:
@@ -122,7 +123,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_graph(self, request, context):
-        self.logger.info("Received 'simulation_graph'")
+        self.logger.info("Received 'simulation_graph' request")
         if request.simulation_id in self.open_assemblers:
             assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
@@ -142,7 +143,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_logs(self, request, context):
-        self.logger.info("Received 'simulation_logs'")
+        self.logger.info("Received 'simulation_logs' request")
         if request.simulation_id in self.open_assemblers:
             assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
@@ -168,7 +169,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def close_simulation(self, request, context):
-        self.logger.info("Received 'close_simulation'")
+        self.logger.info("Received 'close_simulation' request")
         try:
             del self.open_assemblers[request.simulation_id]
             return simulation_pb2.CloseSimulationResponse(

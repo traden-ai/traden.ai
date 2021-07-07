@@ -30,8 +30,14 @@ class DataProviderTestMethods(unittest.TestCase):
         self.assertEqual(self.PING_MESSAGE, response.output)
 
     def test_get_past_data_successfully(self):
-        time_interval = data_provider_pb2.TimeInterval(start_date=self.VALID_START_DATE, end_date=self.VALID_END_DATE)
-        request = data_provider_pb2.PastDataRequest(tickers=self.VALID_TICKER_LIST, indicators=self.VALID_INDICATOR_LIST, interval=time_interval)
+        request = data_provider_pb2.PastDataRequest(
+            tickers=self.VALID_TICKER_LIST,
+            indicators=self.VALID_INDICATOR_LIST,
+            interval=data_provider_pb2.TimeInterval(
+                start_date=self.VALID_START_DATE,
+                end_date=self.VALID_END_DATE
+            )
+        )
         response, status = self.client.get_past_data(request)
         self.assertEqual(status, data_provider_pb2.PastDataResponse.OK)
         for day_data in response["data"]:
@@ -43,9 +49,14 @@ class DataProviderTestMethods(unittest.TestCase):
                     self.assertNotEqual(ticker_data.indicators_to_values[indicator], None)
 
     def test_get_past_data_without_valid_tickers(self):
-        time_interval = data_provider_pb2.TimeInterval(start_date=self.VALID_START_DATE, end_date=self.VALID_END_DATE)
-        request = data_provider_pb2.PastDataRequest(tickers=self.INVALID_TICKER_LIST,
-                                                    indicators=self.VALID_INDICATOR_LIST, interval=time_interval)
+        request = data_provider_pb2.PastDataRequest(
+            tickers=self.INVALID_TICKER_LIST,
+            indicators=self.VALID_INDICATOR_LIST,
+            interval=data_provider_pb2.TimeInterval(
+                start_date=self.VALID_START_DATE,
+                end_date=self.VALID_END_DATE
+            )
+        )
         response, status = self.client.get_past_data(request)
         self.assertEqual([], response["tickers"].available_tickers)
         for ticker in response["tickers"].not_available_tickers:
@@ -53,20 +64,29 @@ class DataProviderTestMethods(unittest.TestCase):
         self.assertEqual(status, data_provider_pb2.PastDataResponse.TICKERS_NOT_AVAILABLE)
 
     def test_get_past_data_without_valid_indicators(self):
-        time_interval = data_provider_pb2.TimeInterval(start_date=self.VALID_START_DATE, end_date=self.VALID_END_DATE)
-        request = data_provider_pb2.PastDataRequest(tickers=self.VALID_TICKER_LIST, indicators=self.INVALID_INDICATOR_LIST, interval=time_interval)
+        request = data_provider_pb2.PastDataRequest(
+            tickers=self.VALID_TICKER_LIST,
+            indicators=self.INVALID_INDICATOR_LIST,
+            interval=data_provider_pb2.TimeInterval(
+                start_date=self.VALID_START_DATE,
+                end_date=self.VALID_END_DATE
+            )
+        )
         response, status = self.client.get_past_data(request)
         self.assertEqual(status, data_provider_pb2.PastDataResponse.NOK)
 
     def test_get_past_data_without_valid_dates(self):
-        time_interval = data_provider_pb2.TimeInterval(start_date=self.INVALID_START_DATE, end_date=self.INVALID_END_DATE)
-        request = data_provider_pb2.PastDataRequest(tickers=self.VALID_TICKER_LIST,
-                                                    indicators=self.VALID_INDICATOR_LIST, interval=time_interval)
+        request = data_provider_pb2.PastDataRequest(
+            tickers=self.VALID_TICKER_LIST,
+            indicators=self.VALID_INDICATOR_LIST,
+            interval=data_provider_pb2.TimeInterval(
+                start_date=self.INVALID_START_DATE,
+                end_date=self.INVALID_END_DATE
+            )
+        )
         response, status = self.client.get_past_data(request)
         self.assertEqual(status, data_provider_pb2.PastDataResponse.INTERVAL_NOT_AVAILABLE)
-        self.assertEqual(self.CORRECT_START_DATE , response["interval"].start_date)
-
-
+        self.assertEqual(self.CORRECT_START_DATE, response["interval"].start_date)
 
 
 if __name__ == '__main__':

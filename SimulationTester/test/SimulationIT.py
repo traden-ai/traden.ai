@@ -35,7 +35,8 @@ class SimulationIT(unittest.TestCase):
     INVALID_SIMULATION_ID = 1000000
 
     def test_a_ctrl_ping(self):
-        response = self.frontend.ctrl_ping(CtrlPingRequest(input=self.PING_MESSAGE))
+        request = CtrlPingRequest(input=self.PING_MESSAGE)
+        response = self.frontend.ctrl_ping(request)
         self.assertEqual(response.output, self.PING_MESSAGE)
 
     def test_b_list_and_delete_model_instances(self):
@@ -43,15 +44,19 @@ class SimulationIT(unittest.TestCase):
         with open(PYTHON_PATH + self.MODEL_INSTANCES_PATH + self.MODEL_INSTANCE_NAME, 'w') as f:
             f.write(self.MODEL_INSTANCE_NAME)
 
-        response = self.frontend.list_model_instances(ListInstancesRequest())
+        request = ListInstancesRequest()
+        response = self.frontend.list_model_instances(request)
         self.assertIn(self.MODEL_INSTANCE_NAME, response.instances)
 
-        self.frontend.delete_model_instances(DeleteInstancesRequest(instances=[self.MODEL_INSTANCE_NAME]))
-        response = self.frontend.list_model_instances(ListInstancesRequest())
+        request = DeleteInstancesRequest(instances=[self.MODEL_INSTANCE_NAME])
+        self.frontend.delete_model_instances(request)
+
+        request = ListInstancesRequest()
+        response = self.frontend.list_model_instances(request)
         self.assertNotIn(self.MODEL_INSTANCE_NAME, response.instances)
 
     def test_c_start_simulation_unavailable_model_instances(self):
-        response = self.frontend.start_simulation(StartSimulationRequest(
+        request = StartSimulationRequest(
             balance=self.BALANCE,
             tickers=self.VALID_TICKERS,
             interval=TimeInterval(
@@ -61,11 +66,12 @@ class SimulationIT(unittest.TestCase):
             models=self.INVALID_MODEL_INSTANCES,
             transaction_fee=self.TRANSACTION_FEE,
             number_executions=self.NUMBER_EXECUTIONS
-        ))
+        )
+        response = self.frontend.start_simulation(request)
         self.assertEqual(StartSimulationResponse.Status.MODEL_INSTANCES_NOT_AVAILABLE, response.status)
 
     def test_d_start_simulation_unavailable_tickers(self):
-        response = self.frontend.start_simulation(StartSimulationRequest(
+        request = StartSimulationRequest(
             balance=self.BALANCE,
             tickers=self.INVALID_TICKERS,
             interval=TimeInterval(
@@ -75,11 +81,12 @@ class SimulationIT(unittest.TestCase):
             models=self.VALID_MODEL_INSTANCES,
             transaction_fee=self.TRANSACTION_FEE,
             number_executions=self.NUMBER_EXECUTIONS
-        ))
+        )
+        response = self.frontend.start_simulation(request)
         self.assertEqual(StartSimulationResponse.Status.TICKERS_NOT_AVAILABLE, response.status)
 
     def test_e_start_simulation_unavailable_time_interval(self):
-        response = self.frontend.start_simulation(StartSimulationRequest(
+        request = StartSimulationRequest(
             balance=self.BALANCE,
             tickers=self.VALID_TICKERS,
             interval=TimeInterval(
@@ -89,11 +96,12 @@ class SimulationIT(unittest.TestCase):
             models=self.VALID_MODEL_INSTANCES,
             transaction_fee=self.TRANSACTION_FEE,
             number_executions=self.NUMBER_EXECUTIONS
-        ))
+        )
+        response = self.frontend.start_simulation(request)
         self.assertEqual(StartSimulationResponse.Status.INTERVAL_NOT_AVAILABLE, response.status)
 
     def test_f_start_simulation_success(self):
-        response = self.frontend.start_simulation(StartSimulationRequest(
+        request = StartSimulationRequest(
             balance=self.BALANCE,
             tickers=self.VALID_TICKERS,
             interval=TimeInterval(
@@ -103,44 +111,51 @@ class SimulationIT(unittest.TestCase):
             models=self.VALID_MODEL_INSTANCES,
             transaction_fee=self.TRANSACTION_FEE,
             number_executions=self.NUMBER_EXECUTIONS
-        ))
+        )
+        response = self.frontend.start_simulation(request)
         self.assertEqual(StartSimulationResponse.Status.OK, response.status)
         self.VALID_SIMULATION_ID = response.simulation_result.simulation_id
 
     def test_g_simulation_graph_invalid_id(self):
-        _, status = self.frontend.simulation_graph(SimulationGraphRequest(
+        request = SimulationGraphRequest(
             simulation_id=self.INVALID_SIMULATION_ID
-        ))
+        )
+        _, status = self.frontend.simulation_graph(request)
         self.assertEqual(SimulationGraphResponse.Status.SIMULATION_NOT_FOUND, status)
 
     def test_h_simulation_graph_success(self):
-        _, status = self.frontend.simulation_graph(SimulationGraphRequest(
+        request = SimulationGraphRequest(
             simulation_id=self.VALID_SIMULATION_ID
-        ))
+        )
+        _, status = self.frontend.simulation_graph(request)
         self.assertEqual(SimulationGraphResponse.Status.OK, status)
 
     def test_i_simulation_logs_invalid_id(self):
-        _, status = self.frontend.simulation_logs(SimulationLogsRequest(
+        request = SimulationLogsRequest(
             simulation_id=self.INVALID_SIMULATION_ID
-        ))
+        )
+        _, status = self.frontend.simulation_logs(request)
         self.assertEqual(SimulationLogsResponse.Status.SIMULATION_NOT_FOUND, status)
 
     def test_j_simulation_logs_success(self):
-        _, status = self.frontend.simulation_logs(SimulationLogsRequest(
+        request = SimulationLogsRequest(
             simulation_id=self.VALID_SIMULATION_ID
-        ))
+        )
+        _, status = self.frontend.simulation_logs(request)
         self.assertEqual(SimulationLogsResponse.Status.OK, status)
 
     def test_k_close_simulation_invalid_id(self):
-        response = self.frontend.close_simulation(CloseSimulationRequest(
+        request = CloseSimulationRequest(
             simulation_id=self.INVALID_SIMULATION_ID
-        ))
+        )
+        response = self.frontend.close_simulation(request)
         self.assertEqual(CloseSimulationResponse.Status.SIMULATION_NOT_FOUND, response.status)
 
     def test_l_close_simulation_success(self):
-        response = self.frontend.close_simulation(CloseSimulationRequest(
+        request = CloseSimulationRequest(
             simulation_id=self.VALID_SIMULATION_ID
-        ))
+        )
+        response = self.frontend.close_simulation(request)
         self.assertEqual(CloseSimulationResponse.Status.OK, response.status)
 
 

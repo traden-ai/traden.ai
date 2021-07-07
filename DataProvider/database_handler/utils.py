@@ -4,6 +4,7 @@ from DataProvider.database_handler.constants import STOCK_TABLE_NAME, METADATA_T
 from datetime import datetime
 import json
 
+
 def insert_items(items, batch_size=25):
     client = get_client()
     for ticker in items:
@@ -80,6 +81,7 @@ def insert_indicators_for_resource_identifier(indicators, resource_identifier, b
     if len(batch) != 0:
         client.batch_write_item(RequestItems={INDICATORS_TABLE_NAME: batch})
 
+
 def insert_tasks(tasks, batch_size=25):
     client = get_client()
     batch = []
@@ -94,6 +96,7 @@ def insert_tasks(tasks, batch_size=25):
     if len(batch) != 0:
         client.batch_write_item(RequestItems={TASKS_TABLE_NAME: batch})
 
+
 def get_tasks(no_tasks):
     client = get_client()
     response = client.scan(TableName=TASKS_TABLE_NAME)
@@ -107,6 +110,7 @@ def get_tasks(no_tasks):
         if len(final_items) == no_tasks:
             return final_items
     return final_items[:no_tasks]
+
 
 def get_indicators(resource_identifier=None):
     client = get_client()
@@ -187,9 +191,11 @@ def remove_item_metadata(ticker):
     for indicator in item["IndicatorData"]:
         client.delete_item(TableName=METADATA_TABLE_NAME, Key={"Symbol": {"S": ticker}, "Indicator": {"S": indicator}})
 
+
 def remove_task(ticker, indicator):
     client = get_client()
     client.delete_item(TableName=TASKS_TABLE_NAME, Key={"Symbol": {"S": ticker}, "Indicator": {"S": indicator}})
+
 
 def query_item(ticker, indicators, start_date, end_date, exclusive_start_key=None):
     client = get_client()
@@ -212,9 +218,11 @@ def query_item(ticker, indicators, start_date, end_date, exclusive_start_key=Non
         for indicator in indicators:
             if indicator in item:
                 new_item["Data"][item["Date"]["S"]][indicator] = json.loads(item[indicator]["S"])
+        if new_item["Data"][item["Date"]["S"]] == {}:
+            new_item["Data"].pop(item["Date"]["S"], None)
     if "LastEvaluatedKey" in response:
         new_item["Data"].update(
-            query_item(ticker, start_date, end_date, exclusive_start_key=response["LastEvaluatedKey"])["Data"])
+            query_item(ticker, indicators, start_date, end_date, response["LastEvaluatedKey"])["Data"])
     return new_item
 
 
@@ -234,7 +242,7 @@ def query_item_metadata(ticker, exclusive_start_key=None):
             , "LastUpdate": item["LastUpdate"]["S"]}
     if "LastEvaluatedKey" in response:
         new_item["IndicatorData"].update(
-            query_item_metadata(ticker, exclusive_start_key=response["LastEvaluatedKey"])["IndicatorData"])
+            query_item_metadata(ticker, response["LastEvaluatedKey"])["IndicatorData"])
     return new_item
 
 

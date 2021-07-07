@@ -73,17 +73,11 @@ def data_load(data_provider_data):
 
     def daily_data_load(indicators_to_values):
         typed_data = {trading_data: {} for trading_data in SimulationDataClasses}
-
         for indicator in indicators_to_values:
             components_to_values = indicators_to_values[indicator].components_to_values
             for component in components_to_values:
-                # FIXME DB
-                if component == " close":
-                    typed_data[indicator]["close"] =\
-                        type(getattr(SimulationDataClasses[indicator], "close"))(components_to_values[component])
-                else:
-                    typed_data[indicator][component] =\
-                        type(getattr(SimulationDataClasses[indicator], component))(components_to_values[component])
+                typed_data[indicator][component] =\
+                    type(getattr(SimulationDataClasses[indicator], component))(components_to_values[component])
 
         return typed_data
 

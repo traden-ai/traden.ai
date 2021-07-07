@@ -5,4 +5,4 @@ from dataclasses import dataclass, field
 class RSI:
     """class for representing the RSI technical indicator"""
 
-    rsi: float = field(default=None)
+    rsi: float = field(default=.0)

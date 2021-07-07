@@ -5,4 +5,4 @@ from dataclasses import dataclass, field
 class OBV:
     """class for representing the OBV technical indicator"""
 
-    obv: float = field(default=None)
+    obv: float = field(default=.0)

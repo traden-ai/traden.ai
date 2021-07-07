@@ -15,8 +15,7 @@ if __name__ == '__main__':
     # receive and print arguments
     print(f"Received {len(args)} arguments\n")
     for i in range(len(args)):
-        print(f"arg[{i}] = {args[i]}")
-        print("")
+        print(f"arg[{i}] = {args[i]}\n")
 
     # check arguments
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):

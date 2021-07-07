@@ -5,4 +5,5 @@ from dataclasses import dataclass, field
 class VWAP:
     """class for representing the VWAP technical indicator"""
 
-    vwap: float = field(default=None)
+    vwap: float = field(default=.0)
+    vwap: float = field(default=.0)

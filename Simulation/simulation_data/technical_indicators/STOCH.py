@@ -5,5 +5,5 @@ from dataclasses import dataclass, field
 class STOCH:
     """class for representing the STOCH technical indicator"""
 
-    slowK: float = field(default=None)
-    slowD: float = field(default=None)
+    slowK: float = field(default=.0)
+    slowD: float = field(default=.0)

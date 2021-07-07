@@ -5,5 +5,5 @@ from dataclasses import dataclass, field
 class AROON:
     """class for representing the AROON technical indicator"""
 
-    aroonUp: float = field(default=None)
-    aroonDown: float = field(default=None)
+    aroonUp: float = field(default=.0)
+    aroonDown: float = field(default=.0)

@@ -34,8 +34,7 @@ class Simulation:
     def buy(self, stock_name: str, amount: float):
         if amount > 0:
             stock_price = self.get_current_stock_price(stock_name)
-            is_possible = self.ledger.buy(stock_name, stock_price, amount, self.transaction_fee)
-            if is_possible:
+            if self.ledger.buy(stock_name, stock_price, amount, self.transaction_fee):
                 self.logs.append(
                     {
                         "action": Action.BUY,
@@ -49,8 +48,7 @@ class Simulation:
     def sell(self, stock_name: str, amount: float):
         if amount > 0:
             stock_price = self.get_current_stock_price(stock_name)
-            is_possible = self.ledger.sell(stock_name, stock_price, amount, self.transaction_fee)
-            if is_possible:
+            if self.ledger.sell(stock_name, stock_price, amount, self.transaction_fee):
                 self.logs.append(
                     {
                         "action": Action.SELL,
@@ -97,6 +95,7 @@ class Simulation:
     def reset(self):
         self.ledger = Ledger(self.initial_balance, self.tradable_tickers)
         self.current_date = self.start_date
+        self.operating_days = 0
         self.iterator = 0
         self.logs = []
 
@@ -113,7 +112,7 @@ class Simulation:
                                                                                  self.ledger.balance,
                                                                                  time_between_days(self.start_date,
                                                                                                    self.end_date)),
-                             "operating_time_percentage": (self.operating_days / (self.iterator + 1)) * 100,
+                             "operating_time_percentage": (self.operating_days / len(self.dates)) * 100,
                              "stocks_performance": stocks_performance,
                              "logs": self.logs})
         self.avg_results = {"profit": sum(map(lambda x: x["profit"], self.results)) / len(self.results),

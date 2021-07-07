@@ -15,16 +15,16 @@ class SimulationIT(unittest.TestCase):
     MODEL_INSTANCES_PATH = "/Models/instances/"
     MODEL_INSTANCE_NAME = "model_instance_test"
 
-    VALID_MODEL_INSTANCES = ["RSISignals"]
+    VALID_MODEL_INSTANCES = ["EMACrossing", "Random"]
     INVALID_MODEL_INSTANCES = ["invalid", "not_model_instance"]
 
-    VALID_START_DATE = "2019-04-30"
+    VALID_START_DATE = "2019-03-01"
     INVALID_START_DATE = "2800-01-01"
 
-    VALID_END_DATE = "2019-06-28"
+    VALID_END_DATE = "2019-06-01"
     INVALID_END_DATE = "2900-01-01"
 
-    VALID_TICKERS = ["FOX"]
+    VALID_TICKERS = ["NIO", "TLRY"]
     INVALID_TICKERS = ["invalid", "not_ticker"]
 
     BALANCE = 100000.0
@@ -32,7 +32,7 @@ class SimulationIT(unittest.TestCase):
     NUMBER_EXECUTIONS = 2
 
     VALID_SIMULATION_ID = 0
-    INVALID_SIMULATION_ID = 10000
+    INVALID_SIMULATION_ID = 1000000
 
     def test_ctrl_ping(self):
         response = self.frontend.ctrl_ping(CtrlPingRequest(input=self.PING_MESSAGE))

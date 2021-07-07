@@ -5,4 +5,4 @@ from dataclasses import dataclass, field
 class AD:
     """class for representing the AD technical indicator"""
 
-    ad: float = field(default=None)
+    ad: float = field(default=.0)

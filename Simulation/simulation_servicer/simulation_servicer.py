@@ -44,7 +44,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
         # get data requested by models
         data_request = {TradingData.dailyAdjusted}  # price is always needed
         for instance in model_instances:
-            data_request = data_request or instance.get_input_data()
+            data_request = data_request.union(instance.get_input_data())
 
         # get data from data provider
         response, status = self.data_provider_frontend.get_past_data(data_provider_pb2.PastDataRequest(
@@ -79,11 +79,9 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
 
         if status == data_provider_pb2.PastDataResponse.Status.OK:
 
-            self.logger.debug("data load")
             # process data
             dates, data, prices = data_load(response["data"])
 
-            self.logger.debug("execute")
             # create and execute simulation assembler
             try:
                 assembler = SimulationAssembler(request.balance, request.tickers, model_instances, dates, data, prices,
@@ -93,14 +91,12 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
                 self.logger.exception("Caught an exception while execution a simulation")
                 return simulation_pb2.StartSimulationResponse(status=simulation_pb2.StartSimulationResponse.Status.NOK)
 
-            self.logger.debug("save")
             # save opened simulation assembler
             assembler_id = 0
             while assembler_id in self.open_assemblers:
                 assembler_id += 1
             self.open_assemblers[assembler_id] = assembler
 
-            self.logger.debug("return")
             # send simulation results
             return simulation_pb2.StartSimulationResponse(
                 status=simulation_pb2.StartSimulationResponse.Status.OK,

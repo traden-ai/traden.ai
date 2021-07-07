@@ -210,11 +210,8 @@ def query_item(ticker, indicators, start_date, end_date, exclusive_start_key=Non
     for item in response['Items']:
         new_item["Data"][item["Date"]["S"]] = {}
         for indicator in indicators:
-            new_item["Data"][item["Date"]["S"]][indicator] = json.loads(item[indicator]["S"])
-            print(item[indicator]["S"])
-            print(type(item[indicator]["S"]))
-            print(json.loads(item[indicator]["S"]))
-            print(type(json.loads(item[indicator]["S"])))
+            if indicator in item:
+                new_item["Data"][item["Date"]["S"]][indicator] = json.loads(item[indicator]["S"])
     if "LastEvaluatedKey" in response:
         new_item["Data"].update(
             query_item(ticker, start_date, end_date, exclusive_start_key=response["LastEvaluatedKey"])["Data"])

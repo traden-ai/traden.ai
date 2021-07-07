@@ -122,7 +122,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_graph(self, request, context):
-        self.logger.info("Received 'simulation_graph'" + str(self.open_assemblers.keys()))
+        self.logger.info("Received 'simulation_graph'")
         if request.simulation_id in self.open_assemblers:
             assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
@@ -142,7 +142,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def simulation_logs(self, request, context):
-        self.logger.info("Received 'simulation_logs'" + str(self.open_assemblers.keys()))
+        self.logger.info("Received 'simulation_logs'")
         if request.simulation_id in self.open_assemblers:
             assembler = self.open_assemblers[request.simulation_id]
             for no_sim in range(len(assembler.simulations)):
@@ -168,7 +168,7 @@ class SimulationServicer(simulation_pb2_grpc.SimulationServicer):
             )
 
     def close_simulation(self, request, context):
-        self.logger.info("Received 'close_simulation'" + str(self.open_assemblers.keys()))
+        self.logger.info("Received 'close_simulation'")
         try:
             del self.open_assemblers[request.simulation_id]
             return simulation_pb2.CloseSimulationResponse(

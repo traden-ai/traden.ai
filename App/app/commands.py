@@ -62,13 +62,14 @@ class Commands:
         req = simulation_pb2.ListInstancesRequest()
         res = self.frontend.list_model_instances(req)
         instances = ask_model_instances(res.instances)
-        print(instances)
+        
         req = simulation_pb2.DeleteInstancesRequest(instances=instances)
         res = self.frontend.delete_model_instances(req)
         # FIXME check for errors? implies changing proto
 
     def close_simulation(self):  
 
+        # TODO multiple simulations
         id = ask_simulation_id()
         req = simulation_pb2.CloseSimulationRequest(simulation_id=id)
         res = self.frontend.close_simulation(req)

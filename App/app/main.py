@@ -62,7 +62,7 @@ if __name__ == "__main__":
         print("")
 
     # Check arguments
-    if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
+    if len(args) != MAX_ARGS:
         print("ERROR incorrect number of arguments.")
         print("Usage: python main.py simulation_host simulation_port\n")
 

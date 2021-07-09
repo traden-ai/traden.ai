@@ -100,6 +100,15 @@ def ask_graph():
         return option in ("yes", "y")
 
 
+def ask_results():
+    while True:
+        option = input("Store simulation results? (yes/no) ")
+        if option not in ("yes", "no", "y", "n"):
+            print("\n\tPlease enter valid option.\n")
+            continue
+        return option in ("yes", "y")
+
+
 def render_graph(stream):
     # FIXME daily? time seems to be predefined
     plt.xlabel("Time (daily)")

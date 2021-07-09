@@ -71,6 +71,6 @@ if __name__ == "__main__":
     simulation_port = args[2]
 
     frontend = SimulationFrontend(simulation_host, simulation_port)
-    commands = Commands(None)
+    commands = Commands(frontend)
     render_title()
     run()

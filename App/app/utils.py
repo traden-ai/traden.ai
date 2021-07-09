@@ -60,7 +60,7 @@ def ask_model_instances(instances):
             print("\tPlease insert 'l' to consult the available instances.")
             continue
 
-        return [i if not i.isdigit() else model_instances_clean[int(i) - 1] for i in instances]
+        return [i if not i.isdigit() else instances[int(i) - 1] for i in model_instances_clean]
 
 
 def ask_executions():
@@ -91,13 +91,44 @@ def ask_simulation_id():
             print("\n\tPlease enter a number.")
 
 
+def ask_graph():
+    while True:
+        option = input("Plot results into graph? (yes/no) ")
+        if option not in ("yes", "no", "y", "n"):
+            print("\n\tPlease enter valid option.\n")
+            continue
+        return option in ("yes", "y")
+
+
 def render_graph(stream):
     # FIXME daily? time seems to be predefined
     plt.xlabel("Time (daily)")
     plt.ylabel("Capital")
-    for key, value in stream:
-        x = [el.time for el in value.data_points]
-        y = [el.capital for el in value.data_points]
-        plt.plot(x, y, label=f"{key}")
+    for model in stream:
+        x = [el.time for el in stream[model]]
+        y = [el.capital for el in stream[model]]
+        plt.plot(x, y, label=f"{model}")
     plt.legend(loc='best')
     plt.show()
+
+
+def render_simulation(result):
+    print(f"\n\t\tSimulation ID: {result.simulation_id}")
+
+    models = result.model_results
+    tickers = result.ticker_results
+
+    for m in models:
+        results_str = "\nEx:\t"
+        results_str += "\tProfit: {}".format(m.nominal_profit)
+        results_str += "\n\t\tProfit (% / Year): {}".format(
+            m.percentage_profit)
+        results_str += "\n\t\tOperating time (%): {}\n".format(
+            m.operating_time_percentage)
+        print(results_str)
+
+    for t in tickers:
+        print("\n\t\tProfit for {} stock (%): {}".format(
+            t.ticker, t.percentage_profit))
+
+    print("\n\t\tAverage profit for chosen stocks (%): {}\n".format(sum(t.percentage_profit for t in tickers)/len(tickers)))

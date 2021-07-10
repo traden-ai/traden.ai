@@ -106,7 +106,8 @@ def get_tasks(no_tasks):
         task = {"Ticker": item["Symbol"]["S"],
                 "Indicator": item["Indicator"]["S"],
                 "StartDate": item["StartDate"]["S"] if item["StartDate"]["S"] != "0000-00-00" else None}
-        final_items.append(task)
+        if (task["Ticker"] not in [final_item["Ticker"] for final_item in final_items]):
+            final_items.append(task)
         if len(final_items) == no_tasks:
             return final_items
     return final_items[:no_tasks]

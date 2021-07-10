@@ -54,7 +54,7 @@ class AlphaVantage(DataResourceInterface):
             return self.get_fundamental_indicator
 
     @retry(retry_on_exception=retry_if_value_error, wait_exponential_multiplier=1000, wait_exponential_max=10000,
-           stop_max_delay=30000)
+           stop_max_delay=120000)
     def get_daily(self, stock, indicator):
         ts = TimeSeries(key=self.key, output_format='json')
         data, meta_data = None, None
@@ -64,7 +64,7 @@ class AlphaVantage(DataResourceInterface):
         return data, meta_data
 
     @retry(retry_on_exception=retry_if_value_error, wait_exponential_multiplier=1000, wait_exponential_max=10000,
-           stop_max_delay=30000)
+           stop_max_delay=240000)
     def get_tech_indicator(self, stock, indicator):
         ts = TechIndicators(key=self.key, output_format='json')
         data, meta_data = None, None
@@ -118,7 +118,7 @@ class AlphaVantage(DataResourceInterface):
         return data, meta_data
 
     @retry(retry_on_exception=retry_if_value_error, wait_exponential_multiplier=1000, wait_exponential_max=10000,
-           stop_max_delay=30000)
+           stop_max_delay=240000)
     def get_fundamental_indicator(self, stock, indicator):
         ts = FundamentalData(key=self.key, output_format='json')
         data, meta_data = None, None

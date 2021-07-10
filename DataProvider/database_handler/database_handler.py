@@ -53,8 +53,11 @@ class DatabaseHandler:
         return self.current_indicators
 
     def update_data(self, items):
-        insert_items(items)
-        insert_items_metadata(items)
+        try:
+            insert_items(items)
+            insert_items_metadata(items)
+        except Exception as e:
+            print(e)
 
 
     def update_item(self, ticker, date, indicator, value):

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     alpha_vantage_key = "E9NN094GU5JX53JA" if len(args) == MAX_ARGS - 1 else args[MAX_ARGS - 1]
 
     db = DatabaseHandler()
-    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=100)
+    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=10   )
 
     if no_tasks==0:
         p1 = Process(target=du.plan_database())

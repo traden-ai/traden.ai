@@ -14,6 +14,7 @@ class DataUpdaterWorker:
             items = self.resource_handler.get_past_data([task["Ticker"]], [task["Indicator"]], MINIMUM_DATE, get_current_date())
         else:
             items = self.resource_handler.get_past_data([task["Ticker"]], [task["Indicator"]], task["StartDate"], get_current_date())
+        print("Loaded task data for ticker {}, and indicator {}".format(task["Ticker"], task["Indicator"]))
         self.database_handler.update_data(items)
         print("Finished executing task for ticker {}, and indicator {}".format(task["Ticker"], task["Indicator"]))
 

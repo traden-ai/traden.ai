@@ -1,0 +1,132 @@
+syntax = "proto3";
+package Exchange;
+
+// ping
+
+message CtrlPingRequest {
+  string input = 1;
+}
+
+message CtrlPingResponse {
+  string output = 1;
+}
+
+// capital changes to model
+
+enum CapitalChangeStatus {
+  OK = 0;
+  NOK = 1;
+  MODEL_NOT_FOUND = 2;
+  MONEY_NOT_FOUND = 3;
+  TICKERS_NOT_FOUND = 4;
+}
+
+
+message StartModelRequest {
+  string model = 1;
+  repeated string tickers = 2;
+  float capital = 3;
+}
+
+message StartModelResponse {
+  CapitalChangeStatus status = 1;
+}
+
+message AddCapitalRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message AddCapitalResponse {
+  CapitalChangeStatus status = 1;
+}
+
+message RemoveCapitalRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message RemoveCapitalResponse {
+  CapitalChangeStatus status = 1;
+}
+
+message StopModelRequest {
+  string model = 1;
+}
+
+message StopModelResponse {
+  CapitalChangeStatus status = 1;
+}
+
+
+// update model
+
+message AddTickersRequest {
+  string model = 1;
+  repeated string tickers = 2;
+}
+
+message AddTickersResponse {
+  CapitalChangesStatus status = 1;
+}
+
+message RemoveTickersRequest {
+  string model = 1;
+  repeated string tickers = 2;
+}
+
+message RemoveTickersResponse {
+  CapitalChangesStatus status = 1;
+}
+
+
+// ledger status
+
+message LedgerInfoRequest {
+  // empty
+}
+
+message OpenPosition {
+  string ticker = 1;
+  float capital_value = 2;
+  float capital_invested = 3;
+  float units = 4;
+  float average_open = 5;
+  float current_price = 6;
+}
+
+message LedgerInfoResponse {
+  repeated OpenPosition positions = 1;
+  float capital_available = 2;
+  float capital_allocated = 3;
+  float profit = 4;
+}
+
+
+// query model status
+
+message ModelInfoRequest {
+  string model = 1;
+}
+
+message ModelInfoResponse {
+  LedgerInfoResponse model_ledger = 1;
+  float ledger_representation = 2;
+  enum Status {
+    OK = 0;
+    SIMULATION_NOT_FOUND = 1;
+    NOK = 2;
+  }
+  Status status = 3;
+}
+
+
+service Exchange {
+  rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc start_model(StartModelRequest) returns (StartModelResponse);
+  rpc stop_model(StopModelRequest) returns (StopModelResponse);
+  rpc add_capital(AddCapitalRequest) returns (AddCapitalResponse);
+  rpc remove_capital(RemoveCapitalRequest) returns (RemoveCapitalResponse);
+  rpc ledger_info(LedgerInfoRequest) returns (LedgerInfoResponse);
+  rpc model_info(ModelInfoRequest) reuturns (ModelInfoResponse);
+}

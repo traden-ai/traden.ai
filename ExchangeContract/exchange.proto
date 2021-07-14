@@ -67,7 +67,7 @@ message AddTickersRequest {
 }
 
 message AddTickersResponse {
-  CapitalChangesStatus status = 1;
+  CapitalChangeStatus status = 1;
 }
 
 message RemoveTickersRequest {
@@ -76,7 +76,7 @@ message RemoveTickersRequest {
 }
 
 message RemoveTickersResponse {
-  CapitalChangesStatus status = 1;
+  CapitalChangeStatus status = 1;
 }
 
 
@@ -128,5 +128,5 @@ service Exchange {
   rpc add_capital(AddCapitalRequest) returns (AddCapitalResponse);
   rpc remove_capital(RemoveCapitalRequest) returns (RemoveCapitalResponse);
   rpc ledger_info(LedgerInfoRequest) returns (LedgerInfoResponse);
-  rpc model_info(ModelInfoRequest) reuturns (ModelInfoResponse);
+  rpc model_info(ModelInfoRequest) returns (ModelInfoResponse);
 }

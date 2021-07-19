@@ -1,6 +1,14 @@
 syntax = "proto3";
 package Exchange;
 
+enum ExchangeResponseStatus {
+  OK = 0;
+  NOK = 1;
+  MODEL_NOT_FOUND = 2;
+  MONEY_NOT_FOUND = 3;
+  TICKERS_NOT_FOUND = 4;
+}
+
 // ping
 
 message CtrlPingRequest {
@@ -11,16 +19,7 @@ message CtrlPingResponse {
   string output = 1;
 }
 
-// capital changes to model
-
-enum CapitalChangeStatus {
-  OK = 0;
-  NOK = 1;
-  MODEL_NOT_FOUND = 2;
-  MONEY_NOT_FOUND = 3;
-  TICKERS_NOT_FOUND = 4;
-}
-
+// start and stop model
 
 message StartModelRequest {
   string model = 1;
@@ -29,25 +28,7 @@ message StartModelRequest {
 }
 
 message StartModelResponse {
-  CapitalChangeStatus status = 1;
-}
-
-message AddCapitalRequest {
-  string model = 1;
-  float capital = 2;
-}
-
-message AddCapitalResponse {
-  CapitalChangeStatus status = 1;
-}
-
-message RemoveCapitalRequest {
-  string model = 1;
-  float capital = 2;
-}
-
-message RemoveCapitalResponse {
-  CapitalChangeStatus status = 1;
+  ExchangeResponseStatus status = 1;
 }
 
 message StopModelRequest {
@@ -55,32 +36,52 @@ message StopModelRequest {
 }
 
 message StopModelResponse {
-  CapitalChangeStatus status = 1;
+  ExchangeResponseStatus status = 1;
 }
 
+// add remove capital
 
-// update model
 
-message AddTickersRequest {
+
+message AddCapitalToModelRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message AddCapitalToModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+message RemoveCapitalFromModelRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message RemoveCapitalFromModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+// add remove tickers
+
+message AddTickersToModelRequest {
   string model = 1;
   repeated string tickers = 2;
 }
 
-message AddTickersResponse {
-  CapitalChangeStatus status = 1;
+message AddTickersToModelResponse {
+  ExchangeResponseStatus status = 1;
 }
 
-message RemoveTickersRequest {
+message RemoveTickersFromModelRequest {
   string model = 1;
   repeated string tickers = 2;
 }
 
-message RemoveTickersResponse {
-  CapitalChangeStatus status = 1;
+message RemoveTickersFromModelResponse {
+  ExchangeResponseStatus status = 1;
 }
 
-
-// ledger status
+// ledger info
 
 message LedgerInfoRequest {
   // empty
@@ -102,8 +103,7 @@ message LedgerInfoResponse {
   float profit = 4;
 }
 
-
-// query model status
+// model info
 
 message ModelInfoRequest {
   string model = 1;
@@ -112,21 +112,19 @@ message ModelInfoRequest {
 message ModelInfoResponse {
   LedgerInfoResponse model_ledger = 1;
   float ledger_representation = 2;
-  enum Status {
-    OK = 0;
-    SIMULATION_NOT_FOUND = 1;
-    NOK = 2;
-  }
-  Status status = 3;
+  ExchangeResponseStatus status = 3;
 }
 
+// service
 
 service Exchange {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
   rpc start_model(StartModelRequest) returns (StartModelResponse);
   rpc stop_model(StopModelRequest) returns (StopModelResponse);
-  rpc add_capital(AddCapitalRequest) returns (AddCapitalResponse);
-  rpc remove_capital(RemoveCapitalRequest) returns (RemoveCapitalResponse);
+  rpc add_capital_to_model(AddCapitalToModelRequest) returns (AddCapitalToModelResponse);
+  rpc remove_capital_from_model(RemoveCapitalFromModelRequest) returns (RemoveCapitalFromModelResponse);
+  rpc add_tickers_to_model(AddTickersToModelRequest) returns (AddTickersToModelResponse);
+  rpc remove_tickers_from_model(RemoveTickersFromModelRequest) returns (RemoveTickersFromModelResponse);
   rpc ledger_info(LedgerInfoRequest) returns (LedgerInfoResponse);
   rpc model_info(ModelInfoRequest) returns (ModelInfoResponse);
 }

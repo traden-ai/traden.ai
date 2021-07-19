@@ -2,7 +2,9 @@ import unittest
 
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 from DataProviderContract.generated_files import data_provider_pb2
-from DataProviderTester.test.constants import DP_HOST, DP_PORT
+
+DP_HOST = "localhost"
+DP_PORT = 8081
 
 
 class DataProviderTestMethods(unittest.TestCase):

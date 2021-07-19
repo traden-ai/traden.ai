@@ -1,11 +1,10 @@
 import json
-
 import requests
+
+from retrying import retry
 from alpha_vantage.fundamentaldata import FundamentalData
 from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.timeseries import TimeSeries
-from retrying import retry
-
 from DataProvider.data_resources.data_resource_interface import DataResourceInterface
 from DataProvider.data_resources.resources.utils import *
 

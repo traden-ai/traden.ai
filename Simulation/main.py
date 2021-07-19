@@ -4,18 +4,10 @@ import logging
 from concurrent import futures
 
 from SimulationContract.generated_files import simulation_pb2_grpc
-from SimulationContract.generated_files import simulation_pb2
 from Simulation.simulation_servicer.simulation_servicer import SimulationServicer
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 
 MAX_ARGS = 6
-PING_MESSAGE = "ping"
-
-
-def terminate():
-    data_provider_frontend.close()
-    logger.info("Terminating...")
-    exit()
 
 
 if __name__ == '__main__':
@@ -30,6 +22,7 @@ if __name__ == '__main__':
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
         print(f"Usage: python3 main.py data_provider_host data_provider_port host port [maxWorkers = 10]\n")
+        exit()
 
     # parse arguments
     data_provider_host = args[1]
@@ -63,4 +56,5 @@ if __name__ == '__main__':
         server.wait_for_termination()
     except KeyboardInterrupt:
         data_provider_frontend.close()
-        terminate()
+        logger.info("Terminating...")
+        exit()

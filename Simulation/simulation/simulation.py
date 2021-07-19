@@ -1,7 +1,8 @@
+from Models.models.action import Action
 from Simulation.ledger.ledger import Ledger
-from Simulation.utils.utils import *
-from Models.models.model_interface import ModelInterface, Action
-from Simulation.simulation_data.SimulationData import SimulationData
+from Simulation.simulation_servicer.utils import *
+from Models.models.model_interface import ModelInterface
+from Simulation.simulation_data.simulation_data import SimulationData
 
 
 class Simulation:

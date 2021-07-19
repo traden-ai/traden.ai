@@ -1,1 +1,1 @@
-PYTHON_PATH = "YOUR_PYTHON_PATH"  # set your python path here
+PYTHON_PATH = "/home/atfortes/Dev/traden.ai"  # set your python path here

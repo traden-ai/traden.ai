@@ -1,5 +1,6 @@
-from Simulation.utils.utils import *
-from Models.models.model_interface import Action, TradingData
+from Models.models.action import Action
+from Models.models.trading_data import TradingData
+from Simulation.simulation_servicer.utils import *
 from Simulation.simulation.simulation_assembler import SimulationAssembler
 from DataProviderContract.generated_files import data_provider_pb2
 from SimulationContract.generated_files import simulation_pb2_grpc, simulation_pb2

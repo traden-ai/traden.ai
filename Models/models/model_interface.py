@@ -1,33 +1,7 @@
-from enum import Enum
+from abc import ABC, abstractmethod
 
 
-class Action(Enum):
-    BUY = 1
-    SELL = 2
-
-
-class TradingData(Enum):
-    dailyAdjusted = 1
-    sma = 2
-    ema = 3
-    macd = 4
-    rsi = 5
-    vwap = 6
-    cci = 7
-    adx = 8
-    stoch = 9
-    aroon = 10
-    bbands = 11
-    ad = 12
-    obv = 13
-    companyOverview = 14
-    earnings = 15
-    cashFlow = 16
-    balanceSheet = 17
-    incomeStatement = 18
-
-
-class ModelInterface:
+class ModelInterface(ABC):
 
     description = "default description for model"
 
@@ -39,6 +13,10 @@ class ModelInterface:
     def get_input_data(self):
         return self.input_data
 
+    def set_input_data(self, input_data: set):
+        self.input_data = input_data
+
+    @abstractmethod
     def execute(self, daily_data: dict) -> list:
         """Executes actions for a certain day in the respective runnable
         ----------------------------------------------------------------------------------

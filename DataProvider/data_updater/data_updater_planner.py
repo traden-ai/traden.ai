@@ -1,7 +1,7 @@
-from DataProvider.data_updater.constants import MAXIMUM_DATE
-from DataProvider.data_updater.utils import chunks
 import concurrent.futures
 
+from DataProvider.data_updater.utils import chunks
+from DataProvider.data_updater.constants import MAXIMUM_DATE
 from DataProvider.database_handler.database_handler import DatabaseHandler
 
 

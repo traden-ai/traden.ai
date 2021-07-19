@@ -1,18 +1,17 @@
-import numpy as np
-import tensorflow as tf
-import keras
 import os
+import keras
+import numpy as np
 
 from constants import PYTHON_PATH
 from Models.models.estimator_interface import EstimatorInterface
 from Simulation.simulation.simulation import Simulation
 from keras.models import Model
-from keras.layers import Dense, Dropout, LSTM, Input, Activation
+from keras.layers import Dense, Input, Activation
 from keras import optimizers
 from sklearn import preprocessing
 
 
-class StackingEstimatorsInterface(EstimatorInterface):
+class StackingEstimators(EstimatorInterface):
     trainable_component = None
 
     x_normalizers = {}
@@ -120,7 +119,7 @@ if __name__ == '__main__':
 
     model1 = get_instance("NeuralNetEstimator")
     model2 = get_instance("FirstTradeModel")
-    stacked = StackingEstimatorsInterface([model1, model2], percentual_threshold=0.01)
+    stacked = StackingEstimators([model1, model2], percentual_threshold=0.01)
     X, Y = stacked.preprocessing(["GM"], "2013-01-01", "2018-01-01", 1)
     stacked.train(X, Y)
     save_instance("FirstStacked", stacked)

@@ -1,10 +1,10 @@
 import sys
 from multiprocessing import Process
 
-from DataProvider.data_resources.resource_handler.resource_handler import ResourceHandler
-from DataProvider.data_resources.resources.alpha_vantage_resource import AlphaVantage
-from DataProvider.data_updater.data_updater import DataUpdater
-from DataProvider.database_handler.database_handler import DatabaseHandler
+from DataProvider.data_resources.resource_handler.ResourceHandler import ResourceHandler
+from DataProvider.data_resources.resources.AlphaVantage import AlphaVantage
+from DataProvider.data_updater.DataUpdater import DataUpdater
+from DataProvider.database_handler.DatabaseHandler import DatabaseHandler
 
 MAX_ARGS = 3
 

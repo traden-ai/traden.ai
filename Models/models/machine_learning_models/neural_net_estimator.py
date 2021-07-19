@@ -1,18 +1,14 @@
-import random
+import keras
+import numpy as np
 
-from constants import PYTHON_PATH
-from models.estimator_interface import EstimatorInterface, record_estimation
-from models.model_interface import *
+from Models.models.estimator_interface import EstimatorInterface, record_estimation
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
 from utils.utils import data_load
-import keras
 from keras.models import Model
-from keras.layers import Dense, Dropout, LSTM, Input, Activation
+from keras.layers import Dense, Dropout, Input, Activation
 from keras import optimizers
-import numpy as np
-import os
-from model_database_handler.model_database_handler import *
+from Models.model_database_handler.model_database_handler import *
 
 
 class NeuralNetEstimator(EstimatorInterface):

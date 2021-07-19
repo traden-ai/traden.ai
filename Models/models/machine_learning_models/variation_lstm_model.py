@@ -1,20 +1,16 @@
-import random
+import keras
+import numpy as np
 
-from constants import PYTHON_PATH
-from models.estimator_interface import EstimatorInterface, record_estimation
-from models.model_interface import *
+
+from Models.models.estimator_interface import EstimatorInterface, record_estimation
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np, \
     convert_nominal_to_variation_1D, convert_nominal_to_variation_2D
-from sklearn import preprocessing
 from utils.utils import data_load
-import keras
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras import optimizers
-import numpy as np
-import os
-from model_database_handler.model_database_handler import *
-from utils.data_distribution import DataDistribution, convert_data_points_into_percentile_list, \
+from Models.model_database_handler.model_database_handler import *
+from utils.data_distribution import convert_data_points_into_percentile_list, \
     convert_data_points_2D_into_percentile_2D
 
 

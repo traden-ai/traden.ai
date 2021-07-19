@@ -21,6 +21,7 @@ if __name__ == '__main__':
     if len(args) not in (MAX_ARGS - 1, MAX_ARGS):
         print("ERROR incorrect number of arguments.")
         print(f"Usage: python3 main.py host port [workers = 10]\n")
+        exit()
 
     # parse arguments
     host = args[1]

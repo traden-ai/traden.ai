@@ -1,10 +1,13 @@
 import random
-from Models.models.model_interface import *
+
+from enum import Enum
+from Models.models.action import Action
+from Models.models.trading_data import TradingData
+from Models.models.model_interface import ModelInterface
 from Models.model_database_handler.model_database_handler import *
 
 
 class EMACrossing(ModelInterface):
-
     description = "Buys and sells when EMA and Close price cross."
 
     input_data = {TradingData.dailyAdjusted, TradingData.ema}

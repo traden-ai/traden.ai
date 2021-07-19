@@ -4,8 +4,8 @@ import logging
 from concurrent import futures
 
 from ExchangeContract.generated_files import exchange_pb2_grpc
-from Exchange.exchange_servicer.ExchangeServicer import ExchangeServicer
-from DataProviderTester.main.DataProviderFrontend import DataProviderFrontend
+from Exchange.exchange_servicer.exchange_servicer import ExchangeServicer
+from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 
 MAX_ARGS = 6
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     logger = logging.getLogger("exchange")
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
-    file_handler = logging.FileHandler("simulation.log")
+    file_handler = logging.FileHandler("exchange.log")
     file_handler.setLevel(logging.ERROR)
     file_handler.setFormatter(formatter)
     stream_handler = logging.StreamHandler()

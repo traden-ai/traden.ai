@@ -1,10 +1,10 @@
 import sys
 from multiprocessing import Process
 
-from DataProvider.data_resources.resource_handler.ResourceHandler import ResourceHandler
-from DataProvider.data_resources.resources.AlphaVantage import AlphaVantage
-from DataProvider.data_updater.DataUpdater import DataUpdater
-from DataProvider.database_handler.DatabaseHandler import DatabaseHandler
+from DataProvider.data_resources.resource_handler.resource_handler import ResourceHandler
+from DataProvider.data_resources.resources.alpha_vantage_resource import AlphaVantage
+from DataProvider.data_updater.data_updater import DataUpdater
+from DataProvider.database_handler.database_handler import DatabaseHandler
 
 MAX_ARGS = 3
 
@@ -27,9 +27,9 @@ if __name__ == '__main__':
     alpha_vantage_key = "E9NN094GU5JX53JA" if len(args) == MAX_ARGS - 1 else args[MAX_ARGS - 1]
 
     db = DatabaseHandler()
-    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=10   )
+    du = DataUpdater(ResourceHandler([AlphaVantage(key=alpha_vantage_key)], db), DatabaseHandler(), no_workers=10)
 
-    if no_tasks==0:
+    if no_tasks == 0:
         p1 = Process(target=du.plan_database())
         p1.start()
         p1.join()

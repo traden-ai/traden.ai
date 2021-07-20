@@ -1,7 +1,6 @@
 import datetime as dt
 
 import numpy as np
-from DataProvider.database_handler.database_handler import get_data
 from Models.models.action import Action
 from Simulation.simulation_data.simulation_data import SimulationData
 
@@ -66,36 +65,45 @@ def get_date_index(data_year: list, date: str, date_type: str):
     return index
 
 
-def convert_daily_data_to_np(daily_data: dict, keys=(
-        "close", "open", "high", "low", "volume", "sma", "ema", "macd_hist", "macd_signal", "macd",
-        "cci", "rsi", "adx", "stoch_slowd", "stoch_slowk", "aroon_up", "aroon_down", "bbands_real_upper",
-        "bbands_real_middle", "bbands_real_lower", "ad", "obv"
-)):
+def convert_daily_data_to_np(daily_data):
     result = {}
+    vec = []
     for s in daily_data:
-        vec = [getattr(daily_data[s], el) for el in keys]
+        attributes = [a for a in dir(daily_data[s]) if not a.startswith('__') and not callable(getattr(daily_data[s], a))]
+        for attr in attributes:
+            attr_dict = getattr(daily_data[s], attr)
+            attribute_components_values = [attr_dict[key] for key in attr_dict]
+            if attribute_components_values != []:
+                vec.extend(attribute_components_values)
         result[s] = np.array(vec)
+        vec = []
     return result
 
 
 def convert_data_to_np(data_raw):
     matrix = {}
-    stock_matrix = []
-
-    for stock in data_raw:
-        for index in range(len(data_raw[stock])):
-            stock_matrix.append([convert_daily_data_to_np({stock: SimulationData(data_raw[stock][index])})[stock]])
-        matrix[stock] = np.concatenate(stock_matrix, axis=0)
-        stock_matrix = []
+    stock_matrix = {}
+    for day in data_raw:
+        for stock in data_raw[day]:
+            daily_np = convert_daily_data_to_np({stock: SimulationData(**data_raw[day][stock])})
+            if stock not in stock_matrix:
+                stock_matrix[stock] = []
+            stock_matrix[stock].append(daily_np[stock])
+    for stock in stock_matrix:
+        matrix[stock] = np.stack(stock_matrix[stock], axis=-1)
     return matrix
 
 
 def convert_prices_to_np(prices_raw):
     price_matrix = {}
-
-    for stock in prices_raw:
-        elements = [price for price in prices_raw[stock]]
-        price_matrix[stock] = np.array(elements).reshape(-1, 1)
+    elements = {}
+    for day in prices_raw:
+        for stock in day:
+            if stock not in elements:
+                elements[stock] = []
+            elements[stock].append(day[stock])
+    for stock in elements:
+        price_matrix[stock] = np.array(elements[stock]).reshape(-1, 1)
     return price_matrix
 
 
@@ -132,10 +140,10 @@ def get_indicators(path=indicators_filepath):
             indicators.append(line.strip())
     return indicators
 
-
+"""
 def data_load(stocks: list, start: str, end: str):
-    """ method that loads the data corresponding to the stocks in 'stocks'
-    between the dates 'start' and 'end' from the database to a numpy array """
+    method that loads the data corresponding to the stocks in 'stocks'
+    between the dates 'start' and 'end' from the database to a numpy array
     json_data = get_data(stocks, start, end)
     return_data = {}
     prices = {}
@@ -151,7 +159,7 @@ def data_load(stocks: list, start: str, end: str):
     for day in json_data[0]["Data"]:
         if start <= day <= end and all(day in sd["Data"] for sd in json_data):
             dates.append(day)
-    return dates, return_data, prices
+    return dates, return_data, prices"""
 
 
 def vector_proj_of_vec1_on_vec2(vec1: list, vec2: list):

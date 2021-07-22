@@ -1,5 +1,7 @@
 from enum import Enum
-from Models.models.model_interface import ModelInterface, Action
+
+from Models.models.action import Action
+from Models.models.model_interface import ModelInterface
 
 
 def record_estimation(func):
@@ -17,6 +19,7 @@ class EstimatorInterface(ModelInterface):
     sell_percentual_threshold = None
     buy_nominal_threshold = None
     sell_nominal_threshold = None
+    buy_percentage = 1
 
     def estimate(self, daily_data: dict) -> dict:
         """Estimates prices for a certain day in the respective runnable
@@ -30,7 +33,7 @@ class EstimatorInterface(ModelInterface):
         """
         pass
 
-    def execute(self, daily_data: dict) -> list:
+    def execute(self, daily_data: dict):
         output = []
         results = self.estimate(daily_data)
         for ticker in results:
@@ -51,13 +54,16 @@ class EstimatorInterface(ModelInterface):
                 elif difference < -self.sell_nominal_threshold:
                     output.append({"Ticker": ticker, "Action": Action.SELL,
                                    "Intensity": min(abs(difference) / (2 * self.sell_nominal_threshold), 1)})
-        return output
+        return output, self.buy_percentage
 
     def set_threshold(self, buy_percentual_threshold=None, sell_percentual_threshold=None, buy_nominal_threshold=None, sell_nominal_threshold=None):
         self.buy_percentual_threshold = buy_percentual_threshold
         self.sell_percentual_threshold = sell_percentual_threshold
         self.buy_nominal_threshold = buy_nominal_threshold
         self.sell_nominal_threshold = sell_nominal_threshold
+
+    def set_buy_percentage(self, buy_percentage):
+        self.buy_percentage = buy_percentage
 
     def get_estimations(self):
         return self.estimations

@@ -11,6 +11,8 @@ class TrendFollowing(ModelInterface):
 
     input_data = {TradingData.dailyAdjusted}
 
+    buy_percentage = 1
+
     prev = {}
     prices_bought = {}
 
@@ -54,7 +56,7 @@ class TrendFollowing(ModelInterface):
                     output.append({"Ticker": s, "Action": Action.SELL, "Intensity": 1})
 
         self.prev = daily_data
-        return output
+        return output, self.buy_percentage
 
 
 if __name__ == '__main__':

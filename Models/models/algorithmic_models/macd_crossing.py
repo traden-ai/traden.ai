@@ -13,6 +13,8 @@ class MACDCrossing(ModelInterface):
 
     input_data = {TradingData.macd}
 
+    buy_percentage = 1
+
     prev = {}
 
     def execute(self, daily_data: dict):
@@ -32,7 +34,7 @@ class MACDCrossing(ModelInterface):
 
             self.prev[s] = diff
 
-        return output
+        return output, self.buy_percentage
 
 
 if __name__ == '__main__':

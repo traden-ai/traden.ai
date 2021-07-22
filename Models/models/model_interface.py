@@ -17,15 +17,17 @@ class ModelInterface(ABC):
         self.input_data = input_data
 
     @abstractmethod
-    def execute(self, daily_data: dict) -> list:
+    def execute(self, daily_data: dict):
         """Executes actions for a certain day in the respective runnable
         ----------------------------------------------------------------------------------
         Daily_data  is of the form
         {Tradable_ticker_1: {"RSI" : 54.7352, ...}}
         ----------------------------------------------------------------------------------
         Output List is of the form
-        [{"Ticker": ticker, "Action": Action, "Intensity": float}, ...]
-        float between 0..1 representing intensity, the intensity should be non increasing
+        [{"Ticker": ticker, "Action": Action, "Intensity": float}, ...], Buy_Percentage
+        float between 0..1 representing intensity, the intensity should be non increasing,
+        Buy_Percentage is a float between 0 and 1 representing the amount one wants to buy of a stock when compared
+        to the ledger capital
         """
         pass
 

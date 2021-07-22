@@ -12,6 +12,8 @@ class Random(ModelInterface):
 
     input_data = {}
 
+    buy_percentage = 1
+
     def execute(self, daily_data: dict):
 
         output = []
@@ -20,7 +22,7 @@ class Random(ModelInterface):
             output.append({"Ticker": s, "Action": Action.SELL, "Intensity": random.uniform(0, 1)})
             output.append({"Ticker": s, "Action": Action.BUY, "Intensity": random.uniform(0, 1)})
 
-        return output
+        return output, self.buy_percentage
 
 
 if __name__ == '__main__':

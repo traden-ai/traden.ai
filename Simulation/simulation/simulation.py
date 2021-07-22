@@ -3,6 +3,7 @@ from Simulation.ledger.ledger import Ledger
 from Simulation.simulation_servicer.utils import *
 from Models.models.model_interface import ModelInterface
 from Simulation.simulation_data.simulation_data import SimulationData
+from Simulation.utils.utils import divide_results, normalize_to_sum
 
 
 class Simulation:
@@ -67,15 +68,23 @@ class Simulation:
                 self.sell(stock, stocks[stock])
 
     def execute_day(self, daily_data):
-        results = self.model.execute(daily_data)
-        for result in results:
-            if result["Action"] == Action.BUY:
-                current_balance = self.ledger.get_balance()
-                max_buy = current_balance // self.get_current_stock_price(result["Ticker"])
-                self.buy(result["Ticker"], max_buy*result["Intensity"])
-            elif result["Action"] == Action.SELL:
-                max_sell = self.ledger.get_amount_stock(result["Ticker"])
-                self.sell(result["Ticker"], max_sell*result["Intensity"])
+        results, buy_percentage = self.model.execute(daily_data)
+        buy_results, sell_results = divide_results(results)
+
+        for sell_result in sell_results:
+            max_sell = self.ledger.get_amount_stock(sell_result["Ticker"])
+            self.sell(sell_result["Ticker"], max_sell*sell_result["Intensity"])
+
+        ledger_value = self.get_current_value()
+        ledger_capital = self.ledger.get_balance()
+        true_percentage = min(buy_percentage, ledger_capital/ledger_value)
+
+        buy_results_normalized = normalize_to_sum(buy_results, true_percentage)
+
+        for buy_result in buy_results_normalized:
+            buy_capital = ledger_value*buy_result["Intensity"]
+            no_stocks = buy_capital // self.get_current_stock_price(buy_result["Ticker"])
+            self.buy(buy_result["Ticker"], no_stocks)
 
     def execute(self):
         for i in range(self.no_executions):

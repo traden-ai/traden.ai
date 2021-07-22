@@ -13,6 +13,8 @@ class RSISignals(ModelInterface):
 
     input_data = {TradingData.rsi}
 
+    buy_percentage = 1
+
     def execute(self, daily_data: dict):
 
         output = []
@@ -25,7 +27,7 @@ class RSISignals(ModelInterface):
             elif rsi > 66.6:
                 output.append({"Ticker": s, "Action": Action.SELL, "Intensity": random.uniform(0.5, 1)})
 
-        return output
+        return output, self.buy_percentage
 
 
 if __name__ == '__main__':

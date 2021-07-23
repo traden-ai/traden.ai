@@ -68,11 +68,15 @@ def get_date_index(data_year: list, date: str, date_type: str):
 def convert_daily_data_to_np(daily_data):
     result = {}
     vec = []
+    attributes = None
     for s in daily_data:
-        attributes = [a for a in dir(daily_data[s]) if not a.startswith('__') and not callable(getattr(daily_data[s], a))]
+        if not attributes:
+            attributes = [a for a in dir(daily_data[s]) if not a.startswith('__') and not callable(getattr(daily_data[s], a))]
+            attributes = sorted(attributes)
         for attr in attributes:
             attr_dict = getattr(daily_data[s], attr)
-            attribute_components_values = [attr_dict[key] for key in attr_dict]
+            keys = sorted(list(attr_dict))
+            attribute_components_values = [attr_dict[key] for key in keys]
             if attribute_components_values != []:
                 vec.extend(attribute_components_values)
         result[s] = np.array(vec)
@@ -214,7 +218,8 @@ def majority_voting(actions):
     return final_actions
 
 
-def convert_nominal_to_variation_2D(np_arr, eps=0.001):
+def convert_nominal_to_variation_2D(np_arr_raw, eps=0.001):
+    np_arr = np_arr_raw.transpose()
     new_arr = []
     for i in range(1, len(np_arr)):
         features = []
@@ -224,7 +229,7 @@ def convert_nominal_to_variation_2D(np_arr, eps=0.001):
             else:
                 features.append(np_arr[i][j] / eps)
         new_arr.append(features)
-    return new_arr
+    return np.array(new_arr).transpose()
 
 
 def convert_nominal_to_variation_1D(np_arr, eps=0.001):
@@ -234,4 +239,4 @@ def convert_nominal_to_variation_1D(np_arr, eps=0.001):
             new_arr.append(np_arr[i] / np_arr[i - 1])
         else:
             new_arr.append(np_arr[i] / eps)
-    return new_arr
+    return np.array(new_arr)

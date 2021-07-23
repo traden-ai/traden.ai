@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class DataDistribution:
     """class for representing data distribution"""
 
@@ -24,7 +27,7 @@ def convert_data_points_into_percentile_list(data_points, dist=None):
     final_lst = []
     for point in data_points:
         final_lst.append(dist.get_percentile(point))
-    return final_lst, dist
+    return np.array([final_lst]), dist
 
 
 def convert_data_points_2D_into_percentile_2D(data_points):
@@ -34,4 +37,4 @@ def convert_data_points_2D_into_percentile_2D(data_points):
         lst, dt = convert_data_points_into_percentile_list(data_points[i])
         dist.append(dt)
         new_arr.append(lst)
-    return new_arr, dist
+    return np.concatenate(new_arr), dist

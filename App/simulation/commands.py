@@ -49,7 +49,7 @@ class SimulationCommands:
         status = res.status
 
         if (status == simulation_pb2.StartSimulationResponse.Status.OK):
-            print(f"\n\tSimulation ID: {res.simulation_result.simulation_id}")
+            print(f"\n\n\tSimulation ID: {res.simulation_result.simulation_id}")
             print(render_simulation(res.simulation_result))
             if (ask_graph()):
                 req = simulation_pb2.SimulationGraphRequest(simulation_id=res.simulation_result.simulation_id)

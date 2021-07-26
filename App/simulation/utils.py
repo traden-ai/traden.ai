@@ -125,13 +125,13 @@ def ask_results():
 def find_index(dir):
     files = os.listdir(dir)
     files = [f[0:f.find(".")] for f in files]
-    return max(int(f) for f in files) + 1
+    return max(int(f) for f in files) + 1 if len(files) != 0 else 1
 
 
 def save_logs(sim_req, sim_results, logs):
 
     try:
-        dir_path = PYTHON_PATH + "/App/app/simulation_history/"
+        dir_path = PYTHON_PATH + "/App/simulation/simulation_history/"
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
 

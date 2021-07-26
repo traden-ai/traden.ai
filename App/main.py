@@ -73,7 +73,7 @@ def run(sim, exc):
 
 if __name__ == "__main__":
 
-    MAX_ARGS = 6
+    MAX_ARGS = 5
     args = sys.argv
 
     # Receive and print arguments

@@ -61,15 +61,14 @@ def run(sim, exc):
 
             command = input(commands.prompt())
             func = commands.parser(command)
-            # FIXME use OK/NOK
-            if func is None:
-                commands = None
-            else:
-                func()
-
+            func()
+            
+        except TypeError:
+            commands = None
+        
         except KeyboardInterrupt:
             quit_app()
-
+        
 
 if __name__ == "__main__":
 

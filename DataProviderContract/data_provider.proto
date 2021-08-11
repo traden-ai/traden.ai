@@ -1,0 +1,85 @@
+syntax = "proto3";
+package DataProvider;
+
+message CtrlPingRequest {
+  string input = 1;
+}
+
+message CtrlPingResponse {
+	string output = 1;
+}
+
+message TimeInterval {
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message Indicator{
+  map<string, string> components_to_values = 1;
+}
+
+message TickerData {
+  string ticker = 1;
+  map<string, Indicator> indicators_to_values = 2;
+}
+
+message DayData{
+  string date = 1;
+  repeated TickerData ticker_data = 2;
+}
+
+message StockData {
+  repeated DayData multiple_days_data = 1;
+}
+
+message PastDataRequest {
+  repeated string tickers = 1;
+  repeated string indicators = 2;
+  TimeInterval interval = 3;
+}
+
+message TickerList{
+  repeated string available_tickers = 1;
+  repeated string not_available_tickers= 2;
+}
+
+message PastDataResponse {
+  oneof Response {
+    StockData data = 1;
+    TimeInterval interval = 2;
+    TickerList tickers = 3;
+  }
+  enum Status {
+    OK = 0;
+    INTERVAL_NOT_AVAILABLE = 1;
+    TICKERS_NOT_AVAILABLE = 2;
+    NOK = 3;
+  }
+
+  Status status = 4;
+}
+
+/*
+
+message ExchangeDailyData{
+
+}
+
+message CurrentDailyDataRequest {
+  ExchangeDailyData exchange_data = 1;
+}
+
+message CurrentDailyDataResponse {
+  StockData daily_data = 1;
+  enum Status {
+    OK = 0;
+    NOK = 1;
+  }
+} */
+
+service DataProvider {
+  rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc get_past_data(PastDataRequest) returns (stream PastDataResponse);
+  // rpc get_daily_data(CurrentDailyDataRequest) returns (CurrentDailyDataResponse);
+  // rpc get_intra_daily_data(CurrentIntraDailyDataRequest) returns (CurrentIntraDailyDataResponse);
+}

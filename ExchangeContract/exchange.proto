@@ -1,0 +1,130 @@
+syntax = "proto3";
+package Exchange;
+
+enum ExchangeResponseStatus {
+  OK = 0;
+  NOK = 1;
+  MODEL_NOT_FOUND = 2;
+  MONEY_NOT_FOUND = 3;
+  TICKERS_NOT_FOUND = 4;
+}
+
+// ping
+
+message CtrlPingRequest {
+  string input = 1;
+}
+
+message CtrlPingResponse {
+  string output = 1;
+}
+
+// start and stop model
+
+message StartModelRequest {
+  string model = 1;
+  repeated string tickers = 2;
+  float capital = 3;
+}
+
+message StartModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+message StopModelRequest {
+  string model = 1;
+}
+
+message StopModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+// add remove capital
+
+
+
+message AddCapitalToModelRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message AddCapitalToModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+message RemoveCapitalFromModelRequest {
+  string model = 1;
+  float capital = 2;
+}
+
+message RemoveCapitalFromModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+// add remove tickers
+
+message AddTickersToModelRequest {
+  string model = 1;
+  repeated string tickers = 2;
+}
+
+message AddTickersToModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+message RemoveTickersFromModelRequest {
+  string model = 1;
+  repeated string tickers = 2;
+}
+
+message RemoveTickersFromModelResponse {
+  ExchangeResponseStatus status = 1;
+}
+
+// ledger info
+
+message LedgerInfoRequest {
+  // empty
+}
+
+message OpenPosition {
+  string ticker = 1;
+  float capital_value = 2;
+  float capital_invested = 3;
+  float units = 4;
+  float average_open = 5;
+  float current_price = 6;
+}
+
+message LedgerInfoResponse {
+  repeated OpenPosition positions = 1;
+  float capital_available = 2;
+  float capital_allocated = 3;
+  float profit = 4;
+}
+
+// model info
+
+message ModelInfoRequest {
+  string model = 1;
+}
+
+message ModelInfoResponse {
+  LedgerInfoResponse model_ledger = 1;
+  float ledger_representation = 2;
+  ExchangeResponseStatus status = 3;
+}
+
+// service
+
+service Exchange {
+  rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc start_model(StartModelRequest) returns (StartModelResponse);
+  rpc stop_model(StopModelRequest) returns (StopModelResponse);
+  rpc add_capital_to_model(AddCapitalToModelRequest) returns (AddCapitalToModelResponse);
+  rpc remove_capital_from_model(RemoveCapitalFromModelRequest) returns (RemoveCapitalFromModelResponse);
+  rpc add_tickers_to_model(AddTickersToModelRequest) returns (AddTickersToModelResponse);
+  rpc remove_tickers_from_model(RemoveTickersFromModelRequest) returns (RemoveTickersFromModelResponse);
+  rpc ledger_info(LedgerInfoRequest) returns (LedgerInfoResponse);
+  rpc model_info(ModelInfoRequest) returns (ModelInfoResponse);
+}

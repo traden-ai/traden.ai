@@ -1,17 +1,14 @@
 import keras
 import numpy as np
 
-
-from Models.models.estimator_interface import EstimatorInterface, record_estimation
-from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np, \
-    convert_nominal_to_variation_1D, convert_nominal_to_variation_2D
-from utils.utils import data_load
+from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
+from Models.model_data_endpoint.model_data_endpoint import ModelDataEndpoint
+from Models.models.interfaces.estimator_interface import EstimatorInterface, record_estimation
+from utils.utils import convert_daily_data_to_np, convert_nominal_to_variation_2D
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras import optimizers
 from Models.model_database_handler.model_database_handler import *
-from utils.data_distribution import convert_data_points_into_percentile_list, \
-    convert_data_points_2D_into_percentile_2D
 
 
 class VariationLstmModel(EstimatorInterface):
@@ -29,37 +26,26 @@ class VariationLstmModel(EstimatorInterface):
 
     time_steps = None
 
-    def __init__(self, buy_threshold, sell_threshold, time_steps):
+    model_endpoint = None
+
+    def __init__(self, model_endpoint, buy_threshold, sell_threshold, time_steps):
+        self.model_endpoint = model_endpoint
         self.set_threshold(buy_percentual_threshold=buy_threshold, sell_percentual_threshold=sell_threshold)
         self.time_steps = time_steps
 
     def preprocessing(self, stock, start, end, pred_time):
-        _, data_raw, prices_raw = data_load([stock], start, end)
-        data = convert_data_to_np(data_raw)
-        data_variations = {}
-        for stock in data:
-            data_variations[stock] = np.array(convert_nominal_to_variation_2D(data[stock]))
-        processed_data, self.x_dist = convert_data_points_2D_into_percentile_2D(data_variations[stock].transpose())
-        transformed_data = np.array(processed_data).transpose()
-        X_arr = np.array([list(transformed_data[:][i].copy()) for i in range(len(transformed_data) - pred_time)])
+        data , self.x_dist = self.model_endpoint.get_percentile_variation_data_np([stock], ["dailyAdjusted", "cci", "adx", "ad", "aroon", "bbands", "ema", "macd", "obv", "rsi", "sma", "stoch"], start, end)
         X = []
-        for i in range(self.time_steps, len(X_arr)-self.time_steps):
-            X.append(X_arr[i - self.time_steps:i, 0])
+        for i in range(self.time_steps, len(data[stock])-self.time_steps):
+            X.append(data[stock][0, i - self.time_steps:i])
         X = np.array(X)
         X = np.reshape(X, (X.shape[0], X.shape[1], 1))
         print(X.shape)
 
-        prices = convert_prices_to_np(prices_raw)
-        price_variations = {}
-        for stock in prices:
-            price_variations[stock] = convert_nominal_to_variation_1D(prices[stock])
-        processed_variations = price_variations[stock]
-        transformed_variations, self.y_dist = convert_data_points_into_percentile_list(processed_variations)
-        transformed_variations = np.array([transformed_variations]).transpose()
-        Y_arr = np.array([transformed_variations[:][i + pred_time].copy() for i in range(len(transformed_variations) - pred_time)])
+        prices, self.y_dist = self.model_endpoint.get_percentile_variation_prices_np([stock], start, end)
         Y = []
-        for i in range(self.time_steps, len(Y_arr) - self.time_steps):
-            Y.append(Y_arr[i, 0])
+        for i in range(self.time_steps, len(prices[stock]) - self.time_steps):
+            Y.append(prices[stock][i, 0])
         Y = np.array(Y)
         print(Y.shape)
         return X, Y
@@ -79,9 +65,9 @@ class VariationLstmModel(EstimatorInterface):
             output = Activation('linear', name='linear_output')(x)
 
             self.model = Model(inputs=NNinput, outputs=output)
-            adam = optimizers.Adam(lr=0.005)
+            adam = optimizers.Adam(lr=0.001)
             self.model.compile(optimizer=adam, loss='mse')
-        self.model.fit(x=X, y=Y, batch_size=32, epochs=500, shuffle=True)
+        self.model.fit(x=X, y=Y, batch_size=32, epochs=2000, shuffle=True)
 
     @record_estimation
     def estimate(self, daily_data) -> dict:
@@ -119,9 +105,7 @@ class VariationLstmModel(EstimatorInterface):
 
 
 if __name__ == '__main__':
-    model = VariationLstmModel(0.01, 0.0001, 10)
-    X, Y = model.preprocessing("CVS", "2013-01-01", "2018-01-01", 1)
-    model.train(X, Y)
-    X, Y = model.preprocessing("NVDA", "2013-01-01", "2018-01-01", 1)
+    model = VariationLstmModel(ModelDataEndpoint(DataProviderFrontend("[::]", "50051")), 0.01, 0.0001, 10)
+    X, Y = model.preprocessing("MO", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
     save_instance("VariationLstmModel", model)

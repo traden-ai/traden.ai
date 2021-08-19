@@ -1,7 +1,7 @@
 import keras
 import numpy as np
 
-from Models.models.estimator_interface import EstimatorInterface, record_estimation
+from Models.models.interfaces.estimator_interface import EstimatorInterface, record_estimation
 from utils.data_distribution import convert_data_points_into_percentile_list, \
     convert_data_points_2D_into_percentile_2D
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np, \

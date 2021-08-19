@@ -1,15 +1,19 @@
-import keras
-import numpy as np
+import random
 
-
-from Models.models.estimator_interface import EstimatorInterface, record_estimation
+from Models.model_database_handler.model_database_handler import save_instance
+from constants import PYTHON_PATH
+from models.estimator_interface import EstimatorInterface, record_estimation
+from models.model_interface import *
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
 from utils.utils import data_load
+import keras
 from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras import optimizers
-from Models.model_database_handler.model_database_handler import *
+import numpy as np
+import os
+from model_database_handler.model_database_handler import *
 
 
 class FirstTradenModel(EstimatorInterface):

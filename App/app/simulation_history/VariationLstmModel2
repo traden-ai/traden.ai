@@ -1,0 +1,79 @@
++------------------------------------------------------------------------------+
+|                              Simulation Details                              |
++------------------------------------------------------------------------------+
+
+Balance: 10000.0
+Stocks: ['DUK']
+Starting Date: 2018-01-02
+Ending Date: 2020-12-11
+Model: VariationLstmModel	(Artificial Intelligence Approach using LSTMs.)
+
++------------------------------------------------------------------------------+
+|                              Simulation Results                              |
++------------------------------------------------------------------------------+
+
+Ex:		Profit: -1074.5600000000031
+		Profit (%): -10.745600000000032
+		Profit (% / Year): -3.789730574734096
+		Operating time (%): 10.612244897959183
+
+		Profit for DUK stock (%): 9.984380631983662
+
++------------------------------------------------------------------------------+
+|                                Simulation Logs                               |
++------------------------------------------------------------------------------+
+
+Ex.
+[1]	Bought 77 stocks of DUK with price 75.69 at 2018-02-16
+	Sold 77 stocks of DUK with price 75.54 at 2018-02-21
+	Bought 68 stocks of DUK with price 75.35 at 2018-03-01
+	Sold 68 stocks of DUK with price 76.55 at 2018-03-09
+	Bought 69 stocks of DUK with price 79.76 at 2018-05-02
+	Sold 69 stocks of DUK with price 79.5 at 2018-05-04
+	Bought 84 stocks of DUK with price 76.98 at 2018-05-29
+	Sold 84 stocks of DUK with price 76.08 at 2018-05-31
+	Bought 63 stocks of DUK with price 81.7 at 2018-09-13
+	Sold 63 stocks of DUK with price 80.09 at 2018-09-18
+	Bought 64 stocks of DUK with price 84.33 at 2018-11-05
+	Sold 64 stocks of DUK with price 84.7 at 2018-11-06
+	Bought 56 stocks of DUK with price 88.52 at 2018-11-19
+	Sold 56 stocks of DUK with price 86.75 at 2018-11-21
+	Bought 64 stocks of DUK with price 85.61 at 2019-01-18
+	Bought 27 stocks of DUK with price 86.13 at 2019-01-22
+	Sold 91 stocks of DUK with price 86.7 at 2019-01-23
+	Bought 59 stocks of DUK with price 89.28 at 2019-02-26
+	Bought 29 stocks of DUK with price 89.66 at 2019-02-27
+	Sold 88 stocks of DUK with price 89.88 at 2019-03-01
+	Bought 57 stocks of DUK with price 87.8 at 2019-05-07
+	Sold 57 stocks of DUK with price 86.83 at 2019-05-08
+	Bought 60 stocks of DUK with price 91.18 at 2019-08-19
+	Sold 60 stocks of DUK with price 91.24 at 2019-08-20
+	Bought 57 stocks of DUK with price 92.15 at 2019-08-26
+	Sold 57 stocks of DUK with price 92.76 at 2019-08-28
+	Bought 53 stocks of DUK with price 96.0 at 2019-09-24
+	Sold 53 stocks of DUK with price 96.26 at 2019-09-26
+	Bought 67 stocks of DUK with price 89.28 at 2019-12-06
+	Bought 24 stocks of DUK with price 89.0 at 2019-12-10
+	Sold 91 stocks of DUK with price 90.49 at 2019-12-13
+	Bought 53 stocks of DUK with price 96.93 at 2020-02-05
+	Sold 53 stocks of DUK with price 96.27 at 2020-02-06
+	Bought 60 stocks of DUK with price 99.05 at 2020-03-05
+	Sold 60 stocks of DUK with price 94.58 at 2020-03-06
+	Bought 57 stocks of DUK with price 95.05 at 2020-03-09
+	Sold 57 stocks of DUK with price 90.94 at 2020-03-10
+	Bought 59 stocks of DUK with price 85.77 at 2020-03-12
+	Sold 59 stocks of DUK with price 86.0 at 2020-03-16
+	Bought 77 stocks of DUK with price 75.05 at 2020-03-18
+	Sold 77 stocks of DUK with price 68.4 at 2020-03-19
+	Bought 64 stocks of DUK with price 79.39 at 2020-04-01
+	Sold 64 stocks of DUK with price 83.14 at 2020-04-03
+	Bought 53 stocks of DUK with price 90.19 at 2020-06-09
+	Sold 53 stocks of DUK with price 87.08 at 2020-06-10
+	Bought 80 stocks of DUK with price 82.74 at 2020-08-12
+	Sold 80 stocks of DUK with price 82.15 at 2020-08-13
+	Bought 58 stocks of DUK with price 92.06 at 2020-10-19
+	Sold 58 stocks of DUK with price 93.06 at 2020-10-26
+	Bought 50 stocks of DUK with price 96.15 at 2020-11-24
+	Sold 50 stocks of DUK with price 94.6 at 2020-11-25
+	Bought 96 stocks of DUK with price 93.26 at 2020-11-30
+	Sold 96 stocks of DUK with price 92.35 at 2020-12-02

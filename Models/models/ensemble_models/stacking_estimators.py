@@ -3,7 +3,7 @@ import keras
 import numpy as np
 
 from constants import PYTHON_PATH
-from Models.models.estimator_interface import EstimatorInterface
+from Models.models.interfaces.estimator_interface import EstimatorInterface
 from Simulation.simulation.simulation import Simulation
 from keras.models import Model
 from keras.layers import Dense, Input, Activation

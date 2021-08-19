@@ -1,4 +1,4 @@
-from Models.models.action import Action
+from Models.models.daily_data_related.action import Action
 
 
 def divide_results(results):

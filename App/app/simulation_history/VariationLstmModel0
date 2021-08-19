@@ -1,0 +1,114 @@
++------------------------------------------------------------------------------+
+|                              Simulation Details                              |
++------------------------------------------------------------------------------+
+
+Balance: 10000.0
+Stocks: ['EIX']
+Starting Date: 2018-01-02
+Ending Date: 2020-12-31
+Model: VariationLstmModel	(Artificial Intelligence Approach using LSTMs.)
+
++------------------------------------------------------------------------------+
+|                              Simulation Results                              |
++------------------------------------------------------------------------------+
+
+Ex:		Profit: 1414.7400000000052
+		Profit (%): 14.14740000000005
+		Profit (% / Year): 4.513610424409142
+		Operating time (%): 17.59259259259259
+
+		Profit for EIX stock (%): -0.6798418972332011
+
++------------------------------------------------------------------------------+
+|                                Simulation Logs                               |
++------------------------------------------------------------------------------+
+
+Ex.
+[1]	Bought 122 stocks of EIX with price 61.74 at 2018-01-31
+	Sold 122 stocks of EIX with price 61.6 at 2018-02-01
+	Bought 86 stocks of EIX with price 60.36 at 2018-02-05
+	Bought 44 stocks of EIX with price 59.69 at 2018-02-06
+	Sold 130 stocks of EIX with price 59.24 at 2018-02-13
+	Bought 115 stocks of EIX with price 59.59 at 2018-03-01
+	Sold 115 stocks of EIX with price 60.67 at 2018-03-02
+	Bought 89 stocks of EIX with price 60.2 at 2018-03-09
+	Sold 89 stocks of EIX with price 64.0 at 2018-03-14
+	Bought 81 stocks of EIX with price 65.22 at 2018-04-16
+	Bought 41 stocks of EIX with price 64.12 at 2018-04-19
+	Sold 122 stocks of EIX with price 64.77 at 2018-04-23
+	Bought 95 stocks of EIX with price 59.72 at 2018-06-06
+	Sold 95 stocks of EIX with price 59.61 at 2018-06-07
+	Bought 90 stocks of EIX with price 60.2 at 2018-06-13
+	Sold 90 stocks of EIX with price 60.67 at 2018-06-20
+	Bought 86 stocks of EIX with price 68.04 at 2018-07-25
+	Bought 37 stocks of EIX with price 65.68 at 2018-07-27
+	Bought 19 stocks of EIX with price 66.08 at 2018-07-31
+	Bought 7 stocks of EIX with price 67.29 at 2018-08-07
+	Sold 149 stocks of EIX with price 66.63 at 2018-08-09
+	Bought 83 stocks of EIX with price 67.58 at 2018-08-24
+	Sold 83 stocks of EIX with price 67.2 at 2018-08-28
+	Bought 82 stocks of EIX with price 68.41 at 2018-09-12
+	Bought 40 stocks of EIX with price 68.43 at 2018-09-14
+	Sold 122 stocks of EIX with price 67.82 at 2018-09-19
+	Bought 93 stocks of EIX with price 66.81 at 2018-09-25
+	Bought 37 stocks of EIX with price 68.44 at 2018-10-02
+	Sold 130 stocks of EIX with price 68.69 at 2018-10-03
+	Bought 82 stocks of EIX with price 68.17 at 2018-10-25
+	Sold 82 stocks of EIX with price 69.53 at 2018-10-29
+	Bought 100 stocks of EIX with price 54.88 at 2019-01-17
+	Bought 55 stocks of EIX with price 54.21 at 2019-01-18
+	Sold 155 stocks of EIX with price 54.51 at 2019-01-25
+	Bought 104 stocks of EIX with price 61.31 at 2019-02-28
+	Sold 104 stocks of EIX with price 62.09 at 2019-03-01
+	Bought 136 stocks of EIX with price 62.16 at 2019-03-27
+	Sold 136 stocks of EIX with price 61.92 at 2019-03-28
+	Bought 89 stocks of EIX with price 63.45 at 2019-04-02
+	Bought 49 stocks of EIX with price 63.76 at 2019-04-05
+	Sold 138 stocks of EIX with price 62.47 at 2019-04-08
+	Bought 86 stocks of EIX with price 64.44 at 2019-04-15
+	Sold 86 stocks of EIX with price 63.02 at 2019-04-18
+	Bought 87 stocks of EIX with price 63.3 at 2019-04-26
+	Sold 87 stocks of EIX with price 59.19 at 2019-05-09
+	Bought 91 stocks of EIX with price 61.7 at 2019-05-22
+	Bought 36 stocks of EIX with price 59.7 at 2019-05-29
+	Sold 127 stocks of EIX with price 63.48 at 2019-06-05
+	Bought 91 stocks of EIX with price 59.88 at 2019-06-12
+	Sold 91 stocks of EIX with price 63.78 at 2019-06-19
+	Bought 89 stocks of EIX with price 67.06 at 2019-06-28
+	Sold 89 stocks of EIX with price 67.16 at 2019-07-01
+	Bought 74 stocks of EIX with price 72.51 at 2019-08-02
+	Sold 74 stocks of EIX with price 73.37 at 2019-08-05
+	Bought 75 stocks of EIX with price 71.82 at 2019-08-13
+	Sold 75 stocks of EIX with price 72.07 at 2019-08-14
+	Bought 129 stocks of EIX with price 71.31 at 2019-09-04
+	Sold 129 stocks of EIX with price 71.93 at 2019-09-12
+	Bought 76 stocks of EIX with price 72.63 at 2019-09-18
+	Sold 76 stocks of EIX with price 72.74 at 2019-09-19
+	Bought 91 stocks of EIX with price 65.58 at 2019-10-31
+	Sold 91 stocks of EIX with price 66.14 at 2019-11-04
+	Bought 109 stocks of EIX with price 66.84 at 2019-11-11
+	Sold 109 stocks of EIX with price 68.11 at 2019-11-12
+	Bought 103 stocks of EIX with price 71.25 at 2019-11-21
+	Sold 103 stocks of EIX with price 71.0 at 2019-12-03
+	Bought 105 stocks of EIX with price 57.88 at 2020-04-14
+	Sold 105 stocks of EIX with price 58.23 at 2020-04-22
+	Bought 108 stocks of EIX with price 54.04 at 2020-05-05
+	Bought 50 stocks of EIX with price 54.53 at 2020-05-06
+	Bought 23 stocks of EIX with price 57.05 at 2020-05-07
+	Sold 181 stocks of EIX with price 56.41 at 2020-05-11
+	Bought 115 stocks of EIX with price 58.11 at 2020-05-28
+	Sold 115 stocks of EIX with price 59.86 at 2020-06-01
+	Bought 118 stocks of EIX with price 54.37 at 2020-06-23
+	Sold 118 stocks of EIX with price 54.31 at 2020-06-29
+	Bought 119 stocks of EIX with price 53.16 at 2020-07-24
+	Sold 119 stocks of EIX with price 54.87 at 2020-07-29
+	Bought 135 stocks of EIX with price 51.26 at 2020-08-20
+	Sold 135 stocks of EIX with price 52.34 at 2020-08-21
+	Bought 134 stocks of EIX with price 52.48 at 2020-08-28
+	Sold 134 stocks of EIX with price 51.81 at 2020-08-31
+	Bought 125 stocks of EIX with price 52.57 at 2020-09-01
+	Bought 50 stocks of EIX with price 52.96 at 2020-09-02
+	Bought 24 stocks of EIX with price 51.37 at 2020-09-04
+	Sold 199 stocks of EIX with price 50.63 at 2020-09-10
+	Bought 92 stocks of EIX with price 61.63 at 2020-12-29
+	Sold 92 stocks of EIX with price 62.82 at 2020-12-30

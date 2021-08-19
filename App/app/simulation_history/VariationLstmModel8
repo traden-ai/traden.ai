@@ -1,0 +1,56 @@
++------------------------------------------------------------------------------+
+|                              Simulation Details                              |
++------------------------------------------------------------------------------+
+
+Balance: 10000.0
+Stocks: ['DUK']
+Starting Date: 2018-01-02
+Ending Date: 2020-12-11
+Model: VariationLstmModel	(Artificial Intelligence Approach using LSTMs.)
+
++------------------------------------------------------------------------------+
+|                              Simulation Results                              |
++------------------------------------------------------------------------------+
+
+Ex:		Profit: -638.9800000000014
+		Profit (%): -6.3898000000000135
+		Profit (% / Year): -2.2190728216693545
+		Operating time (%): 6.73469387755102
+
+		Profit for DUK stock (%): 9.984380631983662
+
++------------------------------------------------------------------------------+
+|                                Simulation Logs                               |
++------------------------------------------------------------------------------+
+
+Ex.
+[1]	Bought 67 stocks of DUK with price 76.47 at 2018-03-12
+	Sold 67 stocks of DUK with price 76.74 at 2018-03-14
+	Bought 78 stocks of DUK with price 79.83 at 2018-04-30
+	Bought 28 stocks of DUK with price 79.76 at 2018-05-02
+	Sold 106 stocks of DUK with price 79.88 at 2018-05-03
+	Bought 80 stocks of DUK with price 85.61 at 2019-01-18
+	Bought 18 stocks of DUK with price 86.13 at 2019-01-22
+	Sold 98 stocks of DUK with price 86.7 at 2019-01-23
+	Bought 76 stocks of DUK with price 88.81 at 2019-05-23
+	Bought 21 stocks of DUK with price 85.81 at 2019-05-28
+	Sold 97 stocks of DUK with price 85.53 at 2019-05-29
+	Bought 59 stocks of DUK with price 87.22 at 2019-06-04
+	Sold 59 stocks of DUK with price 87.71 at 2019-06-05
+	Bought 76 stocks of DUK with price 87.98 at 2019-06-25
+	Sold 76 stocks of DUK with price 89.14 at 2019-07-01
+	Bought 71 stocks of DUK with price 96.0 at 2019-09-24
+	Bought 17 stocks of DUK with price 96.2 at 2019-09-25
+	Sold 88 stocks of DUK with price 95.86 at 2019-09-27
+	Bought 64 stocks of DUK with price 101.42 at 2020-02-18
+	Bought 25 stocks of DUK with price 101.43 at 2020-02-19
+	Sold 89 stocks of DUK with price 102.3 at 2020-02-21
+	Bought 64 stocks of DUK with price 94.58 at 2020-03-06
+	Sold 64 stocks of DUK with price 95.05 at 2020-03-09
+	Bought 74 stocks of DUK with price 75.05 at 2020-03-18
+	Sold 74 stocks of DUK with price 64.15 at 2020-03-20
+	Bought 76 stocks of DUK with price 81.89 at 2020-05-12
+	Sold 76 stocks of DUK with price 81.19 at 2020-05-14
+	Bought 54 stocks of DUK with price 95.01 at 2020-11-13
+	Bought 23 stocks of DUK with price 92.58 at 2020-11-19
+	Sold 77 stocks of DUK with price 96.15 at 2020-11-24

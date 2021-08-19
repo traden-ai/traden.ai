@@ -1,1 +1,2 @@
-PYTHON_PATH = "/home/atfortes/Dev/traden.ai"  # set your python path here
+PYTHON_PATH = "/home/diogo/Documents/traden.ai"
+

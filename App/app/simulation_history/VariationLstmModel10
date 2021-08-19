@@ -1,0 +1,86 @@
++------------------------------------------------------------------------------+
+|                              Simulation Details                              |
++------------------------------------------------------------------------------+
+
+Balance: 10000.0
+Stocks: ['ADBE']
+Starting Date: 2018-01-11
+Ending Date: 2020-12-31
+Model: VariationLstmModel	(Artificial Intelligence Approach using LSTMs.)
+
++------------------------------------------------------------------------------+
+|                              Simulation Results                              |
++------------------------------------------------------------------------------+
+
+Ex:		Profit: 3402.559999999994
+		Profit (%): 34.02559999999994
+		Profit (% / Year): 10.35364075515135
+		Operating time (%): 24.253731343283583
+
+		Profit for ADBE stock (%): 164.72580986661026
+
++------------------------------------------------------------------------------+
+|                                Simulation Logs                               |
++------------------------------------------------------------------------------+
+
+Ex.
+[1]	Bought 26 stocks of ADBE with price 202.98 at 2018-02-16
+	Sold 26 stocks of ADBE with price 202.61 at 2018-02-21
+	Bought 28 stocks of ADBE with price 226.85 at 2018-03-20
+	Bought 10 stocks of ADBE with price 220.52 at 2018-03-21
+	Bought 3 stocks of ADBE with price 215.02 at 2018-03-22
+	Sold 41 stocks of ADBE with price 228.91 at 2018-03-23
+	Bought 30 stocks of ADBE with price 213.8 at 2018-03-26
+	Sold 30 stocks of ADBE with price 216.08 at 2018-03-28
+	Bought 28 stocks of ADBE with price 225.05 at 2018-04-03
+	Sold 28 stocks of ADBE with price 223.54 at 2018-04-04
+	Bought 43 stocks of ADBE with price 230.99 at 2018-05-04
+	Sold 43 stocks of ADBE with price 239.74 at 2018-05-08
+	Bought 37 stocks of ADBE with price 251.74 at 2018-06-18
+	Sold 37 stocks of ADBE with price 258.59 at 2018-06-19
+	Bought 42 stocks of ADBE with price 254.68 at 2018-07-13
+	Sold 42 stocks of ADBE with price 258.31 at 2018-07-16
+	Bought 45 stocks of ADBE with price 240.56 at 2018-11-05
+	Sold 45 stocks of ADBE with price 232.25 at 2018-11-26
+	Bought 38 stocks of ADBE with price 234.56 at 2018-12-17
+	Bought 5 stocks of ADBE with price 241.95 at 2019-01-15
+	Sold 43 stocks of ADBE with price 247.51 at 2019-01-17
+	Bought 37 stocks of ADBE with price 262.34 at 2019-03-26
+	Sold 37 stocks of ADBE with price 266.49 at 2019-03-28
+	Bought 41 stocks of ADBE with price 271.5 at 2019-04-02
+	Sold 41 stocks of ADBE with price 267.89 at 2019-04-03
+	Bought 26 stocks of ADBE with price 275.79 at 2019-04-05
+	Sold 26 stocks of ADBE with price 278.48 at 2019-05-09
+	Bought 26 stocks of ADBE with price 288.74 at 2019-07-24
+	Sold 26 stocks of ADBE with price 284.69 at 2019-08-28
+	Bought 39 stocks of ADBE with price 277.91 at 2019-09-19
+	Sold 39 stocks of ADBE with price 277.43 at 2019-09-24
+	Bought 29 stocks of ADBE with price 283.81 at 2019-09-25
+	Sold 29 stocks of ADBE with price 277.54 at 2019-09-26
+	Bought 40 stocks of ADBE with price 266.66 at 2019-10-01
+	Sold 40 stocks of ADBE with price 272.4 at 2019-10-02
+	Bought 30 stocks of ADBE with price 277.78 at 2019-10-03
+	Sold 30 stocks of ADBE with price 279.39 at 2019-10-14
+	Bought 28 stocks of ADBE with price 269.24 at 2019-10-16
+	Bought 9 stocks of ADBE with price 265.52 at 2019-10-17
+	Sold 37 stocks of ADBE with price 261.09 at 2019-10-21
+	Bought 21 stocks of ADBE with price 290.77 at 2019-11-06
+	Sold 21 stocks of ADBE with price 304.17 at 2019-11-19
+	Bought 22 stocks of ADBE with price 305.96 at 2019-12-11
+	Sold 22 stocks of ADBE with price 331.81 at 2020-01-02
+	Bought 24 stocks of ADBE with price 349.74 at 2020-01-16
+	Sold 24 stocks of ADBE with price 372.95 at 2020-01-22
+	Bought 22 stocks of ADBE with price 347.8 at 2020-02-24
+	Bought 9 stocks of ADBE with price 362.52 at 2020-05-05
+	Sold 31 stocks of ADBE with price 366.78 at 2020-05-06
+	Bought 23 stocks of ADBE with price 367.97 at 2020-05-15
+	Sold 23 stocks of ADBE with price 382.17 at 2020-05-20
+	Bought 18 stocks of ADBE with price 476.3 at 2020-08-21
+	Sold 18 stocks of ADBE with price 485.91 at 2020-09-11
+	Bought 15 stocks of ADBE with price 476.0 at 2020-09-15
+	Sold 15 stocks of ADBE with price 467.55 at 2020-09-17
+	Bought 14 stocks of ADBE with price 476.87 at 2020-12-09
+	Sold 14 stocks of ADBE with price 498.95 at 2020-12-10
+	Bought 25 stocks of ADBE with price 502.11 at 2020-12-28
+	Bought 1 stocks of ADBE with price 500.12 at 2020-12-30
+	Sold 26 stocks of ADBE with price 500.12 at 2020-12-31

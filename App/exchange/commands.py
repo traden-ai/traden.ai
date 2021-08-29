@@ -204,4 +204,4 @@ class ExchangeCommands:
         print("|\t\tx\tRemove tickers to a model.\n|")
         print("|\t\tl\tDisplay ledger data\n|")
         print("|\t\tm\tDisplay model data\n|")
-        print("|\t\tq\tQuit mode.\n+\n")]
+        print("|\t\tq\tQuit mode.\n+\n")

@@ -1,7 +1,7 @@
 import datetime as dt
 
 import numpy as np
-from Models.models.action import Action
+from Models.models.daily_data_related.action import Action
 from Simulation.simulation_data.simulation_data import SimulationData
 
 symbols_filepath = "../data/symbols.txt"
@@ -65,10 +65,9 @@ def get_date_index(data_year: list, date: str, date_type: str):
     return index
 
 
-def convert_daily_data_to_np(daily_data):
+def convert_daily_data_to_np(daily_data, attributes = None):
     result = {}
     vec = []
-    attributes = None
     for s in daily_data:
         if not attributes:
             attributes = [a for a in dir(daily_data[s]) if not a.startswith('__') and not callable(getattr(daily_data[s], a))]
@@ -77,6 +76,24 @@ def convert_daily_data_to_np(daily_data):
             attr_dict = getattr(daily_data[s], attr)
             keys = sorted(list(attr_dict))
             attribute_components_values = [attr_dict[key] for key in keys]
+            if attribute_components_values != []:
+                vec.extend(attribute_components_values)
+        result[s] = np.array(vec)
+        vec = []
+    return result
+
+
+def convert_daily_simulation_data_to_np(daily_data, attributes=None):
+    result = {}
+    vec = []
+    for s in daily_data:
+        if not attributes:
+            attributes = [a for a in dir(daily_data[s]) if not a.startswith('__') and not callable(getattr(daily_data[s], a))]
+            attributes = sorted(attributes)
+        for attr in attributes:
+            attr_dict = getattr(daily_data[s], attr)
+            keys = sorted(list([a for a in dir(attr_dict) if not a.startswith('__') and not callable(getattr(attr_dict, a))]))
+            attribute_components_values = [float(getattr(attr_dict, key)) for key in keys]
             if attribute_components_values != []:
                 vec.extend(attribute_components_values)
         result[s] = np.array(vec)
@@ -239,4 +256,4 @@ def convert_nominal_to_variation_1D(np_arr, eps=0.001):
             new_arr.append(np_arr[i] / np_arr[i - 1])
         else:
             new_arr.append(np_arr[i] / eps)
-    return np.array(new_arr)
+    return new_arr

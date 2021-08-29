@@ -5,8 +5,8 @@ from DataProviderContract.generated_files import data_provider_pb2_grpc
 from DataProviderContract.generated_files import data_provider_pb2
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 from Simulation.simulation_servicer.utils import data_load
-from utils.data_distribution import convert_data_points_2D_into_percentile_2D, convert_data_points_into_percentile_list
-from utils.utils import convert_data_to_np, convert_prices_to_np, convert_nominal_to_variation_2D, \
+from Utils.data_distribution import convert_data_points_2D_into_percentile_2D, convert_data_points_into_percentile_list
+from Utils.utils import convert_data_to_np, convert_prices_to_np, convert_nominal_to_variation_2D, \
     convert_nominal_to_variation_1D
 
 

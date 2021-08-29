@@ -27,7 +27,8 @@ class DataProviderServicer(data_provider_pb2_grpc.DataProviderServicer):
                                                      not_available_tickers=not_available_tickers),
                 status=data_provider_pb2.PastDataResponse.TICKERS_NOT_AVAILABLE)
             return None
-
+        if len(indicators) == 0:
+            indicators = self.database_handler.get_indicators()
         are_indicators_possible = self.database_handler.are_indicators_possible(indicators)
         if not are_indicators_possible:
             yield data_provider_pb2.PastDataResponse(

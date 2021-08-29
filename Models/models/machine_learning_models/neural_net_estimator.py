@@ -1,10 +1,10 @@
-import keras
+"""import keras
 import numpy as np
 
-from Models.models.estimator_interface import EstimatorInterface, record_estimation
-from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
+from Models.models.interfaces.estimator_interface import EstimatorInterface, record_estimation
+from Utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
-from utils.utils import data_load
+from Utils.utils import data_load
 from keras.models import Model
 from keras.layers import Dense, Dropout, Input, Activation
 from keras import optimizers
@@ -82,4 +82,4 @@ if __name__ == '__main__':
     model = NeuralNetEstimator(0.01, 0.0001)
     X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
-    save_instance("NeuralNetEstimator", model)
+    save_instance("NeuralNetEstimator", model)"""

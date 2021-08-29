@@ -1,5 +1,5 @@
-from Models.models.action import Action
-from Models.models.trading_data import TradingData
+from Models.models.daily_data_related.action import Action
+from Models.models.daily_data_related.trading_data import TradingData
 from Simulation.simulation_servicer.utils import *
 from Simulation.simulation.simulation_assembler import SimulationAssembler
 from DataProviderContract.generated_files import data_provider_pb2

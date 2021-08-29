@@ -2,7 +2,7 @@ import os
 import jsonpickle
 
 from constants import PYTHON_PATH
-from Models.models.model_interface import ModelInterface
+from Models.models.interfaces.model_interface import ModelInterface
 from Models.models import *
 import inspect
 import json

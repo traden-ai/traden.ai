@@ -1,7 +1,7 @@
 from enum import Enum
-from Models.models.action import Action
-from Models.models.trading_data import TradingData
-from Models.models.model_interface import ModelInterface
+from Models.models.daily_data_related.action import Action
+from Models.models.daily_data_related.trading_data import TradingData
+from Models.models.interfaces.model_interface import ModelInterface
 from Models.model_database_handler.model_database_handler import *
 
 

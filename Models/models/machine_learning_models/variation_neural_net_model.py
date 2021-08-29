@@ -1,4 +1,4 @@
-import keras
+"""import keras
 import numpy as np
 
 from Models.models.interfaces.estimator_interface import EstimatorInterface, record_estimation
@@ -106,4 +106,4 @@ if __name__ == '__main__':
     X, Y = model.preprocessing("AMZN", "2013-01-01", "2018-01-01", 1)
 
     model.train(X, Y)
-    save_instance("VariationNeuralNetModel", model)
+    save_instance("VariationNeuralNetModel", model)"""

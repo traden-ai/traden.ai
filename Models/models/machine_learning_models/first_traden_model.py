@@ -1,9 +1,9 @@
-import random
+"""import random
 
 from Models.model_database_handler.model_database_handler import save_instance
 from constants import PYTHON_PATH
-from models.estimator_interface import EstimatorInterface, record_estimation
-from models.model_interface import *
+from Models.models.interfaces.estimator_interface import EstimatorInterface, record_estimation
+from Models.models.interfaces.model_interface import *
 from utils.utils import convert_daily_data_to_np, convert_data_to_np, convert_prices_to_np
 from sklearn import preprocessing
 from utils.utils import data_load
@@ -109,3 +109,4 @@ if __name__ == '__main__':
     X, Y = model.preprocessing("GM", "2013-01-01", "2018-01-01", 1)
     model.train(X, Y)
     save_instance("FirstTradenModel", model)
+    """

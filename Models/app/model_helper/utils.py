@@ -1,11 +1,26 @@
 from datetime import datetime
 from typing import re
 
+import numpy as np
+
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 from Models.model_database_handler.model_database_handler import list_instances, get_instance, save_instance
 import importlib, inspect
 import matplotlib.pyplot as plt
 import os
+import tensorflow as tf
+
+def do_monte_carlo_simuls(Y_pred, Y_corr, N=1000):
+    results = []
+    my_result = minimum_squared_error(Y_pred, Y_corr)
+    for i in range(N):
+        np.random.shuffle(Y_pred)
+        results.append(float(minimum_squared_error(Y_pred, Y_corr)))
+    results.sort()
+    for i in range(len(results)):
+        if results[i] >= my_result:
+            return (i / N) * 100
+    return 100
 
 def ask_test_parameters(instances: list):
     stock, start_date, end_date, pred_time = ask_preprocessing_parameters()
@@ -96,6 +111,13 @@ def ask_pred_time():
     pred_time = input("\n\tPredTime: ")
     return pred_time
 
+def ask_no_models():
+    while True:
+        no = input("\tNumber of models?")
+        if not no.isdigit():
+            continue
+        return no
+
 def ask_graph():
     while True:
         option = input("\tPlot results into graph? (yes/no) ")
@@ -126,3 +148,7 @@ def list_model_classes_from_folder(relative_path, raw_absolute_path):
     for file in files:
         classes += list_model_classes(clean_absolute_path + file.replace(".py", ""))
     return classes
+
+def minimum_squared_error(y_pred, y_corr):
+    squared_difference = tf.square(y_corr - y_pred)
+    return tf.reduce_mean(squared_difference, axis=-1)

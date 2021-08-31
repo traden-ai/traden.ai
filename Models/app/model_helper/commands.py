@@ -1,9 +1,9 @@
 import numpy as np
 
 from Models.app.model_helper.utils import list_model_classes_from_folder, ask_model_instance, ask_test_parameters, \
-    ask_instance_parameters, ask_preprocessing_parameters, ask_graph, render_graph
+    ask_instance_parameters, ask_preprocessing_parameters, ask_graph, render_graph, do_monte_carlo_simuls, ask_no_models
 from Models.model_data_endpoint.model_data_endpoint import ModelDataEndpoint
-from Models.model_database_handler.model_database_handler import save_instance, list_instances
+from Models.model_database_handler.model_database_handler import save_instance, list_instances, get_instance
 from DataProviderTester.main.data_provider_frontend import DataProviderFrontend
 from Simulation.simulation_data.simulation_data import SimulationData
 from Simulation.simulation_servicer.utils import update_today_data
@@ -60,6 +60,10 @@ def test_instance():
 
     print("The loss function on the selected data corresponds to the following score {}".format(score))
 
+    percentil = do_monte_carlo_simuls(predicted_values.reshape(-1), target_data)
+
+    print("The percentil for random monte carlo simuls is {}".format(percentil))
+
     if ask_graph():
         render_graph(target_data, predicted_values)
 
@@ -82,6 +86,40 @@ def test_estimator():
 
     render_graph(prices, estimations)
 
+def train_existing_instance():
+    model_instance = ask_model_instance(list_instances())
+    preprocessing_parameters = ask_preprocessing_parameters()
+    instance = get_instance(model_instance)
+    X, Y = instance.preprocessing(*(tuple(preprocessing_parameters + [DE])))
+    instance.train(X, Y)
+    save_instance(model_instance, instance)
+
 
 def stack_multiple_estimators():
-    print("TO BE IMPLEMENTED")
+    number_of_models = ask_no_models()
+    models = []
+    model_instances = []
+    preprocessing_parameters = ask_preprocessing_parameters()
+    for i in range(len(number_of_models)):
+        model_instance = ask_model_instance(list_instances())
+        models.append(get_instance(model_instance))
+        model_instances.append(model_instance)
+
+    stock = preprocessing_parameters[0]
+    dates, data, raw_prices, _ = DE.get_past_data([stock],
+                                                  ["dailyAdjusted", "cci", "adx", "ad", "aroon", "bbands", "ema",
+                                                   "macd", "obv", "rsi", "sma", "stoch"], preprocessing_parameters[1], preprocessing_parameters[2])
+    prices = convert_prices_to_np(raw_prices)[stock]
+    prices = np.delete(prices, 0, axis=0)
+
+    current_data = {stock: SimulationData()}
+    estimations = {}
+    for i in range(len(models)):
+        for daily_data in data:
+            current_data = update_today_data(current_data, data[daily_data])
+            models[i].estimate(current_data)
+
+        estimations[model_instances[i]] = np.array([estimation[stock] for estimation in models[i].estimations])
+
+
+

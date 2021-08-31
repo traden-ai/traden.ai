@@ -2,7 +2,8 @@ import sys
 
 from Models.app.model_helper.commands import convert_instance_into_univariate_model, \
     create_composition_of_univariate_models, create_allocator_and_save_allocator, save_instance, \
-    train_and_save_instance, test_instance, test_estimator, stack_multiple_estimators, save_sel_instance
+    train_and_save_instance, test_instance, test_estimator, stack_multiple_estimators, save_sel_instance, \
+    train_existing_instance
 
 
 def render_title():
@@ -62,6 +63,8 @@ def execute_trainable_specifics():
             train_and_save_instance()
         elif (mode == "ti"):
             test_instance()
+        elif (mode == "tei"):
+            train_existing_instance()
         elif (mode == "te"):
             test_estimator()
         elif (mode == "se"):

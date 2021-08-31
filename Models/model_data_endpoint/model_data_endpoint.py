@@ -21,9 +21,9 @@ class ModelDataEndpoint:
                                                     interval=data_provider_pb2.TimeInterval(start_date=start_date,
                                                                                             end_date=end_date))
         response, status = self.data_provider_frontend.get_past_data(request)
-        dates, data, prices = data_load(response["data"])
         if status != data_provider_pb2.PastDataResponse.OK:
             return None, None, None, status
+        dates, data, prices = data_load(response["data"])
         return dates, data, prices, status
 
     def get_data_np(self, tickers, indicators, start_date, end_date):

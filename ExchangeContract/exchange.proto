@@ -19,6 +19,15 @@ message CtrlPingResponse {
   string output = 1;
 }
 
+// list model instances
+
+message ListInstancesRequest {
+}
+
+message ListInstancesResponse {
+  repeated string instances = 1;
+}
+
 // start and stop model
 
 message StartModelRequest {
@@ -119,6 +128,7 @@ message ModelInfoResponse {
 
 service Exchange {
   rpc ctrl_ping(CtrlPingRequest) returns (CtrlPingResponse);
+  rpc list_model_instances(ListInstancesRequest) returns (ListInstancesResponse);
   rpc start_model(StartModelRequest) returns (StartModelResponse);
   rpc stop_model(StopModelRequest) returns (StopModelResponse);
   rpc add_capital_to_model(AddCapitalToModelRequest) returns (AddCapitalToModelResponse);

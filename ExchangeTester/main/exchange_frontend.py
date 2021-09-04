@@ -14,6 +14,9 @@ class ExchangeFrontend:
     def ctrl_ping(self, ctrl_ping_request):
         return self.stub.ctrl_ping(ctrl_ping_request)
 
+    def list_model_instances(self, list_model_instances_request):
+        return self.stub.list_model_instances(list_model_instances_request)
+
     def start_model(self, start_model_request):
         return self.stub.start_model(start_model_request)
 

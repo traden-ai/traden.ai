@@ -32,24 +32,25 @@ class ExchangeCommands:
         req = exchange_pb2.CtrlPingRequest(input="hello")
         res = self.frontend.ctrl_ping(req)
         print("\n\tOutput: {}", res.output)
-        
 
     def start_model(self):
-        
-        # FIXME get instances
-        instance = ask_model(None)
+
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
         tickers = ask_stocks()
         capital = ask_balance()
-        
+
         request = exchange_pb2.StartModelRequest(
             model=instance,
             tickers=tickers,
-            capital=capital 
+            capital=capital
         )
 
         response = self.frontend.start_model(request)
         status = response.status
-        
+
         if (status == exchange_pb2.ExchangeResponseStatus.OK):
             print("Model start sucessful")
         elif (status == exchange_pb2.ExchangeResponseStatus.MODEL_NOT_FOUND):
@@ -61,15 +62,16 @@ class ExchangeCommands:
         elif (status == exchange_pb2.ExchangeResponseStatus.NOK):
             print("Something went wrong in API call")
 
-
     def stop_model(self):
 
-        # FIXME get instances
-        instance = ask_model(None)
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
         request = exchange_pb2.StopModelRequest(
             model=instance
         )
-        
+
         response = self.frontend.stop_model(request)
         status = response.status
 
@@ -82,10 +84,12 @@ class ExchangeCommands:
 
     def change_capital(self):
 
-        # FIXME get instances
-        instance = ask_model(None)
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
         capital = ask_balance()
-        
+
         if (capital > 0):
             self.add_capital(instance, capital)
         elif (capital < 0):
@@ -108,8 +112,7 @@ class ExchangeCommands:
         elif (status == exchange_pb2.ExchangeResponseStatus.MONEY_NOT_FOUND):
             print("Money not found")
         elif (status == exchange_pb2.ExchangeResponseStatus.NOK):
-            print("Something went wrong in API call")
-        
+            print("Something went wrong in API call")    
 
     def remove_capital(self, instance, capital):
 
@@ -129,10 +132,13 @@ class ExchangeCommands:
             print("Money not found")
         elif (status == exchange_pb2.ExchangeResponseStatus.NOK):
             print("Something went wrong in API call")
-    
+
     def add_tickers(self):
 
-        instance = ask_model(None)
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
         tickers = ask_stocks()
 
         request = exchange_pb2.AddTickersToModelRequest(
@@ -151,11 +157,13 @@ class ExchangeCommands:
             print("Tickers not found")
         elif (status == exchange_pb2.ExchangeResponseStatus.NOK):
             print("Something went wrong in API call")
-    
 
     def remove_tickers(self):
 
-        instance = ask_model(None)
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
         tickers = ask_stocks()
 
         request = exchange_pb2.RemoveTickersFromModelRequest(
@@ -174,22 +182,27 @@ class ExchangeCommands:
             print("Tickers not found")
         elif (status == exchange_pb2.ExchangeResponseStatus.NOK):
             print("Something went wrong in API call")
-    
+
     def ledger_info(self):
         request = exchange_pb2.LedgerInfoRequest()
         response = self.frontend.ledger_info(request)
-
-        #FIXME display ledger
+        print(render_ledger(response))
 
     def model_info(self):
 
-        instance = ask_model(None)
-        request = exchange_pb2.ModelInfoRequest(
-            model=instance
-        )       
+        request = exchange_pb2.ListInstancesRequest()
+        response = self.frontend.list_instances(request)
+
+        instance = ask_model(response.instances)
+        request = exchange_pb2.ModelInfoRequest(model=instance)       
         response = self.frontend.model_info(request)
 
-        #FIXME display model/ledger
+        if (response.status == exchange_pb2.ExchangeResponseStatus.OK):
+            print(render_model(instance, response))
+        elif (response.status == exchange_pb2.ExchangeResponseStatus.MODEL_NOT_FOUND):
+            print("Model not found")
+        elif (response.status == exchange_pb2.ExchangeResponseStatus.NOK):
+            print("Something went wrong in API call")
 
     def help_instructions():
         print("\n+\n|\t% Application Description\n|")
